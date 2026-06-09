@@ -1,0 +1,99 @@
+[
+  {
+    "id": "wc26-001",
+    "match_number": 1,
+    "stage": "Group",
+    "group": "A",
+    "kickoff_utc": "2026-06-11T18:00:00Z",
+    "venue": "Estadio Azteca",
+    "city": "Mexico City",
+    "home_team_id": "mex",
+    "away_team_id": "rsa",
+    "context": {"home_mult": 0.99, "away_mult": 0.94, "notes": ["Mexico City altitude", "host opener"]}
+  },
+  {
+    "id": "wc26-002",
+    "match_number": 2,
+    "stage": "Group",
+    "group": "D",
+    "kickoff_utc": "2026-06-12T01:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "usa",
+    "away_team_id": "par",
+    "context": {"home_mult": 1.02, "away_mult": 0.98, "notes": ["host crowd", "long travel for away side"]}
+  },
+  {
+    "id": "wc26-003",
+    "match_number": 3,
+    "stage": "Group",
+    "group": "C",
+    "kickoff_utc": "2026-06-13T18:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "bra",
+    "away_team_id": "sco",
+    "context": {"home_mult": 1.0, "away_mult": 1.0, "notes": []}
+  },
+  {
+    "id": "wc26-004",
+    "match_number": 4,
+    "stage": "Group",
+    "group": "E",
+    "kickoff_utc": "2026-06-14T19:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "ger",
+    "away_team_id": "cur",
+    "context": {"home_mult": 1.0, "away_mult": 0.99, "notes": ["indoor venue reduces weather uncertainty"]}
+  },
+  {
+    "id": "wc26-005",
+    "match_number": 5,
+    "stage": "Group",
+    "group": "D",
+    "kickoff_utc": "2026-06-14T22:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "tur",
+    "away_team_id": "aus",
+    "context": {"home_mult": 1.0, "away_mult": 0.98, "notes": ["travel load watch"]}
+  },
+  {
+    "id": "wc26-006",
+    "match_number": 6,
+    "stage": "Group",
+    "group": "C",
+    "kickoff_utc": "2026-06-15T01:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "mar",
+    "away_team_id": "hai",
+    "context": {"home_mult": 1.01, "away_mult": 0.99, "notes": []}
+  },
+  {
+    "id": "wc26-007",
+    "match_number": 7,
+    "stage": "Group",
+    "group": "A",
+    "kickoff_utc": "2026-06-15T19:00:00Z",
+    "venue": "BMO Field",
+    "city": "Toronto",
+    "home_team_id": "kor",
+    "away_team_id": "cze",
+    "context": {"home_mult": 1.0, "away_mult": 1.0, "notes": []}
+  },
+  {
+    "id": "wc26-008",
+    "match_number": 8,
+    "stage": "Group",
+    "group": "E",
+    "kickoff_utc": "2026-06-16T22:00:00Z",
+    "venue": "Levi's Stadium",
+    "city": "Santa Clara",
+    "home_team_id": "ecu",
+    "away_team_id": "civ",
+    "context": {"home_mult": 1.0, "away_mult": 1.0, "notes": ["player availability low confidence"]}
+  }
+]
+

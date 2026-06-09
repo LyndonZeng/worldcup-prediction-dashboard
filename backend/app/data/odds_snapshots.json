@@ -1,0 +1,13 @@
+[
+  {"match_id": "wc26-001", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -0.75, "price_home": 1.93, "price_away": 1.91, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-001", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -0.5, "price_home": 1.72, "price_away": 2.13, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-002", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -0.25, "price_home": 1.88, "price_away": 1.98, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-002", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -0.5, "price_home": 2.14, "price_away": 1.74, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-003", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -1.0, "price_home": 1.89, "price_away": 1.96, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-003", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -1.25, "price_home": 2.08, "price_away": 1.78, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-004", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -1.5, "price_home": 1.91, "price_away": 1.93, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-004", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -2.0, "price_home": 2.16, "price_away": 1.72, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-005", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -0.5, "price_home": 1.96, "price_away": 1.88, "captured_at": "2026-06-09T00:00:00Z"},
+  {"match_id": "wc26-008", "bookmaker": "sample-consensus", "market_type": "asian_handicap", "line": -0.25, "price_home": 2.03, "price_away": 1.82, "captured_at": "2026-06-09T00:00:00Z"}
+]
+

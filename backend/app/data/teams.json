@@ -1,0 +1,19 @@
+[
+  {"id": "mex", "name": "Mexico", "group": "A", "fifa_code": "MEX", "flag_code": "mx", "elo": 1775, "attack": 0.04, "defence": 0.03, "form_index": 0.12, "injury_impact": 0.01},
+  {"id": "rsa", "name": "South Africa", "group": "A", "fifa_code": "RSA", "flag_code": "za", "elo": 1584, "attack": -0.10, "defence": -0.07, "form_index": 0.06, "injury_impact": 0.00},
+  {"id": "kor", "name": "South Korea", "group": "A", "fifa_code": "KOR", "flag_code": "kr", "elo": 1718, "attack": 0.01, "defence": 0.02, "form_index": 0.04, "injury_impact": 0.00},
+  {"id": "cze", "name": "Czech Republic", "group": "A", "fifa_code": "CZE", "flag_code": "cz", "elo": 1725, "attack": 0.03, "defence": 0.04, "form_index": -0.02, "injury_impact": 0.02},
+  {"id": "usa", "name": "United States", "group": "D", "fifa_code": "USA", "flag_code": "us", "elo": 1770, "attack": 0.07, "defence": 0.02, "form_index": 0.08, "injury_impact": 0.01},
+  {"id": "par", "name": "Paraguay", "group": "D", "fifa_code": "PAR", "flag_code": "py", "elo": 1692, "attack": -0.03, "defence": 0.05, "form_index": 0.03, "injury_impact": 0.00},
+  {"id": "tur", "name": "Turkey", "group": "D", "fifa_code": "TUR", "flag_code": "tr", "elo": 1784, "attack": 0.08, "defence": -0.01, "form_index": 0.07, "injury_impact": 0.02},
+  {"id": "aus", "name": "Australia", "group": "D", "fifa_code": "AUS", "flag_code": "au", "elo": 1664, "attack": -0.04, "defence": 0.01, "form_index": -0.01, "injury_impact": 0.00},
+  {"id": "bra", "name": "Brazil", "group": "C", "fifa_code": "BRA", "flag_code": "br", "elo": 1918, "attack": 0.20, "defence": 0.12, "form_index": 0.03, "injury_impact": 0.01},
+  {"id": "sco", "name": "Scotland", "group": "C", "fifa_code": "SCO", "flag_code": "gb-sct", "elo": 1707, "attack": -0.02, "defence": 0.03, "form_index": -0.03, "injury_impact": 0.02},
+  {"id": "hai", "name": "Haiti", "group": "C", "fifa_code": "HAI", "flag_code": "ht", "elo": 1455, "attack": -0.15, "defence": -0.12, "form_index": 0.02, "injury_impact": 0.00},
+  {"id": "mar", "name": "Morocco", "group": "C", "fifa_code": "MAR", "flag_code": "ma", "elo": 1812, "attack": 0.09, "defence": 0.11, "form_index": 0.06, "injury_impact": 0.01},
+  {"id": "ger", "name": "Germany", "group": "E", "fifa_code": "GER", "flag_code": "de", "elo": 1855, "attack": 0.13, "defence": 0.07, "form_index": 0.05, "injury_impact": 0.00},
+  {"id": "ecu", "name": "Ecuador", "group": "E", "fifa_code": "ECU", "flag_code": "ec", "elo": 1765, "attack": 0.05, "defence": 0.08, "form_index": 0.04, "injury_impact": 0.01},
+  {"id": "civ", "name": "Ivory Coast", "group": "E", "fifa_code": "CIV", "flag_code": "ci", "elo": 1698, "attack": 0.02, "defence": -0.01, "form_index": 0.09, "injury_impact": 0.03},
+  {"id": "cur", "name": "Curacao", "group": "E", "fifa_code": "CUW", "flag_code": "cw", "elo": 1430, "attack": -0.16, "defence": -0.14, "form_index": 0.00, "injury_impact": 0.00}
+]
+

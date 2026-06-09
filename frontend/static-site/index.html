@@ -1,0 +1,1703 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2026 World Cup Prediction Dashboard</title>
+    <style>
+      :root {
+        --bg: #f2f4f7;
+        --surface: rgba(255, 255, 255, 0.88);
+        --solid: #ffffff;
+        --soft: #eef2f7;
+        --ink: #121721;
+        --muted: #687386;
+        --line: rgba(125, 139, 158, 0.24);
+        --blue: #1d4ed8;
+        --cyan: #0891b2;
+        --green: #12805c;
+        --red: #c2384d;
+        --amber: #b7791f;
+        --shadow: 0 18px 46px rgba(20, 31, 48, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(242, 244, 247, 0.96) 320px),
+          radial-gradient(circle at top left, rgba(29, 78, 216, 0.1), transparent 370px),
+          linear-gradient(120deg, rgba(8, 145, 178, 0.1), rgba(255, 255, 255, 0) 48%);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .shell {
+        width: min(1560px, 100%);
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .deck,
+      .controls,
+      .metrics,
+      .workspace,
+      .lower {
+        margin-bottom: 14px;
+      }
+
+      .deck,
+      .controls,
+      .metric,
+      .panel,
+      .match-list,
+      .detail,
+      .rail {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .deck {
+        min-height: 120px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .mark {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--solid);
+        color: var(--blue);
+        font-weight: 900;
+      }
+
+      .eyebrow {
+        margin: 0 0 5px;
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(28px, 4vw, 44px);
+        line-height: 1.02;
+      }
+
+      .copy {
+        margin-top: 8px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .hosts,
+      .badges,
+      .team-line,
+      .inline-team,
+      .tabs,
+      .venue,
+      .availability-head,
+      .weather-grid {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hosts {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .host {
+        min-width: 92px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.76);
+      }
+
+      .host strong,
+      .host span,
+      .metric span,
+      .metric small {
+        display: block;
+      }
+
+      .host span,
+      .metric span,
+      .metric small,
+      .muted,
+      .match-meta,
+      .source span,
+      .tile span,
+      .factor em,
+      .player em {
+        color: var(--muted);
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px;
+      }
+
+      .search {
+        width: min(470px, 100%);
+        height: 42px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--solid);
+      }
+
+      .search input {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+      }
+
+      .segments,
+      .tabs {
+        gap: 4px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--soft);
+        overflow-x: auto;
+      }
+
+      .segments button,
+      .tabs button {
+        height: 32px;
+        min-width: 42px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .segments button.active,
+      .tabs button.active {
+        background: var(--solid);
+        color: var(--ink);
+        box-shadow: 0 1px 5px rgba(24, 34, 48, 0.1);
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .metric {
+        min-height: 112px;
+        padding: 14px;
+      }
+
+      .metric b {
+        display: block;
+        margin-top: 8px;
+        font-size: 25px;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr) 360px;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .match-list,
+      .detail,
+      .rail,
+      .panel {
+        overflow: hidden;
+      }
+
+      .detail {
+        padding: 14px;
+      }
+
+      .head {
+        min-height: 48px;
+        padding: 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .head span {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .match-row {
+        width: 100%;
+        padding: 13px 14px;
+        display: grid;
+        gap: 8px;
+        text-align: left;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.38);
+        color: var(--ink);
+      }
+
+      .match-row.active,
+      .match-row:hover {
+        background: rgba(255, 255, 255, 0.86);
+      }
+
+      .match-row.active {
+        box-shadow: inset 3px 0 0 var(--blue);
+      }
+
+      .team-line {
+        justify-content: space-between;
+      }
+
+      .badges {
+        flex-wrap: wrap;
+      }
+
+      .badge,
+      .risk,
+      .lean,
+      .note {
+        display: inline-flex;
+        min-height: 24px;
+        align-items: center;
+        padding: 0 8px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 850;
+        background: #e6edf5;
+        color: #31516f;
+      }
+
+      .flag {
+        width: 25px;
+        height: 17px;
+        object-fit: cover;
+        flex: 0 0 auto;
+        border: 1px solid rgba(18, 23, 33, 0.14);
+        border-radius: 4px;
+        background: var(--soft);
+      }
+
+      .flag.big {
+        width: 54px;
+        height: 36px;
+      }
+
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(239, 244, 250, 0.86));
+      }
+
+      .hero h2 {
+        margin-top: 4px;
+        font-size: clamp(24px, 3vw, 38px);
+        line-height: 1.05;
+      }
+
+      .venue {
+        margin-top: 10px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .score-lens {
+        min-width: 250px;
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 54px minmax(110px, 1fr) 54px;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.74);
+      }
+
+      .score-lens strong {
+        display: block;
+        font-size: 25px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .prob {
+        margin: 14px 0;
+      }
+
+      .prob-labels {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .prob-labels span:nth-child(2) {
+        text-align: center;
+      }
+
+      .prob-labels span:nth-child(3) {
+        text-align: right;
+      }
+
+      .prob-bar {
+        height: 18px;
+        display: flex;
+        overflow: hidden;
+        border-radius: 6px;
+        background: var(--soft);
+      }
+
+      .home { background: var(--blue); }
+      .draw { background: var(--amber); }
+      .away { background: var(--green); }
+
+      .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--solid);
+      }
+
+      table {
+        width: 100%;
+        min-width: 850px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+        background: #f7f9fc;
+        white-space: nowrap;
+      }
+
+      td small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+      }
+
+      .mono {
+        font-variant-numeric: tabular-nums;
+        font-family: "SF Mono", Consolas, ui-monospace, monospace;
+      }
+
+      .lean.home-lean {
+        color: #123f91;
+        background: #dce8ff;
+      }
+
+      .lean.away-lean {
+        color: #075c3b;
+        background: #d9fbe8;
+      }
+
+      .tabs {
+        width: fit-content;
+        max-width: 100%;
+        margin-bottom: 12px;
+      }
+
+      .grid,
+      .split,
+      .rail-body {
+        display: grid;
+        gap: 10px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .tech-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 10px;
+      }
+
+      .split {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tile,
+      .subpanel {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .tile strong {
+        display: block;
+        margin-top: 6px;
+        line-height: 1.35;
+      }
+
+      .factor {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr) 52px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .track {
+        height: 10px;
+        display: grid;
+        grid-template-columns: 1fr 2px 1fr;
+        overflow: hidden;
+        border-radius: 5px;
+        background: var(--soft);
+      }
+
+      .track b {
+        background: rgba(18, 23, 33, 0.24);
+      }
+
+      .edge-away {
+        justify-self: end;
+        height: 100%;
+        background: var(--green);
+      }
+
+      .edge-home {
+        justify-self: start;
+        height: 100%;
+        background: var(--blue);
+      }
+
+      .rail {
+        padding-bottom: 12px;
+      }
+
+      .rail-body {
+        padding: 12px;
+      }
+
+      .weather-grid {
+        flex-wrap: wrap;
+      }
+
+      .weather-grid span {
+        min-width: calc(50% - 4px);
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .availability {
+        display: grid;
+        gap: 8px;
+      }
+
+      .availability-head {
+        justify-content: space-between;
+      }
+
+      .risk.low {
+        color: var(--green);
+        background: #ddf8eb;
+      }
+
+      .risk.medium {
+        color: var(--amber);
+        background: #fff3d7;
+      }
+
+      .risk.elevated {
+        color: var(--red);
+        background: #ffe1e7;
+      }
+
+      .player {
+        display: grid;
+        grid-template-columns: minmax(80px, 1fr) 62px 46px;
+        gap: 8px;
+        align-items: center;
+        min-height: 30px;
+        padding: 0 8px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #f8fafc;
+      }
+
+      .source {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .source em {
+        color: var(--cyan);
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .lower {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(330px, 0.8fr);
+        gap: 14px;
+      }
+
+      .title-row {
+        display: grid;
+        grid-template-columns: 28px 34px minmax(120px, 1fr) minmax(80px, 1.6fr) 62px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .mini {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 4px;
+        background: var(--soft);
+      }
+
+      .mini i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
+      }
+
+      @media (max-width: 1260px) {
+        .workspace {
+          grid-template-columns: 320px minmax(0, 1fr);
+        }
+
+        .rail {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .deck,
+        .controls {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .metrics,
+        .workspace,
+        .lower,
+        .split {
+          grid-template-columns: 1fr;
+        }
+
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hero {
+          flex-direction: column;
+        }
+
+        .score-lens {
+          width: 100%;
+          min-width: 0;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .shell {
+          padding: 12px;
+        }
+
+        .metrics,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tech-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .prob-labels {
+          grid-template-columns: 1fr;
+        }
+
+        .prob-labels span,
+        .prob-labels span:nth-child(2),
+        .prob-labels span:nth-child(3) {
+          text-align: left;
+        }
+
+        .factor {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <style>
+      :root {
+        --bg: #03060a;
+        --surface: rgba(8, 14, 20, 0.78);
+        --solid: #0c141d;
+        --soft: rgba(18, 29, 39, 0.88);
+        --ink: #f5f7fb;
+        --muted: #93a2b6;
+        --line: rgba(139, 163, 190, 0.22);
+        --line-strong: rgba(209, 228, 255, 0.34);
+        --blue: #66b7ff;
+        --cyan: #38d5e8;
+        --green: #25d990;
+        --red: #ff5f72;
+        --amber: #f2c14e;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.44);
+      }
+
+      html {
+        overflow-x: hidden;
+        background: var(--bg);
+      }
+
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: var(--ink);
+        background:
+          linear-gradient(180deg, rgba(2, 6, 10, 0.72), #03060a 440px),
+          linear-gradient(115deg, rgba(242, 193, 78, 0.18), transparent 24%, rgba(37, 217, 144, 0.12) 48%, transparent 66%),
+          repeating-linear-gradient(90deg, rgba(139, 163, 190, 0.06) 0 1px, transparent 1px 88px),
+          repeating-linear-gradient(0deg, rgba(139, 163, 190, 0.045) 0 1px, transparent 1px 72px),
+          #03060a;
+      }
+
+      body::before {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        content: "";
+        opacity: 0.46;
+        background:
+          linear-gradient(90deg, transparent 0 7%, rgba(37, 217, 144, 0.2) 7.1% 7.25%, transparent 7.35% 92.65%, rgba(37, 217, 144, 0.16) 92.75% 92.9%, transparent 93%),
+          linear-gradient(0deg, transparent 0 16%, rgba(102, 183, 255, 0.18) 16.1% 16.22%, transparent 16.34% 83.66%, rgba(102, 183, 255, 0.14) 83.78% 83.9%, transparent 84%),
+          linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 28%);
+        mask-image: linear-gradient(180deg, black, transparent 82%);
+      }
+
+      .shell {
+        position: relative;
+        z-index: 1;
+        width: min(1640px, 100%);
+      }
+
+      .deck,
+      .controls,
+      .metric,
+      .panel,
+      .match-list,
+      .detail,
+      .rail,
+      .subpanel {
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(20px);
+      }
+
+      .deck {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(330px, 460px);
+        align-items: stretch;
+        min-height: 250px;
+        padding: 22px;
+        overflow: hidden;
+        border-color: var(--line-strong);
+        background:
+          linear-gradient(135deg, rgba(10, 19, 29, 0.94), rgba(5, 11, 17, 0.82) 52%, rgba(30, 54, 48, 0.82)),
+          linear-gradient(90deg, rgba(242, 193, 78, 0.18), transparent 34%, rgba(56, 213, 232, 0.12));
+      }
+
+      .deck::before {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        content: "";
+        background:
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 42px),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 42px),
+          linear-gradient(114deg, transparent 0 34%, rgba(242, 193, 78, 0.12) 34.2% 34.6%, transparent 34.8%);
+        mask-image: linear-gradient(90deg, black, transparent 78%);
+      }
+
+      .brand,
+      .hero-telemetry {
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand {
+        min-width: 0;
+      }
+
+      .brand > div:last-child {
+        min-width: 0;
+      }
+
+      .mark {
+        width: 68px;
+        height: 68px;
+        color: #071018;
+        border-color: rgba(255, 255, 255, 0.22);
+        background: linear-gradient(145deg, #ffe58f, #f2c14e 54%, #23d18b);
+        box-shadow: 0 18px 42px rgba(242, 193, 78, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+
+      .eyebrow {
+        color: var(--amber);
+      }
+
+      h1 {
+        max-width: 820px;
+        color: var(--ink);
+        font-size: clamp(38px, 6vw, 76px);
+        line-height: 0.96;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+      }
+
+      .copy {
+        max-width: 720px;
+        color: #c7d2e2;
+        font-size: 16px;
+      }
+
+      .hero-telemetry {
+        display: grid;
+        grid-template-rows: 1fr auto auto;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .signal-plate {
+        position: relative;
+        display: grid;
+        align-content: center;
+        min-height: 150px;
+        padding: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(102, 183, 255, 0.26);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(7, 16, 24, 0.78), rgba(12, 28, 39, 0.66)),
+          repeating-linear-gradient(90deg, rgba(102, 183, 255, 0.12) 0 1px, transparent 1px 28px);
+        box-shadow: inset 0 0 42px rgba(37, 217, 144, 0.08);
+      }
+
+      .signal-plate::before {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        width: 92px;
+        height: 92px;
+        content: "";
+        border: 1px solid rgba(37, 217, 144, 0.5);
+        border-radius: 50%;
+        background: conic-gradient(from 40deg, rgba(37, 217, 144, 0.08), rgba(102, 183, 255, 0.45), rgba(242, 193, 78, 0.2), rgba(37, 217, 144, 0.08));
+        box-shadow: inset 0 0 0 18px rgba(3, 6, 10, 0.62);
+      }
+
+      .signal-plate span,
+      .signal-plate strong,
+      .signal-plate em {
+        position: relative;
+        z-index: 1;
+        display: block;
+      }
+
+      .signal-plate span {
+        color: var(--cyan);
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .signal-plate strong {
+        margin-top: 4px;
+        color: var(--ink);
+        font-size: 54px;
+        line-height: 0.95;
+        text-shadow: 0 0 24px rgba(102, 183, 255, 0.5);
+      }
+
+      .signal-plate em {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-style: normal;
+      }
+
+      .hosts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        justify-content: stretch;
+      }
+
+      .host {
+        min-width: 0;
+        border-color: rgba(242, 193, 78, 0.24);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .host strong {
+        color: var(--ink);
+      }
+
+      .status-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .status-pills span {
+        min-height: 30px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 10px;
+        color: #dcecff;
+        border: 1px solid rgba(102, 183, 255, 0.24);
+        border-radius: 8px;
+        background: rgba(102, 183, 255, 0.08);
+        font-size: 12px;
+        font-weight: 760;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: minmax(260px, 470px) minmax(0, 1fr);
+        background: rgba(5, 12, 18, 0.72);
+      }
+
+      .search {
+        color: var(--cyan);
+        border-color: rgba(102, 183, 255, 0.22);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .search input {
+        color: var(--ink);
+      }
+
+      .search input::placeholder {
+        color: #5f7188;
+      }
+
+      .segments,
+      .tabs {
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .segments {
+        justify-self: end;
+      }
+
+      .segments button.active,
+      .tabs button.active {
+        color: #061018;
+        background: linear-gradient(135deg, var(--amber), var(--green));
+        box-shadow: 0 10px 22px rgba(37, 217, 144, 0.18);
+      }
+
+      .metric {
+        position: relative;
+        min-height: 126px;
+        padding: 15px;
+        overflow: hidden;
+      }
+
+      .metric::before {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 2px;
+        content: "";
+        background: linear-gradient(90deg, var(--amber), var(--cyan), var(--green));
+      }
+
+      .metric b {
+        display: block;
+        margin-top: 3px;
+        color: var(--ink);
+        font-size: 29px;
+      }
+
+      .head {
+        min-height: 50px;
+        border-bottom-color: var(--line);
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent);
+      }
+
+      .match-row {
+        color: var(--ink);
+        border-bottom-color: var(--line);
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .match-row:hover,
+      .match-row.active {
+        background: linear-gradient(90deg, rgba(102, 183, 255, 0.14), rgba(37, 217, 144, 0.06));
+      }
+
+      .match-row.active {
+        box-shadow: inset 3px 0 0 var(--amber);
+      }
+
+      .badge {
+        color: #d9e9ff;
+        border: 1px solid rgba(102, 183, 255, 0.16);
+        background: rgba(102, 183, 255, 0.1);
+      }
+
+      .hero {
+        position: relative;
+        min-height: 178px;
+        overflow: hidden;
+        border-color: rgba(102, 183, 255, 0.28);
+        background:
+          linear-gradient(135deg, rgba(12, 24, 34, 0.94), rgba(5, 11, 17, 0.72)),
+          repeating-linear-gradient(90deg, rgba(37, 217, 144, 0.1) 0 1px, transparent 1px 54px);
+      }
+
+      .hero::before {
+        position: absolute;
+        inset: 14px;
+        pointer-events: none;
+        content: "";
+        border: 1px solid rgba(37, 217, 144, 0.22);
+        border-radius: 8px;
+        background:
+          linear-gradient(90deg, transparent 49.8%, rgba(37, 217, 144, 0.24) 50%, transparent 50.2%),
+          linear-gradient(0deg, transparent 49.7%, rgba(242, 193, 78, 0.16) 50%, transparent 50.3%);
+        opacity: 0.66;
+      }
+
+      .hero > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h2 {
+        color: var(--ink);
+        font-size: clamp(27px, 3.4vw, 48px);
+      }
+
+      .score-lens {
+        border-color: rgba(242, 193, 78, 0.26);
+        background: rgba(3, 6, 10, 0.55);
+        box-shadow: inset 0 0 42px rgba(242, 193, 78, 0.08);
+      }
+
+      .score-lens strong {
+        color: #fff4c7;
+      }
+
+      .prob-bar {
+        height: 22px;
+        padding: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .prob-bar .home {
+        background: linear-gradient(90deg, var(--blue), var(--cyan));
+      }
+
+      .prob-bar .draw {
+        background: linear-gradient(90deg, #ffe08a, var(--amber));
+      }
+
+      .prob-bar .away {
+        background: linear-gradient(90deg, var(--green), #74f0bd);
+      }
+
+      .table-wrap {
+        border-color: var(--line);
+        background: rgba(3, 8, 13, 0.78);
+      }
+
+      th {
+        color: #aebdd1;
+        background: rgba(255, 255, 255, 0.055);
+      }
+
+      td {
+        color: #edf6ff;
+        border-bottom-color: var(--line);
+      }
+
+      .tile,
+      .source,
+      .player,
+      .factor,
+      .weather-grid span {
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.045);
+      }
+
+      .tile strong,
+      .weather-grid strong,
+      .team-line strong {
+        color: var(--ink);
+      }
+
+      .track {
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .edge-home {
+        background: linear-gradient(90deg, var(--blue), var(--cyan));
+      }
+
+      .edge-away {
+        background: linear-gradient(90deg, #76f0bd, var(--green));
+      }
+
+      .mini {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .mini i {
+        background: linear-gradient(90deg, var(--amber), var(--cyan), var(--green));
+      }
+
+      .lean.home-lean {
+        color: #071018;
+        background: linear-gradient(135deg, var(--blue), var(--cyan));
+      }
+
+      .lean.away-lean {
+        color: #071018;
+        background: linear-gradient(135deg, var(--green), #89f1c4);
+      }
+
+      .risk {
+        color: #071018;
+        background: linear-gradient(135deg, var(--green), #a6f4ce);
+      }
+
+      .risk.medium {
+        color: #171109;
+        background: linear-gradient(135deg, var(--amber), #ffe9a4);
+      }
+
+      .risk.elevated {
+        color: #fff2f4;
+        background: rgba(255, 95, 114, 0.26);
+      }
+
+      @media (max-width: 1040px) {
+        .deck,
+        .controls {
+          grid-template-columns: 1fr;
+        }
+
+        .segments {
+          justify-self: stretch;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .deck {
+          min-height: 0;
+          padding: 14px;
+        }
+
+        .mark {
+          width: 46px;
+          height: 46px;
+        }
+
+        .brand > div:last-child {
+          max-width: calc(100% - 60px);
+        }
+
+        h1 {
+          max-width: 280px;
+          font-size: clamp(32px, 10vw, 40px);
+          line-height: 1.05;
+        }
+
+        .copy {
+          overflow-wrap: anywhere;
+        }
+
+        .signal-plate {
+          min-height: 118px;
+        }
+
+        .signal-plate strong {
+          font-size: 42px;
+        }
+
+        .hosts {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="deck">
+        <div class="brand">
+          <div class="mark">WC</div>
+          <div>
+            <p class="eyebrow">2026 WORLD CUP MODEL ROOM</p>
+            <h1>预测数据控制台</h1>
+            <p class="copy">胜平负、比分分布、亚洲让球、球员健康、历史形态与天气因子统一展示。</p>
+          </div>
+        </div>
+        <div class="hero-telemetry" aria-label="model telemetry">
+          <div class="signal-plate">
+            <span>MODEL</span>
+            <strong id="hero-confidence">--</strong>
+            <em>confidence</em>
+          </div>
+          <div class="hosts">
+            <div class="host"><strong>USA</strong><span>11 venues</span></div>
+            <div class="host"><strong>MEX</strong><span>3 venues</span></div>
+            <div class="host"><strong>CAN</strong><span>2 venues</span></div>
+          </div>
+          <div class="status-pills">
+            <span id="hero-markets">0 handicap markets</span>
+            <span id="hero-sources">0/0 data sources</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls">
+        <label class="search">
+          <span>搜索</span>
+          <input id="search" placeholder="球队、城市或球场" />
+        </label>
+        <div id="groups" class="segments"></div>
+      </section>
+
+      <section id="metrics" class="metrics"></section>
+
+      <section class="workspace">
+        <aside class="match-list">
+          <div class="head"><h2>比赛雷达</h2><span id="match-count">0</span></div>
+          <div id="match-list"></div>
+        </aside>
+
+        <article class="detail">
+          <div id="detail"></div>
+        </article>
+
+        <aside class="rail">
+          <div class="head"><h2>赛前情报</h2><span id="rail-group">-</span></div>
+          <div id="rail" class="rail-body"></div>
+        </aside>
+      </section>
+
+      <section class="lower">
+        <div class="panel">
+          <div class="head"><h2>夺冠概率</h2><span id="sim-count">sims</span></div>
+          <div id="tournament"></div>
+        </div>
+        <div class="panel">
+          <div class="head"><h2>数据源健康</h2><span id="source-count">sources</span></div>
+          <div id="sources" class="rail-body"></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const API = "http://127.0.0.1:8000";
+      const embeddedData = window.__DASHBOARD_DATA__ || null;
+      let state = { matches: [], tournament: null, sources: [], selected: null, group: "ALL", query: "", tab: "handicap" };
+
+      const fallback = {
+        matches: [],
+        tournament: { n_simulations: 100000, teams: [] },
+        sources: []
+      };
+
+      const pct = (value) => value === null || value === undefined || Number.isNaN(value) ? "-" : `${(value * 100).toFixed(1)}%`;
+      const odds = (value) => value ? Number(value).toFixed(2) : "-";
+      const line = (value) => Number(value) > 0 ? `+${value}` : `${value}`;
+      const signed = (value) => `${Number(value) >= 0 ? "+" : ""}${Number(value).toFixed(2)}`;
+      const flag = (team, big = false) => `<img class="flag ${big ? "big" : ""}" src="https://flagcdn.com/w40/${team.flag_code}.png" alt="${team.name || team.team} flag" />`;
+      const team = (item) => `<span class="inline-team">${flag(item)}<span>${item.name || item.team}</span></span>`;
+      const dateText = (value) => new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Shanghai" }).format(new Date(value));
+
+      async function getJson(path, fallbackValue) {
+        try {
+          const url = path.startsWith(".") ? path : `${API}${path}`;
+          const response = await fetch(url);
+          if (!response.ok) return fallbackValue;
+          return await response.json();
+        } catch {
+          return fallbackValue;
+        }
+      }
+
+      async function boot() {
+        const localData = embeddedData || await getJson("./data.json", null);
+        if (localData && localData.matches && localData.tournament && localData.sources) {
+          state.matches = localData.matches;
+          state.tournament = localData.tournament;
+          state.sources = localData.sources;
+          state.selected = state.matches[0] || null;
+          bind();
+          render();
+          refreshFromApi();
+          return;
+        }
+        const [matches, tournament, health] = await Promise.all([
+          getJson("/api/matches", { matches: fallback.matches }),
+          getJson("/api/tournament/probabilities", fallback.tournament),
+          getJson("/api/source-health", { sources: fallback.sources })
+        ]);
+        state.matches = matches.matches || [];
+        state.tournament = tournament;
+        state.sources = health.sources || [];
+        state.selected = state.matches[0] || null;
+        bind();
+        render();
+      }
+
+      async function refreshFromApi() {
+        const [matches, tournament, health] = await Promise.all([
+          getJson("/api/matches", null),
+          getJson("/api/tournament/probabilities", null),
+          getJson("/api/source-health", null)
+        ]);
+        if (!matches || !matches.matches || !tournament || !health || !health.sources) return;
+        const selectedId = state.selected && state.selected.match_id;
+        state.matches = matches.matches;
+        state.tournament = tournament;
+        state.sources = health.sources;
+        state.selected = state.matches.find((match) => match.match_id === selectedId) || state.matches[0] || null;
+        render();
+      }
+
+      function bind() {
+        document.getElementById("search").addEventListener("input", (event) => {
+          state.query = event.target.value.trim().toLowerCase();
+          render();
+        });
+      }
+
+      function filteredMatches() {
+        return state.matches.filter((match) => {
+          const inGroup = state.group === "ALL" || match.fixture.group === state.group;
+          const q = state.query;
+          const inQuery = !q ||
+            match.home_team.name.toLowerCase().includes(q) ||
+            match.away_team.name.toLowerCase().includes(q) ||
+            match.fixture.city.toLowerCase().includes(q) ||
+            match.fixture.venue.toLowerCase().includes(q);
+          return inGroup && inQuery;
+        });
+      }
+
+      function render() {
+        if (!state.matches.length) {
+          document.getElementById("detail").innerHTML = `<div class="subpanel">后端 API 暂时没有返回比赛数据。</div>`;
+          return;
+        }
+        renderGroups();
+        renderMetrics();
+        renderMatchList();
+        renderDetail();
+        renderRail();
+        renderTournament();
+        renderSources();
+      }
+
+      function renderGroups() {
+        const groups = ["ALL", ...Array.from(new Set(state.matches.map((match) => match.fixture.group))).sort()];
+        document.getElementById("groups").innerHTML = groups.map((group) =>
+          `<button class="${state.group === group ? "active" : ""}" data-group="${group}">${group === "ALL" ? "全部" : group}</button>`
+        ).join("");
+        document.querySelectorAll("[data-group]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.group = button.dataset.group;
+            const next = filteredMatches()[0];
+            if (next) state.selected = next;
+            render();
+          });
+        });
+      }
+
+      function renderMetrics() {
+        const top = state.tournament?.teams?.[0];
+        const marketCount = state.matches.reduce((sum, match) => sum + match.handicap_preview.filter((row) => row.market_status === "available").length, 0);
+        const confidence = state.selected ? confidenceScore(state.selected) : 0;
+        const liveSources = state.sources.filter((source) => source.status !== "planned").length;
+        document.getElementById("hero-confidence").textContent = pct(confidence);
+        document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
+        document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
+        document.getElementById("metrics").innerHTML = [
+          metric("样例赛程", `${state.matches.length} 场`, "结构适配全量 104 场"),
+          metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
+          metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? top.team : "等待模拟"),
+          metric("当前置信度", pct(confidence), "由市场、伤病、天气完整度估计")
+        ].join("");
+      }
+
+      function metric(label, value, sub) {
+        return `<div class="metric"><span>${label}</span><b>${value}</b><small>${sub}</small></div>`;
+      }
+
+      function renderMatchList() {
+        const matches = filteredMatches();
+        document.getElementById("match-count").textContent = matches.length;
+        document.getElementById("match-list").innerHTML = matches.map((match) => {
+          const active = state.selected && match.match_id === state.selected.match_id;
+          const marketRows = match.handicap_preview.filter((row) => row.market_status === "available").length;
+          return `
+            <button class="match-row ${active ? "active" : ""}" data-match="${match.match_id}">
+              <span class="match-meta">#${match.fixture.match_number} · ${match.fixture.group}组 · ${dateText(match.fixture.kickoff_utc)}</span>
+              <span class="team-line">${team(match.home_team)}<strong>${pct(match.p_home)}</strong></span>
+              <span class="team-line">${team(match.away_team)}<strong>${pct(match.p_away)}</strong></span>
+              <span class="badges"><em class="badge">${match.weather?.condition || "normal"}</em><em class="badge">${marketRows ? `${marketRows} 市场` : "模型公平盘"}</em></span>
+            </button>
+          `;
+        }).join("");
+        document.querySelectorAll("[data-match]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.selected = state.matches.find((match) => match.match_id === button.dataset.match);
+            render();
+          });
+        });
+      }
+
+      function renderDetail() {
+        const match = state.selected;
+        document.getElementById("rail-group").textContent = `${match.fixture.group}组`;
+        document.getElementById("detail").innerHTML = `
+          <header class="hero">
+            <div>
+              <p class="eyebrow">MATCH #${match.fixture.match_number}</p>
+              <h2>${match.home_team.name} <span class="muted">vs</span> ${match.away_team.name}</h2>
+              <div class="venue">${dateText(match.fixture.kickoff_utc)} · ${match.fixture.venue} · ${match.fixture.city}</div>
+            </div>
+            <div class="score-lens">
+              ${flag(match.home_team, true)}
+              <div><strong>${match.lambda_home.toFixed(2)} : ${match.lambda_away.toFixed(2)}</strong><span class="muted">预期进球</span></div>
+              ${flag(match.away_team, true)}
+            </div>
+          </header>
+          ${probability(match)}
+          <div class="tabs">
+            ${tabButton("handicap", "盘口矩阵")}
+            ${tabButton("stats", "技术统计")}
+            ${tabButton("model", "模型因子")}
+            ${tabButton("history", "球队历史")}
+            ${tabButton("players", "球员天气")}
+          </div>
+          <div id="tab-content">${tabContent(match)}</div>
+        `;
+        document.querySelectorAll("[data-tab]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.tab = button.dataset.tab;
+            renderDetail();
+          });
+        });
+      }
+
+      function probability(match) {
+        return `
+          <div class="prob">
+            <div class="prob-labels">
+              <span>${match.home_team.name} ${pct(match.p_home)}</span>
+              <span>平局 ${pct(match.p_draw)}</span>
+              <span>${match.away_team.name} ${pct(match.p_away)}</span>
+            </div>
+            <div class="prob-bar">
+              <i class="home" style="width:${Math.max(4, match.p_home * 100)}%"></i>
+              <i class="draw" style="width:${Math.max(4, match.p_draw * 100)}%"></i>
+              <i class="away" style="width:${Math.max(4, match.p_away * 100)}%"></i>
+            </div>
+          </div>
+        `;
+      }
+
+      function tabButton(key, label) {
+        return `<button class="${state.tab === key ? "active" : ""}" data-tab="${key}">${label}</button>`;
+      }
+
+      function tabContent(match) {
+        if (state.tab === "stats") return technicalPanel(match);
+        if (state.tab === "model") return modelPanel(match);
+        if (state.tab === "history") return historyPanel(match);
+        if (state.tab === "players") return playersPanel(match);
+        return handicapTable(match);
+      }
+
+      function handicapTable(match) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>主队盘口</th><th>${match.home_team.name}</th><th>${match.away_team.name}</th><th>走盘</th><th>公平赔率</th><th>市场赔率</th><th>模型倾向</th></tr>
+              </thead>
+              <tbody>
+                ${match.handicap_preview.map((row) => `
+                  <tr>
+                    <td class="mono"><strong>${line(row.line)}</strong></td>
+                    <td><strong>${pct(row.home.positive_probability)}</strong><small>半赢 ${pct(row.home.half_win)} · 半输 ${pct(row.home.half_loss)}</small></td>
+                    <td><strong>${pct(row.away.positive_probability)}</strong><small>半赢 ${pct(row.away.half_win)} · 半输 ${pct(row.away.half_loss)}</small></td>
+                    <td>${pct(row.home.push)}</td>
+                    <td><span class="mono">${odds(row.home.fair_decimal_odds)}</span><small>客 ${odds(row.away.fair_decimal_odds)}</small></td>
+                    <td><span class="mono">${row.market_status === "missing" ? "暂无市场" : odds(row.home.market_decimal_odds)}</span><small>${row.market_status === "missing" ? row.source : `客 ${odds(row.away.market_decimal_odds)}`}</small></td>
+                    <td><span class="lean ${row.lean === "home" ? "home-lean" : row.lean === "away" ? "away-lean" : ""}">${row.lean === "home" ? "主队" : row.lean === "away" ? "客队" : "观察"}</span></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function modelPanel(match) {
+        return `
+          <div class="grid">
+            ${tile("预期进球", `${match.lambda_home.toFixed(2)} : ${match.lambda_away.toFixed(2)}`)}
+            ${tile("大 2.5", pct(match.p_over_2_5))}
+            ${tile("双方进球", pct(match.p_btts))}
+            ${tile("置信度", pct(confidenceScore(match)))}
+          </div>
+          <div class="rail-body">${factorPanel(match)}</div>
+        `;
+      }
+
+      function historyPanel(match) {
+        return `<div class="split">${historyCard(match.home_team, match.team_form.home)}${historyCard(match.away_team, match.team_form.away)}</div>`;
+      }
+
+      function historyCard(teamInfo, form) {
+        return `
+          <div class="subpanel">
+            <div class="team-line">${team(teamInfo)}<strong>${form.last_10}</strong></div>
+            <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
+              ${tile("ELO", Math.round(form.elo))}
+              ${tile("状态指数", signed(form.form_index))}
+              ${tile("近似 xG", form.xg_for.toFixed(2))}
+              ${tile("近似 xGA", form.xg_against.toFixed(2))}
+            </div>
+          </div>
+        `;
+      }
+
+      function technicalPanel(match) {
+        const home = match.tactical_profile?.home;
+        const away = match.tactical_profile?.away;
+        if (!home || !away) return `<div class="subpanel">技术统计画像等待数据源回填。</div>`;
+        return `
+          <div class="split">
+            ${technicalCard(match.home_team, home)}
+            ${technicalCard(match.away_team, away)}
+          </div>
+          <div class="subpanel" style="margin-top:10px">
+            <span class="muted">${match.tactical_profile.source} · ${match.tactical_profile.data_quality}</span>
+          </div>
+        `;
+      }
+
+      function technicalCard(teamInfo, profile) {
+        return `
+          <div class="subpanel">
+            <div class="team-line">${team(teamInfo)}<strong>${profile.possession_pct.toFixed(1)}%</strong></div>
+            <div class="grid tech-grid">
+              ${tile("近18月进球", profile.goals_scored_18m.toFixed(1))}
+              ${tile("近18月失球", profile.goals_conceded_18m.toFixed(1))}
+              ${tile("控球率", `${profile.possession_pct.toFixed(1)}%`)}
+              ${tile("射门", profile.shots_per_game.toFixed(1))}
+              ${tile("射正", profile.shots_on_target_per_game.toFixed(1))}
+              ${tile("射门质量", profile.shot_quality.toFixed(3))}
+              ${tile("xG / xGA", `${profile.xg_per_game.toFixed(2)} / ${profile.xga_per_game.toFixed(2)}`)}
+              ${tile("PPDA", profile.ppda.toFixed(1))}
+              ${tile("定位球xG", pct(profile.set_piece_xg_share))}
+              ${tile("黄/红牌率", `${profile.yellow_card_rate.toFixed(2)} / ${profile.red_card_rate.toFixed(2)}`)}
+              ${tile("阵容深度", profile.squad_depth_score.toFixed(1))}
+              ${tile("旅程疲劳", fatigueText(profile.travel_fatigue_level))}
+            </div>
+            <div class="factor" style="margin-top:10px">
+              <div><strong>高压强度</strong><em>预测旅程 ${Number(profile.projected_travel_km).toLocaleString()} km</em></div>
+              <div class="track"><i class="edge-home" style="width:${Math.max(2, profile.press_intensity_idx)}%"></i></div>
+              <strong class="mono">${profile.press_intensity_idx.toFixed(1)}</strong>
+            </div>
+            <div class="factor" style="margin-top:8px">
+              <div><strong>环境压力</strong><em>天气、海拔、旅行综合压力</em></div>
+              <div class="track"><i class="edge-away" style="width:${Math.max(2, profile.environment_stress * 100)}%"></i></div>
+              <strong class="mono">${pct(profile.environment_stress)}</strong>
+            </div>
+          </div>
+        `;
+      }
+
+      function playersPanel(match) {
+        return `<div class="split">${availability(match.home_team, match.availability.home)}${weather(match)}</div>`;
+      }
+
+      function renderRail() {
+        const match = state.selected;
+        document.getElementById("rail").innerHTML = `${factorPanel(match)}${weather(match)}${availability(match.home_team, match.availability.home)}${availability(match.away_team, match.availability.away)}`;
+      }
+
+      function factorPanel(match) {
+        return match.factor_breakdown.map((factor) => {
+          const left = Math.max(0, -factor.home_edge) * 50;
+          const right = Math.max(0, factor.home_edge) * 50;
+          return `
+            <div class="factor">
+              <div><strong>${factor.factor}</strong><em>权重 ${pct(factor.weight)}</em></div>
+              <div class="track"><i class="edge-away" style="width:${left}%"></i><b></b><i class="edge-home" style="width:${right}%"></i></div>
+              <strong class="mono">${signed(factor.home_edge)}</strong>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function weather(match) {
+        return `
+          <div class="subpanel">
+            <h3>天气与场地</h3>
+            <div class="weather-grid" style="margin-top:10px">
+              <span>温度 <strong>${match.weather.temperature_c}°C</strong></span>
+              <span>湿度 <strong>${match.weather.humidity_pct}%</strong></span>
+              <span>风速 <strong>${match.weather.wind_kph} km/h</strong></span>
+              <span>场地 <strong>${match.weather.venue_effect}</strong></span>
+            </div>
+          </div>
+        `;
+      }
+
+      function availability(teamInfo, profile) {
+        return `
+          <div class="subpanel availability">
+            <div class="availability-head">${team(teamInfo)}<span class="risk ${profile.risk}">${profile.risk === "elevated" ? "偏高" : profile.risk === "medium" ? "中等" : "低风险"}</span></div>
+            <p class="muted">${profile.available_starters}/11 首发可用 · 负荷 ${pct(profile.minutes_load)}</p>
+            ${profile.key_players.slice(0, 3).map((player) => `<div class="player"><span>${player.name}</span><em>${player.role}</em><strong>${pct(player.rating)}</strong></div>`).join("")}
+          </div>
+        `;
+      }
+
+      function tile(label, value) {
+        return `<div class="tile"><span>${label}</span><strong>${value}</strong></div>`;
+      }
+
+      function fatigueText(value) {
+        if (value === "very_high") return "极高";
+        if (value === "high") return "高";
+        if (value === "medium") return "中";
+        return "低";
+      }
+
+      function renderTournament() {
+        const teams = state.tournament?.teams || [];
+        document.getElementById("sim-count").textContent = `${Number(state.tournament?.n_simulations || 0).toLocaleString()} sims`;
+        document.getElementById("tournament").innerHTML = teams.slice(0, 10).map((item, index) => `
+          <div class="title-row">
+            <span class="muted">${index + 1}</span>
+            ${flag({ flag_code: item.flag_code, name: item.team })}
+            <strong>${item.team}</strong>
+            <div class="mini"><i style="width:${Math.max(2, item.title_probability * 100)}%"></i></div>
+            <span class="mono">${pct(item.title_probability)}</span>
+          </div>
+        `).join("");
+      }
+
+      function renderSources() {
+        document.getElementById("source-count").textContent = `${state.sources.length} sources`;
+        document.getElementById("sources").innerHTML = state.sources.map((source) => `
+          <div class="source">
+            <div><strong>${source.source}</strong><span>${source.purpose}</span></div>
+            <em>${source.status}</em>
+          </div>
+        `).join("");
+      }
+
+      function confidenceScore(match) {
+        const marketShare = match.handicap_preview.filter((row) => row.market_status === "available").length / Math.max(1, match.handicap_preview.length);
+        const injuryPenalty = Math.min(0.14, match.home_team.injury_impact + match.away_team.injury_impact);
+        return Math.max(0.45, Math.min(0.91, 0.63 + marketShare * 0.22 - injuryPenalty));
+      }
+
+      boot();
+    </script>
+  </body>
+</html>
