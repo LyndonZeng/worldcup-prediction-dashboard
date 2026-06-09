@@ -1,6 +1,12 @@
 import unittest
 
-from app.services.score_model import TeamProfile, match_market_probabilities, predict_match, scoreline_matrix
+from app.services.score_model import (
+    MatchAdjustments,
+    TeamProfile,
+    match_market_probabilities,
+    predict_match,
+    scoreline_matrix,
+)
 
 
 class ScoreModelTest(unittest.TestCase):
@@ -20,7 +26,18 @@ class ScoreModelTest(unittest.TestCase):
         self.assertGreater(prediction["lambda_home"], prediction["lambda_away"])
         self.assertIn("top_scorelines", prediction)
 
+    def test_adjustments_change_expected_goals(self):
+        home = TeamProfile("h", "Home", "A", "HOM", "us", 1800, 0.1, 0.04)
+        away = TeamProfile("a", "Away", "A", "AWY", "mx", 1700, 0.02, 0.01)
+        base = predict_match(home, away)
+        adjusted = predict_match(
+            home,
+            away,
+            adjustments=MatchAdjustments(home_goal_mult=1.08, away_goal_mult=0.94, total_goal_mult=0.98),
+        )
+        self.assertGreater(adjusted["lambda_home"], base["lambda_home"])
+        self.assertLess(adjusted["lambda_away"], base["lambda_away"])
+
 
 if __name__ == "__main__":
     unittest.main()
-

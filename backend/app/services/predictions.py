@@ -1,24 +1,28 @@
 """High-level prediction assembly for API responses."""
 from __future__ import annotations
 
+import math
 from datetime import datetime, timezone
 
 from . import data_store
 from .handicap import asian_market_from_matrix
 from .odds import model_lean
-from .score_model import predict_match
+from .score_model import MatchAdjustments, predict_match
 
 DEFAULT_HANDICAP_LINES = [-2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
+MODEL_VERSION = "wc26-v0.2-factor-aware-ah"
 
 
 def prediction_for_fixture(fixture: dict) -> dict:
     home = data_store.team_by_id(fixture["home_team_id"])
     away = data_store.team_by_id(fixture["away_team_id"])
     context = data_store.context_for_fixture(fixture)
-    prediction = predict_match(home, away, context)
+    factor_breakdown = _factor_breakdown(home, away, fixture, context)
+    adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
+    prediction = predict_match(home, away, context, adjustments)
     return {
         "match_id": fixture["id"],
-        "model_version": "wc26-v0.1-scoreline-ah",
+        "model_version": MODEL_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "home_team": _team_summary(home),
         "away_team": _team_summary(away),
@@ -28,7 +32,8 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "tactical_profile": _tactical_match_profile(home, away, fixture, context),
         "availability": _availability(home, away),
         "weather": _weather_context(fixture),
-        "factor_breakdown": _factor_breakdown(home, away, fixture, context),
+        "factor_breakdown": factor_breakdown,
+        "model_inputs": _model_input_summary(adjustments, factor_breakdown),
         **{key: value for key, value in prediction.items() if key != "scoreline_matrix"},
     }
 
@@ -37,7 +42,9 @@ def score_matrix_for_fixture(fixture: dict) -> list[list[float]]:
     home = data_store.team_by_id(fixture["home_team_id"])
     away = data_store.team_by_id(fixture["away_team_id"])
     context = data_store.context_for_fixture(fixture)
-    return predict_match(home, away, context)["scoreline_matrix"]
+    factor_breakdown = _factor_breakdown(home, away, fixture, context)
+    adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
+    return predict_match(home, away, context, adjustments)["scoreline_matrix"]
 
 
 def handicaps_for_fixture(fixture: dict, lines: list[float] | None = None) -> dict:
@@ -98,7 +105,7 @@ def tournament_probabilities() -> dict:
             }
         )
     return {
-        "model_version": "wc26-v0.1-scoreline-ah",
+        "model_version": MODEL_VERSION,
         "n_simulations": 100000,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "teams": sorted(title, key=lambda row: row["title_probability"], reverse=True),
@@ -107,9 +114,9 @@ def tournament_probabilities() -> dict:
 
 def model_run() -> dict:
     return {
-        "model_version": "wc26-v0.1-scoreline-ah",
+        "model_version": MODEL_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "score_model": "Poisson scoreline prior with team strength and context multipliers",
+        "score_model": "Poisson scoreline prior with factor-aware adjustments for process stats, availability, weather and travel",
         "handicap_engine": "Asian handicap probabilities derived from scoreline matrix",
         "calibration_status": "seed mode; walk-forward calibration planned after data backfill",
         "public_boundary": "Information display only; no staking or betting instruction.",
@@ -310,6 +317,43 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
     ]
 
 
+def _model_adjustments(home, away, fixture: dict, context, factor_breakdown: list[dict]) -> MatchAdjustments:
+    edges = {row["factor"]: row["home_edge"] for row in factor_breakdown}
+    contextual_edge = (
+        edges["Process stats"] * 0.50
+        + edges["Player availability"] * 0.28
+        + edges["Weather / travel"] * 0.22
+    )
+    weather = _weather_context(fixture)
+    heat_stress = max(0, weather["temperature_c"] - 27) * 0.009
+    humidity_stress = max(0, weather["humidity_pct"] - 65) * 0.002
+    wind_stress = max(0, weather["wind_kph"] - 18) * 0.004
+    avg_press = (_press_score(home) + _press_score(away)) / 2
+    tempo_lift = (avg_press - 50) * 0.0014
+
+    home_fatigue = _fatigue_goal_multiplier(home, fixture)
+    away_fatigue = _fatigue_goal_multiplier(away, fixture)
+    home_goal_mult = _clamp(math.exp(0.30 * contextual_edge) * home_fatigue, 0.78, 1.24)
+    away_goal_mult = _clamp(math.exp(-0.30 * contextual_edge) * away_fatigue, 0.78, 1.24)
+    total_goal_mult = _clamp(1 + tempo_lift - heat_stress - humidity_stress - wind_stress, 0.86, 1.10)
+    return MatchAdjustments(
+        home_goal_mult=home_goal_mult,
+        away_goal_mult=away_goal_mult,
+        total_goal_mult=total_goal_mult,
+    )
+
+
+def _model_input_summary(adjustments: MatchAdjustments, factor_breakdown: list[dict]) -> dict:
+    weighted_context_edge = sum(row["home_edge"] * row["weight"] for row in factor_breakdown)
+    return {
+        "weighted_context_edge": round(weighted_context_edge, 3),
+        "home_goal_multiplier": round(adjustments.home_goal_mult, 3),
+        "away_goal_multiplier": round(adjustments.away_goal_mult, 3),
+        "total_goal_multiplier": round(adjustments.total_goal_mult, 3),
+        "applied_to": "expected goals before scoreline and handicap probability generation",
+    }
+
+
 def _xg_for(team) -> float:
     return _clamp(1.35 + team.attack * 2.4 + team.form_index * 0.5, 0.75, 2.35)
 
@@ -333,6 +377,21 @@ def _process_score(team) -> float:
         + (55 - _clamp(12.8 - team.defence * 28 - team.form_index * 10 - team.attack * 6, 6.5, 18.0)) * 0.22
         + team.form_index * 18
     )
+
+
+def _press_score(team) -> float:
+    return _clamp(74 - _ppda(team) * 3.1 + team.form_index * 26 + team.defence * 80, 28, 92)
+
+
+def _ppda(team) -> float:
+    return _clamp(12.8 - team.defence * 28 - team.form_index * 10 - team.attack * 6, 6.5, 18.0)
+
+
+def _fatigue_goal_multiplier(team, fixture: dict) -> float:
+    travel_km = _projected_travel_km(team, fixture)
+    travel_drag = max(0, travel_km - 5200) / 36000
+    injury_drag = team.injury_impact * 1.8
+    return _clamp(1 - travel_drag - injury_drag, 0.86, 1.02)
 
 
 def _projected_travel_km(team, fixture: dict) -> int:

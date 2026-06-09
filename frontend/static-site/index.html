@@ -1297,6 +1297,7 @@
       const odds = (value) => value ? Number(value).toFixed(2) : "-";
       const line = (value) => Number(value) > 0 ? `+${value}` : `${value}`;
       const signed = (value) => `${Number(value) >= 0 ? "+" : ""}${Number(value).toFixed(2)}`;
+      const multiplier = (value) => `${Number(value) >= 1 ? "+" : ""}${((Number(value) - 1) * 100).toFixed(1)}%`;
       const flag = (team, big = false) => `<img class="flag ${big ? "big" : ""}" src="https://flagcdn.com/w40/${team.flag_code}.png" alt="${team.name || team.team} flag" />`;
       const team = (item) => `<span class="inline-team">${flag(item)}<span>${item.name || item.team}</span></span>`;
       const dateText = (value) => new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Shanghai" }).format(new Date(value));
@@ -1539,6 +1540,10 @@
             ${tile("大 2.5", pct(match.p_over_2_5))}
             ${tile("双方进球", pct(match.p_btts))}
             ${tile("置信度", pct(confidenceScore(match)))}
+            ${tile("主队修正", multiplier(match.model_inputs?.home_goal_multiplier ?? 1))}
+            ${tile("客队修正", multiplier(match.model_inputs?.away_goal_multiplier ?? 1))}
+            ${tile("总进球修正", multiplier(match.model_inputs?.total_goal_multiplier ?? 1))}
+            ${tile("综合边际", signed(match.model_inputs?.weighted_context_edge ?? 0))}
           </div>
           <div class="rail-body">${factorPanel(match)}</div>
         `;

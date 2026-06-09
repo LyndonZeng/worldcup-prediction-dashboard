@@ -403,6 +403,10 @@ function ModelPanel({match, modelRun}: {match: MatchPrediction; modelRun: Dashbo
         <InfoTile label="大 2.5" value={pct(match.p_over_2_5)} />
         <InfoTile label="双方进球" value={pct(match.p_btts)} />
         <InfoTile label="置信度" value={pct(confidenceScore(match))} />
+        <InfoTile label="主队修正" value={multiplier(match.model_inputs.home_goal_multiplier)} />
+        <InfoTile label="客队修正" value={multiplier(match.model_inputs.away_goal_multiplier)} />
+        <InfoTile label="总进球修正" value={multiplier(match.model_inputs.total_goal_multiplier)} />
+        <InfoTile label="综合边际" value={signed(match.model_inputs.weighted_context_edge)} />
         <InfoTile wide label="高概率比分" value={match.top_scorelines.map((item) => `${item.score} ${pct(item.probability)}`).join(" · ")} />
         <InfoTile wide label="模型版本" value={modelRun.model_version} />
       </div>
@@ -742,6 +746,10 @@ function evClass(value: number | null | undefined) {
 
 function signed(value: number) {
   return `${value >= 0 ? "+" : ""}${value.toFixed(2)}`;
+}
+
+function multiplier(value: number) {
+  return `${value >= 1 ? "+" : ""}${((value - 1) * 100).toFixed(1)}%`;
 }
 
 function formatLine(value: number) {

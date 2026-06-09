@@ -81,6 +81,13 @@ export type MatchPrediction = {
     source: string;
   };
   factor_breakdown: FactorBreakdown[];
+  model_inputs: {
+    weighted_context_edge: number;
+    home_goal_multiplier: number;
+    away_goal_multiplier: number;
+    total_goal_multiplier: number;
+    applied_to: string;
+  };
   lambda_home: number;
   lambda_away: number;
   p_home: number;

@@ -31,6 +31,13 @@ class MatchContext:
     notes: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class MatchAdjustments:
+    home_goal_mult: float = 1.0
+    away_goal_mult: float = 1.0
+    total_goal_mult: float = 1.0
+
+
 def poisson_pmf(k: int, lam: float) -> float:
     return math.exp(-lam) * (lam**k) / math.factorial(k)
 
@@ -39,13 +46,17 @@ def expected_goals(
     home: TeamProfile,
     away: TeamProfile,
     context: MatchContext | None = None,
+    adjustments: MatchAdjustments | None = None,
 ) -> tuple[float, float]:
     context = context or MatchContext()
+    adjustments = adjustments or MatchAdjustments()
     elo_term = (home.elo - away.elo) / 720.0
     home_quality = home.attack - away.defence + 0.11 * home.form_index - home.injury_impact
     away_quality = away.attack - home.defence + 0.11 * away.form_index - away.injury_impact
     lambda_home = math.exp(math.log(1.26) + 0.34 * elo_term + home_quality) * context.home_mult
     lambda_away = math.exp(math.log(1.05) - 0.34 * elo_term + away_quality) * context.away_mult
+    lambda_home *= adjustments.home_goal_mult * adjustments.total_goal_mult
+    lambda_away *= adjustments.away_goal_mult * adjustments.total_goal_mult
     return max(0.08, min(lambda_home, 4.5)), max(0.08, min(lambda_away, 4.5))
 
 
@@ -89,8 +100,13 @@ def match_market_probabilities(matrix: Iterable[Iterable[float]]) -> dict:
     }
 
 
-def predict_match(home: TeamProfile, away: TeamProfile, context: MatchContext | None = None) -> dict:
-    lambda_home, lambda_away = expected_goals(home, away, context)
+def predict_match(
+    home: TeamProfile,
+    away: TeamProfile,
+    context: MatchContext | None = None,
+    adjustments: MatchAdjustments | None = None,
+) -> dict:
+    lambda_home, lambda_away = expected_goals(home, away, context, adjustments)
     matrix = scoreline_matrix(lambda_home, lambda_away)
     markets = match_market_probabilities(matrix)
     return {
@@ -99,4 +115,3 @@ def predict_match(home: TeamProfile, away: TeamProfile, context: MatchContext | 
         "scoreline_matrix": matrix,
         **markets,
     }
-
