@@ -1,230 +1,1749 @@
 <!doctype html>
-<html lang='zh-CN'>
-<head>
-<meta charset='utf-8'>
-<meta name='viewport' content='width=device-width,initial-scale=1'>
-<title>2026 世界杯预测看板 v0.3.1</title>
-<style>
-:root{--bg:#02050a;--panel:rgba(8,14,23,.78);--panel2:rgba(13,23,35,.9);--line:rgba(190,220,255,.2);--text:#f7fbff;--muted:#91a5ba;--blue:#6cc4ff;--cyan:#36e0f2;--green:#31e49e;--gold:#ffd45f;--red:#ff6475;--shadow:0 28px 80px rgba(0,0,0,.42)}*{box-sizing:border-box}body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background:radial-gradient(circle at 12% -8%,rgba(108,196,255,.3),transparent 31%),radial-gradient(circle at 88% 0,rgba(49,228,158,.2),transparent 31%),linear-gradient(125deg,rgba(255,212,95,.13),transparent 36%,rgba(54,224,242,.1)),repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 82px),linear-gradient(180deg,#02050a,#08121d)}button,input{font:inherit}.shell{max-width:1560px;margin:auto;padding:20px}.hero,.panel,.metric,.match,.sub{border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);backdrop-filter:blur(22px)}.hero{position:relative;overflow:hidden;min-height:280px;padding:24px;display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:20px;background:linear-gradient(135deg,rgba(6,16,27,.97),rgba(3,8,14,.9))}.hero:after{content:'';position:absolute;right:-80px;bottom:-160px;width:520px;height:520px;border:1px solid rgba(255,255,255,.14);border-radius:50%;box-shadow:inset 0 0 80px rgba(108,196,255,.12)}.brand{position:relative;z-index:1;display:flex;gap:16px;align-items:center}.mark{width:72px;height:72px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,var(--gold),var(--green));color:#061018;font-weight:950;font-size:24px}.eyebrow{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.09em}h1,h2,h3,p{margin:0}h1{margin:8px 0 12px;font-size:clamp(40px,6vw,82px);line-height:.94}.copy,.muted{color:var(--muted);line-height:1.65}.heroCard{position:relative;z-index:1;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.055)}.heroCard b{display:block;margin:8px 0;font-size:33px}.metrics,.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metrics{margin:14px 0}.metric,.tile{min-height:88px;padding:13px}.metric span,.tile span{display:block;color:var(--muted);font-size:13px}.metric b,.tile b{display:block;margin-top:7px;font-size:24px}.controls{display:flex;gap:10px;align-items:center;margin-bottom:14px}.search{flex:1;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.06);padding:10px 12px;color:var(--text);outline:none}.groups{display:flex;gap:6px;overflow:auto}.groups button,.tabs button{border:0;border-radius:10px;background:rgba(255,255,255,.06);color:var(--muted);padding:9px 12px;white-space:nowrap;cursor:pointer}.groups .on,.tabs .on{background:#eff8ff;color:#06111e}.layout{display:grid;grid-template-columns:330px minmax(0,1fr) 370px;gap:14px;align-items:start}.panel,.layout>*{min-width:0}.head{height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 14px}.list{max-height:840px;overflow:auto;padding:8px 12px}.match{display:grid;gap:8px;width:100%;margin:10px 0;padding:12px;color:var(--text);text-align:left;cursor:pointer}.match.on{outline:2px solid rgba(108,196,255,.92)}.row,.team,.tabs,.weather{display:flex;align-items:center;gap:8px}.row{justify-content:space-between}.flag{width:30px;height:20px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,.18)}.main{padding:14px}.score{display:grid;grid-template-columns:70px 1fr 70px;gap:12px;align-items:center;text-align:center;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.055);padding:16px}.score strong{display:block;font-size:42px;margin-top:4px}.prob{height:18px;border-radius:10px;display:flex;overflow:hidden;background:#132236;margin:14px 0}.prob i{display:block}.home{background:var(--blue)}.draw{background:var(--gold)}.away{background:var(--green)}.tabs{padding:6px;margin:12px 0;overflow:auto}.table{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:14px;margin-top:10px}table{width:100%;min-width:860px;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-size:12px}.sub{padding:13px;background:var(--panel2)}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.factor{display:grid;grid-template-columns:138px 1fr 56px;gap:9px;align-items:center;padding:11px;border-bottom:1px solid var(--line)}.bar,.mini{height:10px;border-radius:8px;background:#152438;overflow:hidden}.bar i,.mini i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--green))}.titleRow{display:grid;grid-template-columns:28px 1fr 62px;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}.rank{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:rgba(255,212,95,.16);color:var(--gold);font-weight:900}.titleTeam{display:grid;gap:5px}.titleTeam b{font-size:14px}.titleMeta{font-size:12px;color:var(--muted)}.tag{display:inline-flex;border-radius:8px;padding:3px 8px;background:#17293d;color:#c8dff7;font-weight:850}.src{padding:10px 12px;border-bottom:1px solid var(--line)}.mono{font-variant-numeric:tabular-nums;font-weight:850}.warn{color:var(--gold)}small{display:block}@media(max-width:1180px){.hero{grid-template-columns:1fr}.layout{display:block}.metrics,.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{margin-bottom:14px}}@media(max-width:680px){.shell{padding:12px}.metrics,.grid,.two{grid-template-columns:1fr}.score{grid-template-columns:1fr}h1{font-size:42px}.controls{display:block}.groups{margin-top:10px}table{min-width:760px}}
-</style>
-</head>
-<body>
-<div class='shell'>
-<section class='hero'><div><div class='brand'><div class='mark'>26</div><div><div class='eyebrow'>WORLD CUP MODEL CONTROL ROOM</div><h1>2026 世界杯预测仪表盘</h1></div></div><p class='copy'>v0.3.1 公开版：覆盖 48 队、12 组、72 场小组赛，用比分矩阵统一推导胜平负、大小球、亚洲让球盘、技术画像、球员可用性、天气与旅程疲劳。仅作信息展示，非投注建议。</p></div><div class='heroCard'><span class='muted'>当前模型</span><b id='modelName'>wc26-v0.3.1</b><p class='copy'>Dixon-Coles 风格 Poisson score matrix + ELO/context adjustments + Asian handicap settlement</p></div></section>
-<div class='metrics' id='metrics'></div>
-<div class='controls'><input id='q' class='search' placeholder='搜索球队、城市、组别'><div id='groups' class='groups'></div></div>
-<section class='layout'><aside class='panel'><div class='head'><b>比赛雷达</b><span id='matchCount' class='muted'></span></div><div class='list' id='list'></div></aside><main class='panel main'><div id='detail'></div></main><aside class='panel'><div class='head'><b>冠军预测</b><span class='muted'>analytical proxy</span></div><div id='titles'></div><div class='head'><b>模型因子</b><span class='muted'>selected match</span></div><div id='rail'></div><div class='head'><b>数据源健康</b></div><div id='sources'></div></aside></section>
-</div>
-<script>
-const MODEL='wc26-v0.3.1-full-group-seed-ah';
-const TEAM_CSV=`mex|Mexico|A|MEX|mx|1775|0.04|0.03|0.12|0.01
-rsa|South Africa|A|RSA|za|1584|-0.10|-0.07|0.06|0
-kor|South Korea|A|KOR|kr|1718|0.01|0.02|0.04|0
-cze|Czechia|A|CZE|cz|1725|0.03|0.04|-0.02|0.02
-can|Canada|B|CAN|ca|1662|0|-0.02|0.07|0.01
-bih|Bosnia and Herzegovina|B|BIH|ba|1605|-0.04|-0.03|-0.01|0.02
-qat|Qatar|B|QAT|qa|1610|-0.06|-0.02|0.02|0
-sui|Switzerland|B|SUI|ch|1788|0.04|0.08|0.03|0.01
-bra|Brazil|C|BRA|br|1918|0.20|0.12|0.03|0.01
-mar|Morocco|C|MAR|ma|1812|0.09|0.11|0.06|0.01
-hai|Haiti|C|HAI|ht|1455|-0.15|-0.12|0.02|0
-sco|Scotland|C|SCO|gb-sct|1707|-0.02|0.03|-0.03|0.02
-usa|United States|D|USA|us|1770|0.07|0.02|0.08|0.01
-par|Paraguay|D|PAR|py|1692|-0.03|0.05|0.03|0
-aus|Australia|D|AUS|au|1664|-0.04|0.01|-0.01|0
-tur|Turkey|D|TUR|tr|1784|0.08|-0.01|0.07|0.02
-ger|Germany|E|GER|de|1855|0.13|0.07|0.05|0
-cur|Curacao|E|CUW|cw|1430|-0.16|-0.14|0|0
-civ|Cote d'Ivoire|E|CIV|ci|1698|0.02|-0.01|0.09|0.03
-ecu|Ecuador|E|ECU|ec|1765|0.05|0.08|0.04|0.01
-ned|Netherlands|F|NED|nl|1848|0.12|0.10|0.04|0.01
-jpn|Japan|F|JPN|jp|1778|0.08|0.06|0.08|0
-swe|Sweden|F|SWE|se|1720|0.05|0.03|0.02|0.02
-tun|Tunisia|F|TUN|tn|1658|-0.04|0.02|0|0.01
-bel|Belgium|G|BEL|be|1838|0.12|0.04|0.04|0.02
-egy|Egypt|G|EGY|eg|1688|0.03|-0.01|0.05|0.01
-irn|Iran|G|IRN|ir|1712|0.01|0.04|0.02|0
-nzl|New Zealand|G|NZL|nz|1500|-0.12|-0.08|0.01|0
-esp|Spain|H|ESP|es|1925|0.18|0.14|0.10|0.01
-cpv|Cabo Verde|H|CPV|cv|1558|-0.07|-0.03|0.04|0.01
-ksa|Saudi Arabia|H|KSA|sa|1632|-0.05|-0.02|0.02|0.01
-uru|Uruguay|H|URU|uy|1825|0.08|0.10|0.06|0.01
-fra|France|I|FRA|fr|1908|0.18|0.11|0.06|0.01
-sen|Senegal|I|SEN|sn|1768|0.05|0.08|0.05|0.01
-irq|Iraq|I|IRQ|iq|1580|-0.08|-0.04|0.04|0
-nor|Norway|I|NOR|no|1760|0.11|0.01|0.03|0.02
-arg|Argentina|J|ARG|ar|1935|0.18|0.12|0.08|0.01
-alg|Algeria|J|ALG|dz|1708|0.03|0.02|0.05|0.01
-aut|Austria|J|AUT|at|1780|0.07|0.07|0.06|0.02
-jor|Jordan|J|JOR|jo|1515|-0.11|-0.07|0.07|0
-por|Portugal|K|POR|pt|1875|0.16|0.09|0.05|0.01
-cod|DR Congo|K|COD|cd|1620|-0.03|-0.02|0.04|0.01
-uzb|Uzbekistan|K|UZB|uz|1598|-0.05|-0.02|0.05|0
-col|Colombia|K|COL|co|1800|0.09|0.07|0.06|0.01
-eng|England|L|ENG|gb-eng|1888|0.16|0.10|0.05|0.01
-cro|Croatia|L|CRO|hr|1810|0.06|0.09|0.01|0.02
-gha|Ghana|L|GHA|gh|1668|0|-0.02|0.04|0.01
-pan|Panama|L|PAN|pa|1588|-0.08|-0.05|0.03|0`;
-const FIXTURE_CSV=`A|mex|rsa|Mexico City|Estadio Azteca
-A|kor|cze|Arlington|AT&T Stadium
-B|can|bih|Toronto|BMO Field
-D|usa|par|Inglewood|SoFi Stadium
-B|qat|sui|Santa Clara|Levi's Stadium
-C|bra|mar|East Rutherford|MetLife Stadium
-C|hai|sco|Boston|Gillette Stadium
-D|aus|tur|Vancouver|BC Place
-E|ger|cur|Houston|NRG Stadium
-F|ned|jpn|Arlington|AT&T Stadium
-E|civ|ecu|Philadelphia|Lincoln Financial Field
-F|swe|tun|Monterrey|Estadio BBVA
-H|esp|cpv|Atlanta|Mercedes-Benz Stadium
-G|bel|egy|Seattle|Lumen Field
-H|ksa|uru|Miami|Hard Rock Stadium
-G|irn|nzl|Inglewood|SoFi Stadium
-I|fra|sen|East Rutherford|MetLife Stadium
-I|irq|nor|Boston|Gillette Stadium
-J|arg|alg|Kansas City|Arrowhead Stadium
-J|aut|jor|Santa Clara|Levi's Stadium
-K|por|cod|Houston|NRG Stadium
-L|eng|cro|Arlington|AT&T Stadium
-L|gha|pan|Toronto|BMO Field
-K|uzb|col|Mexico City|Estadio Azteca
-A|cze|rsa|Atlanta|Mercedes-Benz Stadium
-B|sui|bih|Inglewood|SoFi Stadium
-B|can|qat|Vancouver|BC Place
-A|mex|kor|Guadalajara|Estadio Akron
-D|usa|aus|Seattle|Lumen Field
-C|sco|mar|Boston|Gillette Stadium
-C|bra|hai|Philadelphia|Lincoln Financial Field
-D|tur|par|Santa Clara|Levi's Stadium
-F|ned|swe|Houston|NRG Stadium
-E|ger|civ|Toronto|BMO Field
-E|ecu|cur|Kansas City|Arrowhead Stadium
-F|tun|jpn|Monterrey|Estadio BBVA
-H|esp|ksa|Atlanta|Mercedes-Benz Stadium
-G|bel|irn|Inglewood|SoFi Stadium
-H|uru|cpv|Miami|Hard Rock Stadium
-G|nzl|egy|Vancouver|BC Place
-J|arg|aut|Arlington|AT&T Stadium
-I|fra|irq|Philadelphia|Lincoln Financial Field
-I|nor|sen|East Rutherford|MetLife Stadium
-J|jor|alg|Santa Clara|Levi's Stadium
-K|por|uzb|Houston|NRG Stadium
-L|eng|gha|Boston|Gillette Stadium
-L|pan|cro|Toronto|BMO Field
-K|col|cod|Guadalajara|Estadio Akron
-B|sui|can|Vancouver|BC Place
-B|bih|qat|Seattle|Lumen Field
-C|mar|hai|Atlanta|Mercedes-Benz Stadium
-C|sco|bra|Miami|Hard Rock Stadium
-A|rsa|kor|Monterrey|Estadio BBVA
-A|cze|mex|Mexico City|Estadio Azteca
-E|cur|civ|Philadelphia|Lincoln Financial Field
-E|ecu|ger|East Rutherford|MetLife Stadium
-F|tun|ned|Kansas City|Arrowhead Stadium
-F|jpn|swe|Arlington|AT&T Stadium
-D|tur|usa|Inglewood|SoFi Stadium
-D|par|aus|Santa Clara|Levi's Stadium
-I|nor|fra|Boston|Gillette Stadium
-I|sen|irq|Toronto|BMO Field
-H|cpv|ksa|Houston|NRG Stadium
-H|uru|esp|Guadalajara|Estadio Akron
-G|nzl|bel|Vancouver|BC Place
-G|egy|irn|Seattle|Lumen Field
-L|pan|eng|East Rutherford|MetLife Stadium
-L|cro|gha|Philadelphia|Lincoln Financial Field
-K|col|por|Miami|Hard Rock Stadium
-K|cod|uzb|Atlanta|Mercedes-Benz Stadium
-J|alg|aut|Kansas City|Arrowhead Stadium
-J|jor|arg|Arlington|AT&T Stadium`;
-const PLAYER_CSV=`mex|S. Gimenez,E. Alvarez,L. Chavez
-rsa|P. Tau,T. Mokoena,R. Williams
-kor|Son H-m,Lee K-i,Kim M-j
-cze|P. Schick,T. Soucek,V. Coufal
-can|A. Davies,J. David,S. Eustaquio
-bih|E. Dzeko,M. Pjanic,S. Kolasinac
-qat|A. Afif,Almoez Ali,A. Hassan
-sui|G. Xhaka,M. Akanji,B. Embolo
-bra|Vinicius Jr,Rodrygo,Bruno G.
-mar|A. Hakimi,S. Amrabat,Y. En-Nesyri
-hai|D. Nazon,F. Pierrot,J. Duverger
-sco|S. McTominay,A. Robertson,J. McGinn
-usa|C. Pulisic,T. Adams,W. McKennie
-par|M. Almiron,G. Gomez,J. Enciso
-aus|M. Ryan,J. Irvine,C. Goodwin
-tur|H. Calhanoglu,A. Guler,K. Akturkoglu
-ger|J. Musiala,F. Wirtz,K. Havertz
-cur|L. Bacuna,J. Bacuna,E. Room
-civ|S. Haller,F. Kessie,O. Diomande
-ecu|M. Caicedo,P. Estupinan,E. Valencia
-ned|V. van Dijk,F. de Jong,C. Gakpo
-jpn|T. Kubo,K. Mitoma,W. Endo
-swe|A. Isak,D. Kulusevski,V. Gyokeres
-tun|Y. Msakni,E. Skhiri,B. Dahmen
-bel|K. De Bruyne,J. Doku,R. Lukaku
-egy|M. Salah,O. Marmoush,M. Elneny
-irn|M. Taremi,S. Azmoun,A. Jahanbakhsh
-nzl|C. Wood,S. Singh,L. Cacace
-esp|L. Yamal,Pedri,Rodri
-cpv|R. Mendes,G. Rodrigues,Vozinha
-ksa|S. Al-Dawsari,M. Kanno,A. Al-Bulaihi
-uru|F. Valverde,D. Nunez,R. Araujo
-fra|K. Mbappe,A. Griezmann,A. Tchouameni
-sen|S. Mane,K. Koulibaly,E. Mendy
-irq|A. Hussein,Z. Iqbal,I. Bayesh
-nor|E. Haaland,M. Odegaard,A. Sorloth
-arg|L. Messi,J. Alvarez,A. Mac Allister
-alg|R. Mahrez,I. Bennacer,A. Gouiri
-aut|M. Sabitzer,D. Alaba,K. Laimer
-jor|Y. Al-Naimat,M. Al-Taamari,N. Al-Rawabdeh
-por|C. Ronaldo,B. Fernandes,R. Leao
-cod|C. Bakambu,Y. Wissa,C. Mbemba
-uzb|E. Shomurodov,J. Masharipov,A. Fayzullaev
-col|L. Diaz,J. Rodriguez,J. Lerma
-eng|H. Kane,J. Bellingham,B. Saka
-cro|L. Modric,J. Gvardiol,M. Kovacic
-gha|M. Kudus,T. Partey,I. Williams
-pan|A. Godoy,I. Diaz,M. Murillo`;
-const CITY={'Mexico City':[22,37,8,'altitude'],Inglewood:[20,58,11,'open-air'],'East Rutherford':[24,63,13,'humid'],Houston:[31,72,10,'roof watch'],Arlington:[29,64,12,'roof watch'],Atlanta:[28,68,9,'roof watch'],Toronto:[21,55,14,'cool'],'Santa Clara':[22,52,15,'dry'],Vancouver:[19,58,12,'roof watch'],Seattle:[18,62,10,'cool'],Philadelphia:[27,66,12,'humid'],Boston:[23,64,13,'humid'],Miami:[31,74,14,'heat'],'Kansas City':[29,61,16,'wind'],Guadalajara:[27,43,10,'altitude-lite'],Monterrey:[33,58,12,'heat']};
-const teams=TEAM_CSV.trim().split('\n').map(r=>{let [id,name,group,code,flag,elo,attack,defence,form,injury]=r.split('|');return {id,name,group,code,flag,elo:+elo,attack:+attack,defence:+defence,form:+form,injury:+injury}});
-const by=Object.fromEntries(teams.map(t=>[t.id,t]));
-const players=Object.fromEntries(PLAYER_CSV.trim().split('\n').map(r=>{let [id,names]=r.split('|');return [id,names.split(',')]}));
-const fixtures=FIXTURE_CSV.trim().split('\n').map((r,i)=>{let [group,home,away,city,venue]=r.split('|');return {id:i+1,group,home:by[home],away:by[away],city,venue}});
-let group='ALL',query='',selected=0,tab='handicap';
-const $=id=>document.getElementById(id), clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), pct=x=>Number.isFinite(x)?(x*100).toFixed(1)+'%':'-', fmt=x=>Number.isFinite(x)?x.toFixed(2):'-', signed=x=>(x>=0?'+':'')+fmt(x), flag=c=>`https://flagcdn.com/w40/${c}.png`;
-function strength(t){return Math.max(.05,t.elo/1850+t.attack+.45*t.defence+.2*t.form-.35*t.injury)}
-function fact(k){let n=1;for(let i=2;i<=k;i++)n*=i;return n}
-function poisson(k,l){return Math.exp(-l)*l**k/fact(k)}
-function weather(f){return CITY[f.city]||[24,58,10,'normal']}
-function context(f){let hm=1,am=1;if(['mex','usa','can'].includes(f.home.id))hm+=.025;if(['mex','usa','can'].includes(f.away.id))am+=.025;if(f.city==='Mexico City'){am-=.04;if(f.home.id!=='mex')hm-=.015}if(['Guadalajara','Monterrey'].includes(f.city))am-=.01;return [hm,am]}
-function factors(f){let h=f.home,a=f.away,w=weather(f),c=context(f),heat=(w[0]-26)*-.015+(w[1]-60)*-.003;return [['ELO strength',clamp((h.elo-a.elo)/260,-1,1),.23],['Process stats',clamp((strength(h)-strength(a))/1.4,-1,1),.2],['Attack quality',clamp((h.attack-a.attack)*4,-1,1),.15],['Defensive control',clamp((h.defence-a.defence)*4,-1,1),.14],['Recent form',clamp((h.form-a.form)*3,-1,1),.1],['Player availability',clamp((a.injury-h.injury)*12,-1,1),.1],['Weather / travel',clamp((c[0]-c[1])*3+heat,-1,1),.08]]}
-function xg(f){let h=f.home,a=f.away,c=context(f),w=weather(f),elo=(h.elo-a.elo)/720,heat=Math.max(0,w[0]-27)*.009+Math.max(0,w[1]-65)*.002;let lh=Math.exp(Math.log(1.28)+.36*elo+.9*h.attack-.55*a.defence+.18*h.form-.75*h.injury)*c[0];let la=Math.exp(Math.log(1.08)-.36*elo+.9*a.attack-.55*h.defence+.18*a.form-.75*a.injury)*c[1];lh*=clamp(1-heat,.86,1.08);la*=clamp(1-heat,.86,1.08);return [clamp(lh,.12,4.6),clamp(la,.1,4.3)]}
-function matrix(lh,la){let m=[],tot=0;for(let i=0;i<=8;i++){m[i]=[];for(let j=0;j<=8;j++){let p=poisson(i,lh)*poisson(j,la);m[i][j]=p;tot+=p}}for(let i=0;i<=8;i++)for(let j=0;j<=8;j++)m[i][j]/=tot;return m}
-function markets(m){let h=0,d=0,a=0,over=0,btts=0;for(let i=0;i<m.length;i++)for(let j=0;j<m[i].length;j++){let p=m[i][j];if(i>j)h+=p;else if(i===j)d+=p;else a+=p;if(i+j>=3)over+=p;if(i&&j)btts+=p}return {home:h,draw:d,away:a,over,btts}}
-function split(line){let q=Math.round(line*4);return q%2===0?[line]:q>0?[(q-1)/4,(q+1)/4]:[(q+1)/4,(q-1)/4]}
-function settle(margin,line){let bits=split(line).map(l=>margin+l>0?'w':margin+l===0?'p':'l'),o={win:0,halfWin:0,push:0,halfLoss:0,loss:0};if(bits.length===1){o[bits[0]==='w'?'win':bits[0]==='p'?'push':'loss']=1;return o}let w=bits.filter(x=>x==='w').length,p=bits.filter(x=>x==='p').length,l=bits.filter(x=>x==='l').length;if(w===2)o.win=1;else if(l===2)o.loss=1;else if(p===2)o.push=1;else if(w&&p)o.halfWin=1;else if(l&&p)o.halfLoss=1;else{o.win=.5;o.loss=.5}return o}
-function ah(m,line,home=true){let out={win:0,halfWin:0,push:0,halfLoss:0,loss:0};for(let i=0;i<m.length;i++)for(let j=0;j<m[i].length;j++){let s=settle(home?i-j:j-i,home?line:-line),p=m[i][j];for(let k in out)out[k]+=s[k]*p}return out}
-function fair(o){let gain=o.win+.5*o.halfWin,loss=o.loss+.5*o.halfLoss;return gain<=.001?99:1+loss/gain}
-function handicapRows(m,idx){return [-1.5,-1.25,-1,-.75,-.5,-.25,0,.25,.5,.75,1,1.25,1.5].map(line=>{let h=ah(m,line,true),a=ah(m,line,false),fh=fair(h),fa=fair(a),sample=Math.abs(line)<=.75;let mh=sample?clamp(fh*(1+.055*Math.sin(idx+line*5)),1.72,2.35):null,ma=sample?clamp(fa*(1-.045*Math.cos(idx+line*4)),1.72,2.35):null;return {line,h,a,fh,fa,mh,ma}})}
-function stats(t){let travel=t.id==='mex'?1400:t.id==='usa'?1800:t.id==='can'?2200:5600+Math.max(0,1700-t.elo)*3;return {gf:clamp(13.2+t.attack*42+t.form*9,5.5,29),ga:clamp(10.8-t.defence*34+t.injury*240,4.5,23),xgf:clamp(1.35+t.attack*2.4+t.form*.5,.75,2.35),xga:clamp(1.18-t.defence*2+t.injury*18,.65,2.2),pos:clamp(50+t.attack*42+t.defence*12+t.form*28,38,67),shots:clamp(10.8+t.attack*20+t.form*7,7.2,16.8),ppda:clamp(12.8-t.defence*28-t.form*10-t.attack*6,6.5,18),travel}}
-function enrich(f,i){let x=xg(f),m=matrix(x[0],x[1]);return {...f,i,x,m,p:markets(m),hc:handicapRows(m,i),fx:factors(f)}}
-const matches=fixtures.map(enrich);
-function titleTable(){let vals=teams.map(t=>({t,s:strength(t)})),sum=vals.reduce((a,x)=>a+x.s**6,0),sum5=vals.reduce((a,x)=>a+x.s**5,0);return vals.map(x=>({t:x.t,title:x.s**6/sum,final:Math.min(.62,x.s**5/sum5*2)})).sort((a,b)=>b.title-a.title)}
-function confidence(m){let market=m.hc.filter(r=>r.mh).length/m.hc.length,inj=Math.min(.14,m.home.injury+m.away.injury);return clamp(.63+market*.22-inj,.45,.91)}
-function metric(a,b,c){return `<div class='metric'><span>${a}</span><b>${b}</b><small class='muted'>${c}</small></div>`}
-function tile(a,b,c=''){return `<div class='tile'><span>${a}</span><b>${b}</b><small class='muted'>${c}</small></div>`}
-function filtered(){let q=query.toLowerCase();return matches.filter(x=>(group==='ALL'||x.group===group)&&(!q||x.home.name.toLowerCase().includes(q)||x.away.name.toLowerCase().includes(q)||x.city.toLowerCase().includes(q)||x.group.toLowerCase().includes(q)))}
-function renderGroups(){let gs=['ALL',...new Set(teams.map(t=>t.group))];$('groups').innerHTML=gs.map(g=>`<button class='${group===g?'on':''}' data-g='${g}'>${g==='ALL'?'全部':g+'组'}</button>`).join('')}
-function render(){renderGroups();let top=titleTable()[0],cur=matches[selected];$('modelName').textContent=MODEL;$('metrics').innerHTML=[metric('小组赛覆盖','72 场','48 队 · 12 组 · 完整小组赛'),metric('亚洲盘口','936 条','每场 13 条盘口线，含走盘/半赢'),metric('最高夺冠',pct(top.title),top.t.name),metric('当前置信度',pct(confidence(cur)),'市场、伤病、天气完整度估计')].join('');let fs=filtered();$('matchCount').textContent=fs.length+' 场';$('list').innerHTML=fs.map(x=>`<button class='match ${x.i===selected?'on':''}' data-m='${x.i}'><span class='muted'>#${x.i+1} · ${x.group}组 · ${x.city}</span><span class='row'><span class='team'><img class='flag' src='${flag(x.home.flag)}'>${x.home.name}</span><b>${pct(x.p.home)}</b></span><span class='row'><span class='team'><img class='flag' src='${flag(x.away.flag)}'>${x.away.name}</span><b>${pct(x.p.away)}</b></span><span class='muted'>xG ${fmt(x.x[0])}:${fmt(x.x[1])}</span></button>`).join('');$('detail').innerHTML=detail(cur);$('rail').innerHTML=cur.fx.map(f=>`<div class='factor'><b>${f[0]}</b><div class='bar'><i style='width:${Math.max(3,Math.abs(f[1])*100)}%'></i></div><span class='mono'>${signed(f[1])}</span></div>`).join('');renderTitles();renderSources()}
-function detail(m){return `<div class='score'><img class='flag' style='width:62px;height:42px' src='${flag(m.home.flag)}'><div><div class='eyebrow'>MATCH #${m.i+1} · ${m.venue} · ${m.city}</div><h2>${m.home.name} <span class='muted'>vs</span> ${m.away.name}</h2><strong>${fmt(m.x[0])} : ${fmt(m.x[1])}</strong><p class='muted'>预期进球</p></div><img class='flag' style='width:62px;height:42px' src='${flag(m.away.flag)}'></div><div class='prob'><i class='home' style='width:${m.p.home*100}%'></i><i class='draw' style='width:${m.p.draw*100}%'></i><i class='away' style='width:${m.p.away*100}%'></i></div><div class='grid'>${tile('主胜',pct(m.p.home),m.home.name)}${tile('平局',pct(m.p.draw),'draw')}${tile('客胜',pct(m.p.away),m.away.name)}${tile('大 2.5',pct(m.p.over),'总进球')}</div><div class='tabs'><button class='${tab==='handicap'?'on':''}' data-tab='handicap'>盘口矩阵</button><button class='${tab==='stats'?'on':''}' data-tab='stats'>技术统计</button><button class='${tab==='players'?'on':''}' data-tab='players'>球员天气</button><button class='${tab==='model'?'on':''}' data-tab='model'>模型输入</button></div>${tabContent(m)}`}
-function tabContent(m){if(tab==='stats')return statsTab(m);if(tab==='players')return playersTab(m);if(tab==='model')return `<div class='grid'>${tile('主队 ELO',m.home.elo,m.home.name)}${tile('客队 ELO',m.away.elo,m.away.name)}${tile('主队进攻',signed(m.home.attack),'seed rating')}${tile('客队进攻',signed(m.away.attack),'seed rating')}${tile('主队伤病',pct(m.home.injury),'availability proxy')}${tile('客队伤病',pct(m.away.injury),'availability proxy')}${tile('模型边际',signed(m.fx.reduce((s,f)=>s+f[1]*f[2],0)),'weighted factors')}${tile('公开边界','非投注建议','information only')}</div>`;return `<div class='table'><table><thead><tr><th>主队盘口</th><th>${m.home.name} 覆盖</th><th>${m.away.name} 覆盖</th><th>走盘</th><th>公平赔率</th><th>市场样例</th><th>模型倾向</th></tr></thead><tbody>${m.hc.map(r=>{let lean='观察';if(r.mh&&r.mh>r.fh*1.055)lean=m.home.name;if(r.ma&&r.ma>r.fa*1.055)lean=m.away.name;return `<tr><td class='mono'><b>${r.line>0?'+'+r.line:r.line}</b></td><td>${pct(r.h.win)}<small class='muted'>半赢 ${pct(r.h.halfWin)} · 半输 ${pct(r.h.halfLoss)}</small></td><td>${pct(r.a.win)}<small class='muted'>半赢 ${pct(r.a.halfWin)} · 半输 ${pct(r.a.halfLoss)}</small></td><td>${pct(r.h.push)}</td><td>${fmt(r.fh)} / ${fmt(r.fa)}</td><td>${r.mh?fmt(r.mh)+' / '+fmt(r.ma):'<span class=muted>模型公平盘</span>'}</td><td><span class='tag'>${lean}</span></td></tr>`}).join('')}</tbody></table></div>`}
-function statsTab(m){let block=(t,s)=>`<div class='sub'><h3><img class='flag' src='${flag(t.flag)}'> ${t.name}</h3><div class='grid'>${tile('近18月进球',s.gf.toFixed(1),'proxy')}${tile('近18月失球',s.ga.toFixed(1),'proxy')}${tile('控球率',s.pos.toFixed(1)+'%','possession')}${tile('射门',s.shots.toFixed(1),'per match')}${tile('xG / xGA',s.xgf.toFixed(2)+' / '+s.xga.toFixed(2),'process')}${tile('PPDA',s.ppda.toFixed(1),'press')}${tile('旅程',Math.round(s.travel)+'km',s.travel>7600?'极高':s.travel>6000?'高':s.travel>3800?'中':'低')}${tile('阵容深度',clamp(58+(t.elo-1600)/9+t.form*45-t.injury*360,36,92).toFixed(1),'proxy')}</div></div>`;return `<div class='two'>${block(m.home,stats(m.home))}${block(m.away,stats(m.away))}</div>`}
-function playersTab(m){let w=weather(m),block=t=>`<div class='sub'><h3>${t.name} · ${t.injury>=.025?'偏高':t.injury>=.015?'中等':'低风险'}</h3><p class='muted'>预计可用首发 ${Math.max(8,Math.min(11,Math.round(11-t.injury*70)))}/11</p>${(players[t.id]||[t.code+' FW',t.code+' MID',t.code+' CB']).map((p,i)=>`<p>${p} <span class='muted'>${['attack','control','defence'][i]}</span></p>`).join('')}</div>`;return `<div class='two'>${block(m.home)}${block(m.away)}</div><div class='sub' style='margin-top:10px'><h3>天气与场地</h3><div class='weather'><span>温度 <b>${w[0]}°C</b></span><span>湿度 <b>${w[1]}%</b></span><span>风速 <b>${w[2]} km/h</b></span><span>场地 <b>${w[3]}</b></span></div><p class='muted warn'>天气为 Open-Meteo 预测窗口前的城市气候代理值，实时 forecast 接入后自动替换。</p></div>`}
-function renderTitles(){let rows=titleTable().slice(0,14);$('titles').innerHTML=rows.map((r,i)=>`<div class='titleRow'><div class='rank'>${i+1}</div><div class='titleTeam'><b><img class='flag' src='${flag(r.t.flag)}'> ${r.t.name}</b><div class='mini'><i style='width:${Math.max(2,r.title*100)}%'></i></div><span class='titleMeta'>${r.t.group}组 · 进决赛 ${pct(r.final)}</span></div><span class='mono'>${pct(r.title)}</span></div>`).join('')}
-function renderSources(){let src=['FIFA/public schedule seed · 48 teams and 72 group fixtures','football-data.org · pending API key for scores','martj42 international_results · historical backfill adapter','StatsBomb/Opta schema · shots, possession, PPDA, xG','Open-Meteo · forecast window weather feed','Lineup/injury feed · player availability schema','Polymarket Gamma · market price adapter','The Odds API/TheStatsAPI · legal sportsbook odds'];$('sources').innerHTML=src.map(s=>{let p=s.split(' · ');return `<div class='src'><b>${p[0]}</b><p class='muted'>${p[1]}</p></div>`}).join('')}
-document.addEventListener('click',e=>{let m=e.target.closest('[data-m]');if(m){selected=+m.dataset.m;render()}let g=e.target.closest('[data-g]');if(g){group=g.dataset.g;render()}let t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render()}});
-$('q').addEventListener('input',e=>{query=e.target.value;render()});
-render();
-</script>
-</body>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2026 World Cup Prediction Dashboard</title>
+    <style>
+      :root {
+        --bg: #f2f4f7;
+        --surface: rgba(255, 255, 255, 0.88);
+        --solid: #ffffff;
+        --soft: #eef2f7;
+        --ink: #121721;
+        --muted: #687386;
+        --line: rgba(125, 139, 158, 0.24);
+        --blue: #1d4ed8;
+        --cyan: #0891b2;
+        --green: #12805c;
+        --red: #c2384d;
+        --amber: #b7791f;
+        --shadow: 0 18px 46px rgba(20, 31, 48, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(242, 244, 247, 0.96) 320px),
+          radial-gradient(circle at top left, rgba(29, 78, 216, 0.1), transparent 370px),
+          linear-gradient(120deg, rgba(8, 145, 178, 0.1), rgba(255, 255, 255, 0) 48%);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .shell {
+        width: min(1560px, 100%);
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .deck,
+      .controls,
+      .metrics,
+      .workspace,
+      .lower {
+        margin-bottom: 14px;
+      }
+
+      .deck,
+      .controls,
+      .metric,
+      .panel,
+      .match-list,
+      .detail,
+      .rail {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .deck {
+        min-height: 120px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .mark {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--solid);
+        color: var(--blue);
+        font-weight: 900;
+      }
+
+      .eyebrow {
+        margin: 0 0 5px;
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(28px, 4vw, 44px);
+        line-height: 1.02;
+      }
+
+      .copy {
+        margin-top: 8px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .hosts,
+      .badges,
+      .team-line,
+      .inline-team,
+      .tabs,
+      .venue,
+      .availability-head,
+      .weather-grid {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hosts {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .host {
+        min-width: 92px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.76);
+      }
+
+      .host strong,
+      .host span,
+      .metric span,
+      .metric small {
+        display: block;
+      }
+
+      .host span,
+      .metric span,
+      .metric small,
+      .muted,
+      .match-meta,
+      .source span,
+      .tile span,
+      .factor em,
+      .player em {
+        color: var(--muted);
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px;
+      }
+
+      .search {
+        width: min(470px, 100%);
+        height: 42px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--solid);
+      }
+
+      .search input {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+      }
+
+      .segments,
+      .tabs {
+        gap: 4px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--soft);
+        overflow-x: auto;
+      }
+
+      .segments button,
+      .tabs button {
+        height: 32px;
+        min-width: 42px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .segments button.active,
+      .tabs button.active {
+        background: var(--solid);
+        color: var(--ink);
+        box-shadow: 0 1px 5px rgba(24, 34, 48, 0.1);
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .metric {
+        min-height: 112px;
+        padding: 14px;
+      }
+
+      .metric b {
+        display: block;
+        margin-top: 8px;
+        font-size: 25px;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr) 360px;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .match-list,
+      .detail,
+      .rail,
+      .panel {
+        overflow: hidden;
+      }
+
+      .detail {
+        padding: 14px;
+      }
+
+      .head {
+        min-height: 48px;
+        padding: 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .head span {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .match-row {
+        width: 100%;
+        padding: 13px 14px;
+        display: grid;
+        gap: 8px;
+        text-align: left;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.38);
+        color: var(--ink);
+      }
+
+      .match-row.active,
+      .match-row:hover {
+        background: rgba(255, 255, 255, 0.86);
+      }
+
+      .match-row.active {
+        box-shadow: inset 3px 0 0 var(--blue);
+      }
+
+      .team-line {
+        justify-content: space-between;
+      }
+
+      .badges {
+        flex-wrap: wrap;
+      }
+
+      .badge,
+      .risk,
+      .lean,
+      .note {
+        display: inline-flex;
+        min-height: 24px;
+        align-items: center;
+        padding: 0 8px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 850;
+        background: #e6edf5;
+        color: #31516f;
+      }
+
+      .flag {
+        width: 25px;
+        height: 17px;
+        object-fit: cover;
+        flex: 0 0 auto;
+        border: 1px solid rgba(18, 23, 33, 0.14);
+        border-radius: 4px;
+        background: var(--soft);
+      }
+
+      .flag.big {
+        width: 54px;
+        height: 36px;
+      }
+
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(239, 244, 250, 0.86));
+      }
+
+      .hero h2 {
+        margin-top: 4px;
+        font-size: clamp(24px, 3vw, 38px);
+        line-height: 1.05;
+      }
+
+      .venue {
+        margin-top: 10px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .score-lens {
+        min-width: 250px;
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 54px minmax(110px, 1fr) 54px;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.74);
+      }
+
+      .score-lens strong {
+        display: block;
+        font-size: 25px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .prob {
+        margin: 14px 0;
+      }
+
+      .prob-labels {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .prob-labels span:nth-child(2) {
+        text-align: center;
+      }
+
+      .prob-labels span:nth-child(3) {
+        text-align: right;
+      }
+
+      .prob-bar {
+        height: 18px;
+        display: flex;
+        overflow: hidden;
+        border-radius: 6px;
+        background: var(--soft);
+      }
+
+      .home { background: var(--blue); }
+      .draw { background: var(--amber); }
+      .away { background: var(--green); }
+
+      .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--solid);
+      }
+
+      table {
+        width: 100%;
+        min-width: 850px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+        background: #f7f9fc;
+        white-space: nowrap;
+      }
+
+      td small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+      }
+
+      .mono {
+        font-variant-numeric: tabular-nums;
+        font-family: "SF Mono", Consolas, ui-monospace, monospace;
+      }
+
+      .lean.home-lean {
+        color: #123f91;
+        background: #dce8ff;
+      }
+
+      .lean.away-lean {
+        color: #075c3b;
+        background: #d9fbe8;
+      }
+
+      .tabs {
+        width: fit-content;
+        max-width: 100%;
+        margin-bottom: 12px;
+      }
+
+      .grid,
+      .split,
+      .rail-body {
+        display: grid;
+        gap: 10px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .tech-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 10px;
+      }
+
+      .split {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tile,
+      .subpanel {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .tile strong {
+        display: block;
+        margin-top: 6px;
+        line-height: 1.35;
+      }
+
+      .factor {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr) 52px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .track {
+        height: 10px;
+        display: grid;
+        grid-template-columns: 1fr 2px 1fr;
+        overflow: hidden;
+        border-radius: 5px;
+        background: var(--soft);
+      }
+
+      .track b {
+        background: rgba(18, 23, 33, 0.24);
+      }
+
+      .edge-away {
+        justify-self: end;
+        height: 100%;
+        background: var(--green);
+      }
+
+      .edge-home {
+        justify-self: start;
+        height: 100%;
+        background: var(--blue);
+      }
+
+      .rail {
+        padding-bottom: 12px;
+      }
+
+      .rail-body {
+        padding: 12px;
+      }
+
+      .weather-grid {
+        flex-wrap: wrap;
+      }
+
+      .weather-grid span {
+        min-width: calc(50% - 4px);
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .availability {
+        display: grid;
+        gap: 8px;
+      }
+
+      .availability-head {
+        justify-content: space-between;
+      }
+
+      .risk.low {
+        color: var(--green);
+        background: #ddf8eb;
+      }
+
+      .risk.medium {
+        color: var(--amber);
+        background: #fff3d7;
+      }
+
+      .risk.elevated {
+        color: var(--red);
+        background: #ffe1e7;
+      }
+
+      .player {
+        display: grid;
+        grid-template-columns: minmax(80px, 1fr) 62px 46px;
+        gap: 8px;
+        align-items: center;
+        min-height: 30px;
+        padding: 0 8px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #f8fafc;
+      }
+
+      .source {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f8fafc;
+      }
+
+      .source em {
+        color: var(--cyan);
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .lower {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(330px, 0.8fr);
+        gap: 14px;
+      }
+
+      .title-row {
+        display: grid;
+        grid-template-columns: 28px 34px minmax(120px, 1fr) minmax(80px, 1.6fr) 62px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .title-team {
+        min-width: 0;
+      }
+
+      .title-team strong,
+      .title-team em {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .title-team em {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        font-style: normal;
+      }
+
+      .mini {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 4px;
+        background: var(--soft);
+      }
+
+      .mini i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
+      }
+
+      @media (max-width: 1260px) {
+        .workspace {
+          grid-template-columns: 320px minmax(0, 1fr);
+        }
+
+        .rail {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .deck,
+        .controls {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .metrics,
+        .workspace,
+        .lower,
+        .split {
+          grid-template-columns: 1fr;
+        }
+
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hero {
+          flex-direction: column;
+        }
+
+        .score-lens {
+          width: 100%;
+          min-width: 0;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .shell {
+          padding: 12px;
+        }
+
+        .metrics,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tech-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .prob-labels {
+          grid-template-columns: 1fr;
+        }
+
+        .prob-labels span,
+        .prob-labels span:nth-child(2),
+        .prob-labels span:nth-child(3) {
+          text-align: left;
+        }
+
+        .factor {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <style>
+      :root {
+        --bg: #03060a;
+        --surface: rgba(8, 14, 20, 0.78);
+        --solid: #0c141d;
+        --soft: rgba(18, 29, 39, 0.88);
+        --ink: #f5f7fb;
+        --muted: #93a2b6;
+        --line: rgba(139, 163, 190, 0.22);
+        --line-strong: rgba(209, 228, 255, 0.34);
+        --blue: #66b7ff;
+        --cyan: #38d5e8;
+        --green: #25d990;
+        --red: #ff5f72;
+        --amber: #f2c14e;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.44);
+      }
+
+      html {
+        overflow-x: hidden;
+        background: var(--bg);
+      }
+
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: var(--ink);
+        background:
+          linear-gradient(180deg, rgba(2, 6, 10, 0.72), #03060a 440px),
+          linear-gradient(115deg, rgba(242, 193, 78, 0.18), transparent 24%, rgba(37, 217, 144, 0.12) 48%, transparent 66%),
+          repeating-linear-gradient(90deg, rgba(139, 163, 190, 0.06) 0 1px, transparent 1px 88px),
+          repeating-linear-gradient(0deg, rgba(139, 163, 190, 0.045) 0 1px, transparent 1px 72px),
+          #03060a;
+      }
+
+      body::before {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        content: "";
+        opacity: 0.46;
+        background:
+          linear-gradient(90deg, transparent 0 7%, rgba(37, 217, 144, 0.2) 7.1% 7.25%, transparent 7.35% 92.65%, rgba(37, 217, 144, 0.16) 92.75% 92.9%, transparent 93%),
+          linear-gradient(0deg, transparent 0 16%, rgba(102, 183, 255, 0.18) 16.1% 16.22%, transparent 16.34% 83.66%, rgba(102, 183, 255, 0.14) 83.78% 83.9%, transparent 84%),
+          linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 28%);
+        mask-image: linear-gradient(180deg, black, transparent 82%);
+      }
+
+      .shell {
+        position: relative;
+        z-index: 1;
+        width: min(1640px, 100%);
+      }
+
+      .deck,
+      .controls,
+      .metric,
+      .panel,
+      .match-list,
+      .detail,
+      .rail,
+      .subpanel {
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(20px);
+      }
+
+      .deck {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(330px, 460px);
+        align-items: stretch;
+        min-height: 250px;
+        padding: 22px;
+        overflow: hidden;
+        border-color: var(--line-strong);
+        background:
+          linear-gradient(135deg, rgba(10, 19, 29, 0.94), rgba(5, 11, 17, 0.82) 52%, rgba(30, 54, 48, 0.82)),
+          linear-gradient(90deg, rgba(242, 193, 78, 0.18), transparent 34%, rgba(56, 213, 232, 0.12));
+      }
+
+      .deck::before {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        content: "";
+        background:
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 42px),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 42px),
+          linear-gradient(114deg, transparent 0 34%, rgba(242, 193, 78, 0.12) 34.2% 34.6%, transparent 34.8%);
+        mask-image: linear-gradient(90deg, black, transparent 78%);
+      }
+
+      .brand,
+      .hero-telemetry {
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand {
+        min-width: 0;
+      }
+
+      .brand > div:last-child {
+        min-width: 0;
+      }
+
+      .mark {
+        width: 68px;
+        height: 68px;
+        color: #071018;
+        border-color: rgba(255, 255, 255, 0.22);
+        background: linear-gradient(145deg, #ffe58f, #f2c14e 54%, #23d18b);
+        box-shadow: 0 18px 42px rgba(242, 193, 78, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+
+      .eyebrow {
+        color: var(--amber);
+      }
+
+      h1 {
+        max-width: 820px;
+        color: var(--ink);
+        font-size: clamp(38px, 6vw, 76px);
+        line-height: 0.96;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+      }
+
+      .copy {
+        max-width: 720px;
+        color: #c7d2e2;
+        font-size: 16px;
+      }
+
+      .hero-telemetry {
+        display: grid;
+        grid-template-rows: 1fr auto auto;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .signal-plate {
+        position: relative;
+        display: grid;
+        align-content: center;
+        min-height: 150px;
+        padding: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(102, 183, 255, 0.26);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(7, 16, 24, 0.78), rgba(12, 28, 39, 0.66)),
+          repeating-linear-gradient(90deg, rgba(102, 183, 255, 0.12) 0 1px, transparent 1px 28px);
+        box-shadow: inset 0 0 42px rgba(37, 217, 144, 0.08);
+      }
+
+      .signal-plate::before {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        width: 92px;
+        height: 92px;
+        content: "";
+        border: 1px solid rgba(37, 217, 144, 0.5);
+        border-radius: 50%;
+        background: conic-gradient(from 40deg, rgba(37, 217, 144, 0.08), rgba(102, 183, 255, 0.45), rgba(242, 193, 78, 0.2), rgba(37, 217, 144, 0.08));
+        box-shadow: inset 0 0 0 18px rgba(3, 6, 10, 0.62);
+      }
+
+      .signal-plate span,
+      .signal-plate strong,
+      .signal-plate em {
+        position: relative;
+        z-index: 1;
+        display: block;
+      }
+
+      .signal-plate span {
+        color: var(--cyan);
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .signal-plate strong {
+        margin-top: 4px;
+        color: var(--ink);
+        font-size: 54px;
+        line-height: 0.95;
+        text-shadow: 0 0 24px rgba(102, 183, 255, 0.5);
+      }
+
+      .signal-plate em {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-style: normal;
+      }
+
+      .hosts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        justify-content: stretch;
+      }
+
+      .host {
+        min-width: 0;
+        border-color: rgba(242, 193, 78, 0.24);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .host strong {
+        color: var(--ink);
+      }
+
+      .status-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .status-pills span {
+        min-height: 30px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 10px;
+        color: #dcecff;
+        border: 1px solid rgba(102, 183, 255, 0.24);
+        border-radius: 8px;
+        background: rgba(102, 183, 255, 0.08);
+        font-size: 12px;
+        font-weight: 760;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: minmax(260px, 470px) minmax(0, 1fr);
+        background: rgba(5, 12, 18, 0.72);
+      }
+
+      .search {
+        color: var(--cyan);
+        border-color: rgba(102, 183, 255, 0.22);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .search input {
+        color: var(--ink);
+      }
+
+      .search input::placeholder {
+        color: #5f7188;
+      }
+
+      .segments,
+      .tabs {
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .segments {
+        justify-self: end;
+      }
+
+      .segments button.active,
+      .tabs button.active {
+        color: #061018;
+        background: linear-gradient(135deg, var(--amber), var(--green));
+        box-shadow: 0 10px 22px rgba(37, 217, 144, 0.18);
+      }
+
+      .metric {
+        position: relative;
+        min-height: 126px;
+        padding: 15px;
+        overflow: hidden;
+      }
+
+      .metric::before {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 2px;
+        content: "";
+        background: linear-gradient(90deg, var(--amber), var(--cyan), var(--green));
+      }
+
+      .metric b {
+        display: block;
+        margin-top: 3px;
+        color: var(--ink);
+        font-size: 29px;
+      }
+
+      .head {
+        min-height: 50px;
+        border-bottom-color: var(--line);
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent);
+      }
+
+      .match-row {
+        color: var(--ink);
+        border-bottom-color: var(--line);
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .match-row:hover,
+      .match-row.active {
+        background: linear-gradient(90deg, rgba(102, 183, 255, 0.14), rgba(37, 217, 144, 0.06));
+      }
+
+      .match-row.active {
+        box-shadow: inset 3px 0 0 var(--amber);
+      }
+
+      .badge {
+        color: #d9e9ff;
+        border: 1px solid rgba(102, 183, 255, 0.16);
+        background: rgba(102, 183, 255, 0.1);
+      }
+
+      .hero {
+        position: relative;
+        min-height: 178px;
+        overflow: hidden;
+        border-color: rgba(102, 183, 255, 0.28);
+        background:
+          linear-gradient(135deg, rgba(12, 24, 34, 0.94), rgba(5, 11, 17, 0.72)),
+          repeating-linear-gradient(90deg, rgba(37, 217, 144, 0.1) 0 1px, transparent 1px 54px);
+      }
+
+      .hero::before {
+        position: absolute;
+        inset: 14px;
+        pointer-events: none;
+        content: "";
+        border: 1px solid rgba(37, 217, 144, 0.22);
+        border-radius: 8px;
+        background:
+          linear-gradient(90deg, transparent 49.8%, rgba(37, 217, 144, 0.24) 50%, transparent 50.2%),
+          linear-gradient(0deg, transparent 49.7%, rgba(242, 193, 78, 0.16) 50%, transparent 50.3%);
+        opacity: 0.66;
+      }
+
+      .hero > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h2 {
+        color: var(--ink);
+        font-size: clamp(27px, 3.4vw, 48px);
+      }
+
+      .score-lens {
+        border-color: rgba(242, 193, 78, 0.26);
+        background: rgba(3, 6, 10, 0.55);
+        box-shadow: inset 0 0 42px rgba(242, 193, 78, 0.08);
+      }
+
+      .score-lens strong {
+        color: #fff4c7;
+      }
+
+      .prob-bar {
+        height: 22px;
+        padding: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .prob-bar .home {
+        background: linear-gradient(90deg, var(--blue), var(--cyan));
+      }
+
+      .prob-bar .draw {
+        background: linear-gradient(90deg, #ffe08a, var(--amber));
+      }
+
+      .prob-bar .away {
+        background: linear-gradient(90deg, var(--green), #74f0bd);
+      }
+
+      .table-wrap {
+        border-color: var(--line);
+        background: rgba(3, 8, 13, 0.78);
+      }
+
+      th {
+        color: #aebdd1;
+        background: rgba(255, 255, 255, 0.055);
+      }
+
+      td {
+        color: #edf6ff;
+        border-bottom-color: var(--line);
+      }
+
+      .tile,
+      .source,
+      .player,
+      .factor,
+      .weather-grid span {
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.045);
+      }
+
+      .tile strong,
+      .weather-grid strong,
+      .team-line strong {
+        color: var(--ink);
+      }
+
+      .track {
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .edge-home {
+        background: linear-gradient(90deg, var(--blue), var(--cyan));
+      }
+
+      .edge-away {
+        background: linear-gradient(90deg, #76f0bd, var(--green));
+      }
+
+      .mini {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .mini i {
+        background: linear-gradient(90deg, var(--amber), var(--cyan), var(--green));
+      }
+
+      .lean.home-lean {
+        color: #071018;
+        background: linear-gradient(135deg, var(--blue), var(--cyan));
+      }
+
+      .lean.away-lean {
+        color: #071018;
+        background: linear-gradient(135deg, var(--green), #89f1c4);
+      }
+
+      .risk {
+        color: #071018;
+        background: linear-gradient(135deg, var(--green), #a6f4ce);
+      }
+
+      .risk.medium {
+        color: #171109;
+        background: linear-gradient(135deg, var(--amber), #ffe9a4);
+      }
+
+      .risk.elevated {
+        color: #fff2f4;
+        background: rgba(255, 95, 114, 0.26);
+      }
+
+      @media (max-width: 1040px) {
+        .deck,
+        .controls {
+          grid-template-columns: 1fr;
+        }
+
+        .segments {
+          justify-self: stretch;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .deck {
+          min-height: 0;
+          padding: 14px;
+        }
+
+        .mark {
+          width: 46px;
+          height: 46px;
+        }
+
+        .brand > div:last-child {
+          max-width: calc(100% - 60px);
+        }
+
+        h1 {
+          max-width: 280px;
+          font-size: clamp(32px, 10vw, 40px);
+          line-height: 1.05;
+        }
+
+        .copy {
+          overflow-wrap: anywhere;
+        }
+
+        .signal-plate {
+          min-height: 118px;
+        }
+
+        .signal-plate strong {
+          font-size: 42px;
+        }
+
+        .hosts {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="deck">
+        <div class="brand">
+          <div class="mark">WC</div>
+          <div>
+            <p class="eyebrow">2026 WORLD CUP MODEL ROOM</p>
+            <h1>预测数据控制台</h1>
+            <p class="copy">胜平负、比分分布、亚洲让球、球员健康、历史形态与天气因子统一展示。</p>
+          </div>
+        </div>
+        <div class="hero-telemetry" aria-label="model telemetry">
+          <div class="signal-plate">
+            <span>MODEL</span>
+            <strong id="hero-confidence">--</strong>
+            <em>confidence</em>
+          </div>
+          <div class="hosts">
+            <div class="host"><strong>USA</strong><span>11 venues</span></div>
+            <div class="host"><strong>MEX</strong><span>3 venues</span></div>
+            <div class="host"><strong>CAN</strong><span>2 venues</span></div>
+          </div>
+          <div class="status-pills">
+            <span id="hero-markets">0 handicap markets</span>
+            <span id="hero-sources">0/0 data sources</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls">
+        <label class="search">
+          <span>搜索</span>
+          <input id="search" placeholder="球队、城市或球场" />
+        </label>
+        <div id="groups" class="segments"></div>
+      </section>
+
+      <section id="metrics" class="metrics"></section>
+
+      <section class="workspace">
+        <aside class="match-list">
+          <div class="head"><h2>比赛雷达</h2><span id="match-count">0</span></div>
+          <div id="match-list"></div>
+        </aside>
+
+        <article class="detail">
+          <div id="detail"></div>
+        </article>
+
+        <aside class="rail">
+          <div class="head"><h2>赛前情报</h2><span id="rail-group">-</span></div>
+          <div id="rail" class="rail-body"></div>
+        </aside>
+      </section>
+
+      <section class="lower">
+        <div class="panel">
+          <div class="head"><h2>夺冠概率</h2><span id="sim-count">sims</span></div>
+          <div id="tournament"></div>
+        </div>
+        <div class="panel">
+          <div class="head"><h2>数据源健康</h2><span id="source-count">sources</span></div>
+          <div id="sources" class="rail-body"></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const API = "http://127.0.0.1:8000";
+      const embeddedData = window.__DASHBOARD_DATA__ || null;
+      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4"];
+      let state = { matches: [], tournament: null, sources: [], selected: null, group: "ALL", query: "", tab: "handicap" };
+
+      const fallback = {
+        matches: [],
+        tournament: { n_simulations: 100000, teams: [] },
+        sources: []
+      };
+
+      const pct = (value) => value === null || value === undefined || Number.isNaN(value) ? "-" : `${(value * 100).toFixed(1)}%`;
+      const odds = (value) => value ? Number(value).toFixed(2) : "-";
+      const line = (value) => Number(value) > 0 ? `+${value}` : `${value}`;
+      const signed = (value) => `${Number(value) >= 0 ? "+" : ""}${Number(value).toFixed(2)}`;
+      const multiplier = (value) => `${Number(value) >= 1 ? "+" : ""}${((Number(value) - 1) * 100).toFixed(1)}%`;
+      const flag = (team, big = false) => `<img class="flag ${big ? "big" : ""}" src="https://flagcdn.com/w40/${team.flag_code}.png" alt="${team.name || team.team} flag" />`;
+      const team = (item) => `<span class="inline-team">${flag(item)}<span>${item.name || item.team}</span></span>`;
+      const dateText = (value) => new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Shanghai" }).format(new Date(value));
+
+      async function getJson(path, fallbackValue) {
+        try {
+          const url = path.startsWith(".") ? path : `${API}${path}`;
+          const response = await fetch(url);
+          if (!response.ok) return fallbackValue;
+          return await response.json();
+        } catch {
+          return fallbackValue;
+        }
+      }
+
+      async function getCompressedJson(paths) {
+        if (!("DecompressionStream" in window)) return null;
+        try {
+          const chunks = await Promise.all(paths.map(async (path) => {
+            const response = await fetch(path, { cache: "no-store" });
+            if (!response.ok) throw new Error("missing chunk");
+            return response.text();
+          }));
+          const binary = atob(chunks.join("").replace(/\s/g, ""));
+          const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+          const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+          return JSON.parse(await new Response(stream).text());
+        } catch {
+          return null;
+        }
+      }
+
+      async function boot() {
+        const localData = embeddedData || await getCompressedJson(compressedDataChunks) || await getJson("./data.json", null);
+        if (localData && localData.matches && localData.tournament && localData.sources) {
+          state.matches = localData.matches;
+          state.tournament = localData.tournament;
+          state.sources = localData.sources;
+          state.selected = state.matches[0] || null;
+          bind();
+          render();
+          refreshFromApi();
+          return;
+        }
+        const [matches, tournament, health] = await Promise.all([
+          getJson("/api/matches", { matches: fallback.matches }),
+          getJson("/api/tournament/probabilities", fallback.tournament),
+          getJson("/api/source-health", { sources: fallback.sources })
+        ]);
+        state.matches = matches.matches || [];
+        state.tournament = tournament;
+        state.sources = health.sources || [];
+        state.selected = state.matches[0] || null;
+        bind();
+        render();
+      }
+
+      async function refreshFromApi() {
+        const [matches, tournament, health] = await Promise.all([
+          getJson("/api/matches", null),
+          getJson("/api/tournament/probabilities", null),
+          getJson("/api/source-health", null)
+        ]);
+        if (!matches || !matches.matches || !tournament || !health || !health.sources) return;
+        const selectedId = state.selected && state.selected.match_id;
+        state.matches = matches.matches;
+        state.tournament = tournament;
+        state.sources = health.sources;
+        state.selected = state.matches.find((match) => match.match_id === selectedId) || state.matches[0] || null;
+        render();
+      }
+
+      function bind() {
+        document.getElementById("search").addEventListener("input", (event) => {
+          state.query = event.target.value.trim().toLowerCase();
+          render();
+        });
+      }
+
+      function filteredMatches() {
+        return state.matches.filter((match) => {
+          const inGroup = state.group === "ALL" || match.fixture.group === state.group;
+          const q = state.query;
+          const inQuery = !q ||
+            match.home_team.name.toLowerCase().includes(q) ||
+            match.away_team.name.toLowerCase().includes(q) ||
+            match.fixture.city.toLowerCase().includes(q) ||
+            match.fixture.venue.toLowerCase().includes(q);
+          return inGroup && inQuery;
+        });
+      }
+
+      function render() {
+        if (!state.matches.length) {
+          document.getElementById("detail").innerHTML = `<div class="subpanel">后端 API 暂时没有返回比赛数据。</div>`;
+          return;
+        }
+        renderGroups();
+        renderMetrics();
+        renderMatchList();
+        renderDetail();
+        renderRail();
+        renderTournament();
+        renderSources();
+      }
+
+      function renderGroups() {
+        const groups = ["ALL", ...Array.from(new Set(state.matches.map((match) => match.fixture.group))).sort()];
+        document.getElementById("groups").innerHTML = groups.map((group) =>
+          `<button class="${state.group === group ? "active" : ""}" data-group="${group}">${group === "ALL" ? "全部" : group}</button>`
+        ).join("");
+        document.querySelectorAll("[data-group]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.group = button.dataset.group;
+            const next = filteredMatches()[0];
+            if (next) state.selected = next;
+            render();
+          });
+        });
+      }
+
+      function renderMetrics() {
+        const top = state.tournament?.teams?.[0];
+        const marketCount = state.matches.reduce((sum, match) => sum + match.handicap_preview.filter((row) => row.market_status === "available").length, 0);
+        const confidence = state.selected ? confidenceScore(state.selected) : 0;
+        const liveSources = state.sources.filter((source) => source.status !== "planned").length;
+        document.getElementById("hero-confidence").textContent = pct(confidence);
+        document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
+        document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
+        document.getElementById("metrics").innerHTML = [
+          metric("小组赛覆盖", `${state.matches.length} 场`, "48 队 · 12 组 · 72 场"),
+          metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
+          metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? top.team : "等待模拟"),
+          metric("当前置信度", pct(confidence), "由市场、伤病、天气完整度估计")
+        ].join("");
+      }
+
+      function metric(label, value, sub) {
+        return `<div class="metric"><span>${label}</span><b>${value}</b><small>${sub}</small></div>`;
+      }
+
+      function renderMatchList() {
+        const matches = filteredMatches();
+        document.getElementById("match-count").textContent = matches.length;
+        document.getElementById("match-list").innerHTML = matches.map((match) => {
+          const active = state.selected && match.match_id === state.selected.match_id;
+          const marketRows = match.handicap_preview.filter((row) => row.market_status === "available").length;
+          return `
+            <button class="match-row ${active ? "active" : ""}" data-match="${match.match_id}">
+              <span class="match-meta">#${match.fixture.match_number} · ${match.fixture.group}组 · ${dateText(match.fixture.kickoff_utc)}</span>
+              <span class="team-line">${team(match.home_team)}<strong>${pct(match.p_home)}</strong></span>
+              <span class="team-line">${team(match.away_team)}<strong>${pct(match.p_away)}</strong></span>
+              <span class="badges"><em class="badge">${match.weather?.condition || "normal"}</em><em class="badge">${marketRows ? `${marketRows} 市场` : "模型公平盘"}</em></span>
+            </button>
+          `;
+        }).join("");
+        document.querySelectorAll("[data-match]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.selected = state.matches.find((match) => match.match_id === button.dataset.match);
+            render();
+          });
+        });
+      }
+
+      function renderDetail() {
+        const match = state.selected;
+        document.getElementById("rail-group").textContent = `${match.fixture.group}组`;
+        document.getElementById("detail").innerHTML = `
+          <header class="hero">
+            <div>
+              <p class="eyebrow">MATCH #${match.fixture.match_number}</p>
+              <h2>${match.home_team.name} <span class="muted">vs</span> ${match.away_team.name}</h2>
+              <div class="venue">${dateText(match.fixture.kickoff_utc)} · ${match.fixture.venue} · ${match.fixture.city}</div>
+            </div>
+            <div class="score-lens">
+              ${flag(match.home_team, true)}
+              <div><strong>${match.lambda_home.toFixed(2)} : ${match.lambda_away.toFixed(2)}</strong><span class="muted">预期进球</span></div>
+              ${flag(match.away_team, true)}
+            </div>
+          </header>
+          ${probability(match)}
+          <div class="tabs">
+            ${tabButton("handicap", "盘口矩阵")}
+            ${tabButton("stats", "技术统计")}
+            ${tabButton("model", "模型因子")}
+            ${tabButton("history", "球队历史")}
+            ${tabButton("players", "球员天气")}
+          </div>
+          <div id="tab-content">${tabContent(match)}</div>
+        `;
+        document.querySelectorAll("[data-tab]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.tab = button.dataset.tab;
+            renderDetail();
+          });
+        });
+      }
+
+      function probability(match) {
+        return `
+          <div class="prob">
+            <div class="prob-labels">
+              <span>${match.home_team.name} ${pct(match.p_home)}</span>
+              <span>平局 ${pct(match.p_draw)}</span>
+              <span>${match.away_team.name} ${pct(match.p_away)}</span>
+            </div>
+            <div class="prob-bar">
+              <i class="home" style="width:${Math.max(4, match.p_home * 100)}%"></i>
+              <i class="draw" style="width:${Math.max(4, match.p_draw * 100)}%"></i>
+              <i class="away" style="width:${Math.max(4, match.p_away * 100)}%"></i>
+            </div>
+          </div>
+        `;
+      }
+
+      function tabButton(key, label) {
+        return `<button class="${state.tab === key ? "active" : ""}" data-tab="${key}">${label}</button>`;
+      }
+
+      function tabContent(match) {
+        if (state.tab === "stats") return technicalPanel(match);
+        if (state.tab === "model") return modelPanel(match);
+        if (state.tab === "history") return historyPanel(match);
+        if (state.tab === "players") return playersPanel(match);
+        return handicapTable(match);
+      }
+
+      function handicapTable(match) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>主队盘口</th><th>${match.home_team.name}</th><th>${match.away_team.name}</th><th>走盘</th><th>公平赔率</th><th>市场赔率</th><th>模型倾向</th></tr>
+              </thead>
+              <tbody>
+                ${match.handicap_preview.map((row) => `
+                  <tr>
+                    <td class="mono"><strong>${line(row.line)}</strong></td>
+                    <td><strong>${pct(row.home.positive_probability)}</strong><small>半赢 ${pct(row.home.half_win)} · 半输 ${pct(row.home.half_loss)}</small></td>
+                    <td><strong>${pct(row.away.positive_probability)}</strong><small>半赢 ${pct(row.away.half_win)} · 半输 ${pct(row.away.half_loss)}</small></td>
+                    <td>${pct(row.home.push)}</td>
+                    <td><span class="mono">${odds(row.home.fair_decimal_odds)}</span><small>客 ${odds(row.away.fair_decimal_odds)}</small></td>
+                    <td><span class="mono">${row.market_status === "missing" ? "暂无市场" : odds(row.home.market_decimal_odds)}</span><small>${row.market_status === "missing" ? row.source : `客 ${odds(row.away.market_decimal_odds)}`}</small></td>
+                    <td><span class="lean ${row.lean === "home" ? "home-lean" : row.lean === "away" ? "away-lean" : ""}">${row.lean === "home" ? "主队" : row.lean === "away" ? "客队" : "观察"}</span></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function modelPanel(match) {
+        return `
+          <div class="grid">
+            ${tile("预期进球", `${match.lambda_home.toFixed(2)} : ${match.lambda_away.toFixed(2)}`)}
+            ${tile("大 2.5", pct(match.p_over_2_5))}
+            ${tile("双方进球", pct(match.p_btts))}
+            ${tile("置信度", pct(confidenceScore(match)))}
+            ${tile("主队修正", multiplier(match.model_inputs?.home_goal_multiplier ?? 1))}
+            ${tile("客队修正", multiplier(match.model_inputs?.away_goal_multiplier ?? 1))}
+            ${tile("总进球修正", multiplier(match.model_inputs?.total_goal_multiplier ?? 1))}
+            ${tile("综合边际", signed(match.model_inputs?.weighted_context_edge ?? 0))}
+          </div>
+          <div class="rail-body">${factorPanel(match)}</div>
+        `;
+      }
+
+      function historyPanel(match) {
+        return `<div class="split">${historyCard(match.home_team, match.team_form.home)}${historyCard(match.away_team, match.team_form.away)}</div>`;
+      }
+
+      function historyCard(teamInfo, form) {
+        return `
+          <div class="subpanel">
+            <div class="team-line">${team(teamInfo)}<strong>${form.last_10}</strong></div>
+            <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
+              ${tile("ELO", Math.round(form.elo))}
+              ${tile("状态指数", signed(form.form_index))}
+              ${tile("近似 xG", form.xg_for.toFixed(2))}
+              ${tile("近似 xGA", form.xg_against.toFixed(2))}
+            </div>
+          </div>
+        `;
+      }
+
+      function technicalPanel(match) {
+        const home = match.tactical_profile?.home;
+        const away = match.tactical_profile?.away;
+        if (!home || !away) return `<div class="subpanel">技术统计画像等待数据源回填。</div>`;
+        return `
+          <div class="split">
+            ${technicalCard(match.home_team, home)}
+            ${technicalCard(match.away_team, away)}
+          </div>
+          <div class="subpanel" style="margin-top:10px">
+            <span class="muted">${match.tactical_profile.source} · ${match.tactical_profile.data_quality}</span>
+          </div>
+        `;
+      }
+
+      function technicalCard(teamInfo, profile) {
+        return `
+          <div class="subpanel">
+            <div class="team-line">${team(teamInfo)}<strong>${profile.possession_pct.toFixed(1)}%</strong></div>
+            <div class="grid tech-grid">
+              ${tile("近18月进球", profile.goals_scored_18m.toFixed(1))}
+              ${tile("近18月失球", profile.goals_conceded_18m.toFixed(1))}
+              ${tile("控球率", `${profile.possession_pct.toFixed(1)}%`)}
+              ${tile("射门", profile.shots_per_game.toFixed(1))}
+              ${tile("射正", profile.shots_on_target_per_game.toFixed(1))}
+              ${tile("射门质量", profile.shot_quality.toFixed(3))}
+              ${tile("xG / xGA", `${profile.xg_per_game.toFixed(2)} / ${profile.xga_per_game.toFixed(2)}`)}
+              ${tile("PPDA", profile.ppda.toFixed(1))}
+              ${tile("定位球xG", pct(profile.set_piece_xg_share))}
+              ${tile("黄/红牌率", `${profile.yellow_card_rate.toFixed(2)} / ${profile.red_card_rate.toFixed(2)}`)}
+              ${tile("阵容深度", profile.squad_depth_score.toFixed(1))}
+              ${tile("旅程疲劳", fatigueText(profile.travel_fatigue_level))}
+            </div>
+            <div class="factor" style="margin-top:10px">
+              <div><strong>高压强度</strong><em>预测旅程 ${Number(profile.projected_travel_km).toLocaleString()} km</em></div>
+              <div class="track"><i class="edge-home" style="width:${Math.max(2, profile.press_intensity_idx)}%"></i></div>
+              <strong class="mono">${profile.press_intensity_idx.toFixed(1)}</strong>
+            </div>
+            <div class="factor" style="margin-top:8px">
+              <div><strong>环境压力</strong><em>天气、海拔、旅行综合压力</em></div>
+              <div class="track"><i class="edge-away" style="width:${Math.max(2, profile.environment_stress * 100)}%"></i></div>
+              <strong class="mono">${pct(profile.environment_stress)}</strong>
+            </div>
+          </div>
+        `;
+      }
+
+      function playersPanel(match) {
+        return `<div class="split">${availability(match.home_team, match.availability.home)}${weather(match)}</div>`;
+      }
+
+      function renderRail() {
+        const match = state.selected;
+        document.getElementById("rail").innerHTML = `${factorPanel(match)}${weather(match)}${availability(match.home_team, match.availability.home)}${availability(match.away_team, match.availability.away)}`;
+      }
+
+      function factorPanel(match) {
+        return match.factor_breakdown.map((factor) => {
+          const left = Math.max(0, -factor.home_edge) * 50;
+          const right = Math.max(0, factor.home_edge) * 50;
+          return `
+            <div class="factor">
+              <div><strong>${factor.factor}</strong><em>权重 ${pct(factor.weight)}</em></div>
+              <div class="track"><i class="edge-away" style="width:${left}%"></i><b></b><i class="edge-home" style="width:${right}%"></i></div>
+              <strong class="mono">${signed(factor.home_edge)}</strong>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function weather(match) {
+        return `
+          <div class="subpanel">
+            <h3>天气与场地</h3>
+            <div class="weather-grid" style="margin-top:10px">
+              <span>温度 <strong>${match.weather.temperature_c}°C</strong></span>
+              <span>湿度 <strong>${match.weather.humidity_pct}%</strong></span>
+              <span>风速 <strong>${match.weather.wind_kph} km/h</strong></span>
+              <span>场地 <strong>${match.weather.venue_effect}</strong></span>
+            </div>
+          </div>
+        `;
+      }
+
+      function availability(teamInfo, profile) {
+        return `
+          <div class="subpanel availability">
+            <div class="availability-head">${team(teamInfo)}<span class="risk ${profile.risk}">${profile.risk === "elevated" ? "偏高" : profile.risk === "medium" ? "中等" : "低风险"}</span></div>
+            <p class="muted">${profile.available_starters}/11 首发可用 · 负荷 ${pct(profile.minutes_load)}</p>
+            ${profile.key_players.slice(0, 3).map((player) => `<div class="player"><span>${player.name}</span><em>${player.role}</em><strong>${pct(player.rating)}</strong></div>`).join("")}
+          </div>
+        `;
+      }
+
+      function tile(label, value) {
+        return `<div class="tile"><span>${label}</span><strong>${value}</strong></div>`;
+      }
+
+      function fatigueText(value) {
+        if (value === "very_high") return "极高";
+        if (value === "high") return "高";
+        if (value === "medium") return "中";
+        return "低";
+      }
+
+      function renderTournament() {
+        const teams = state.tournament?.teams || [];
+        document.getElementById("sim-count").textContent = `${Number(state.tournament?.n_simulations || 0).toLocaleString()} sims`;
+        document.getElementById("tournament").innerHTML = teams.slice(0, 10).map((item, index) => `
+          <div class="title-row">
+            <span class="muted">${index + 1}</span>
+            ${flag({ flag_code: item.flag_code, name: item.team })}
+            <div class="title-team">
+              <strong>${item.team}</strong>
+              <em>${item.market_probability == null ? "暂无市场" : `市场 ${pct(item.market_probability)}`}${item.model_market_delta == null ? "" : ` · 差异 ${signed(item.model_market_delta)}`}</em>
+            </div>
+            <div class="mini"><i style="width:${Math.max(2, item.title_probability * 100)}%"></i></div>
+            <span class="mono">${pct(item.title_probability)}</span>
+          </div>
+        `).join("");
+      }
+
+      function renderSources() {
+        document.getElementById("source-count").textContent = `${state.sources.length} sources`;
+        document.getElementById("sources").innerHTML = state.sources.map((source) => `
+          <div class="source">
+            <div><strong>${source.source}</strong><span>${source.purpose} · ${source.freshness || "unknown freshness"}</span></div>
+            <em>${source.status}</em>
+          </div>
+        `).join("");
+      }
+
+      function confidenceScore(match) {
+        const marketShare = match.handicap_preview.filter((row) => row.market_status === "available").length / Math.max(1, match.handicap_preview.length);
+        const injuryPenalty = Math.min(0.14, match.home_team.injury_impact + match.away_team.injury_impact);
+        return Math.max(0.45, Math.min(0.91, 0.63 + marketShare * 0.22 - injuryPenalty));
+      }
+
+      boot();
+    </script>
+  </body>
 </html>
