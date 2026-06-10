@@ -85,6 +85,7 @@ def all_matches() -> list[dict]:
 
 def tournament_probabilities() -> dict:
     teams = data_store.teams()
+    market_probabilities = _polymarket_title_probabilities(teams)
     strengths = {
         team_id: max(0.02, team.elo / 1850 + team.attack - 0.35 * team.injury_impact)
         for team_id, team in teams.items()
@@ -106,13 +107,22 @@ def tournament_probabilities() -> dict:
         rank_base = {1: 0.88, 2: 0.70, 3: 0.44, 4: 0.19}[group_rank]
         group_avg = sum(value for _team_id, value in groups[team.group]) / len(groups[team.group])
         reach_r32 = _clamp(rank_base + (strength - group_avg) * 0.20, 0.08, 0.97)
+        market_probability = market_probabilities.get(team_id)
+        title_probability = round((strength**6) / total, 6)
         title.append(
             {
                 "team_id": team_id,
                 "team": team.name,
                 "flag_code": team.flag_code,
                 "group": team.group,
-                "title_probability": round((strength**6) / total, 6),
+                "title_probability": title_probability,
+                "market_probability": market_probability,
+                "model_market_delta": (
+                    round(title_probability - market_probability, 6)
+                    if market_probability is not None
+                    else None
+                ),
+                "market_source": "Polymarket Gamma" if market_probability is not None else None,
                 "reach_final": round(min(0.62, (strength**5) / final_total * 2.0), 6),
                 "reach_r32": round(reach_r32, 6),
                 "group_rank_proxy": group_rank,
@@ -126,6 +136,45 @@ def tournament_probabilities() -> dict:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "teams": sorted(title, key=lambda row: row["title_probability"], reverse=True),
     }
+
+
+def _polymarket_title_probabilities(teams: dict) -> dict[str, float]:
+    aliases = {}
+    for team_id, team in teams.items():
+        aliases[team.name.lower()] = team_id
+        aliases[team.fifa_code.lower()] = team_id
+    aliases.update(
+        {
+            "usa": "usa",
+            "united states": "usa",
+            "ivory coast": "civ",
+            "côte d'ivoire": "civ",
+            "cote d'ivoire": "civ",
+            "czech republic": "cze",
+            "curacao": "cur",
+            "curaçao": "cur",
+            "cape verde": "cpv",
+            "cabo verde": "cpv",
+            "dr congo": "cod",
+            "democratic republic of congo": "cod",
+        }
+    )
+    out: dict[str, float] = {}
+    for market in data_store.prediction_markets():
+        question = str(market.get("question") or "").lower()
+        if "world cup" not in question or "win" not in question:
+            continue
+        team_id = None
+        for name, candidate_id in aliases.items():
+            if name and name in question:
+                team_id = candidate_id
+                break
+        if not team_id:
+            continue
+        yes = next((row for row in market.get("outcomes", []) if str(row.get("name", "")).lower() == "yes"), None)
+        if yes and yes.get("price") is not None:
+            out[team_id] = float(yes["price"])
+    return out
 
 
 def model_run() -> dict:
@@ -170,23 +219,30 @@ def _team_form(home, away) -> dict:
         "home": _form_profile(home),
         "away": _form_profile(away),
         "elo_gap": round(home.elo - away.elo, 1),
-        "data_source": "48-team seed profile; replace with international_results and event-data backfill",
+        "data_source": "martj42 international_results when refreshed; seed profile fallback for missing teams",
     }
 
 
 def _form_profile(team) -> dict:
+    history = data_store.team_history(team.id)
     clean_sheet_rate = _clamp(0.34 + team.defence * 0.9, 0.18, 0.58)
     xg_for = _xg_for(team)
     xg_against = _xg_against(team)
     return {
         "elo": round(team.elo, 0),
         "form_index": round(team.form_index, 3),
-        "last_10": _last_10_record(team),
-        "goals_for": round(_goals_for_18m(team), 1),
-        "goals_against": round(_goals_against_18m(team), 1),
+        "last_10": history.get("last_10") if history else _last_10_record(team),
+        "goals_for": round(history.get("goals_for", _goals_for_18m(team)), 1) if history else round(_goals_for_18m(team), 1),
+        "goals_against": (
+            round(history.get("goals_against", _goals_against_18m(team)), 1)
+            if history
+            else round(_goals_against_18m(team), 1)
+        ),
         "xg_for": round(xg_for, 2),
         "xg_against": round(xg_against, 2),
         "clean_sheet_rate": round(clean_sheet_rate, 3),
+        "latest_result_date": history.get("latest_date") if history else None,
+        "source": "martj42 international_results" if history and history.get("matches") else "seed_proxy",
     }
 
 
@@ -285,6 +341,19 @@ def _key_players(team) -> list[dict]:
 
 
 def _weather_context(fixture: dict) -> dict:
+    live_weather = data_store.weather_for_fixture(fixture["id"])
+    if live_weather:
+        return {
+            "temperature_c": live_weather["temperature_c"],
+            "humidity_pct": live_weather["humidity_pct"],
+            "wind_kph": live_weather["wind_kph"],
+            "precipitation_mm": live_weather.get("precipitation_mm"),
+            "condition": live_weather["condition"],
+            "venue_effect": "reduced" if "indoor" in " ".join(fixture.get("context", {}).get("notes", [])) else "open-air",
+            "source": live_weather["source"],
+            "status": live_weather["status"],
+            "captured_at": live_weather.get("captured_at"),
+        }
     city_profiles = {
         "Mexico City": (22, 37, 8, "altitude"),
         "Inglewood": (20, 58, 11, "mild"),
@@ -308,9 +377,11 @@ def _weather_context(fixture: dict) -> dict:
         "temperature_c": temperature,
         "humidity_pct": humidity,
         "wind_kph": wind,
+        "precipitation_mm": None,
         "condition": tag,
         "venue_effect": "reduced" if "indoor" in " ".join(fixture.get("context", {}).get("notes", [])) else "open-air",
-        "source": "Open-Meteo adapter placeholder until forecast window opens",
+        "source": "climate seed fallback; refresh Open-Meteo for live forecast",
+        "status": "fallback",
     }
 
 

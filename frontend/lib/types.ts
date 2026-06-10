@@ -155,6 +155,9 @@ export type TournamentTeam = {
   flag_code: string;
   group: string;
   title_probability: number;
+  market_probability?: number | null;
+  model_market_delta?: number | null;
+  market_source?: string | null;
   reach_final: number;
   reach_r32: number;
 };

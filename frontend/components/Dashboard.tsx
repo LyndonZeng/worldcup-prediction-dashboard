@@ -662,11 +662,16 @@ function PanelTitle({icon, title, value}: {icon: React.ReactNode; title: string;
 }
 
 function TournamentRow({team, rank}: {team: TournamentTeam; rank: number}) {
+  const market = team.market_probability == null ? "暂无市场" : `市场 ${pct(team.market_probability)}`;
+  const delta = team.model_market_delta == null ? "" : ` · 差异 ${signed(team.model_market_delta)}`;
   return (
     <div className="titleRow">
       <span className="rank">{rank}</span>
       <Flag code={team.flag_code} name={team.team} />
-      <strong>{team.team}</strong>
+      <div className="titleTeamCell">
+        <strong>{team.team}</strong>
+        <em>{market}{delta}</em>
+      </div>
       <div className="miniBar">
         <i style={{width: `${Math.max(2, team.title_probability * 100)}%`}} />
       </div>

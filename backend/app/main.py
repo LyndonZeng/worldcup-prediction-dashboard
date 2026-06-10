@@ -93,3 +93,18 @@ def latest_model_run():
 @app.get("/api/source-health")
 def source_health():
     return {"sources": data_store.source_health()}
+
+
+@app.get("/api/weather")
+def weather_snapshots():
+    return {"weather": list(data_store.live_weather().values())}
+
+
+@app.get("/api/markets/polymarket")
+def polymarket_markets():
+    return {"markets": data_store.prediction_markets()}
+
+
+@app.get("/api/history/teams")
+def team_history():
+    return data_store.historical_results_summary()

@@ -8,7 +8,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-import requests
+from .http import get_json
 
 BASE_URL = "https://api.football-data.org/v4"
 
@@ -17,11 +17,9 @@ def fetch_world_cup_matches() -> list[dict[str, Any]]:
     api_key = os.environ.get("FOOTBALL_DATA_API_KEY")
     if not api_key:
         return []
-    response = requests.get(
+    data = get_json(
         f"{BASE_URL}/competitions/WC/matches",
         headers={"X-Auth-Token": api_key, "User-Agent": "wc26-dashboard/0.1"},
         timeout=30,
     )
-    response.raise_for_status()
-    return response.json().get("matches", [])
-
+    return data.get("matches", [])

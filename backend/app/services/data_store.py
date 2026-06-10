@@ -14,8 +14,16 @@ def _read_json(name: str):
     return json.loads((DATA_DIR / name).read_text(encoding="utf-8"))
 
 
+def _read_json_optional(name: str, fallback):
+    path = DATA_DIR / name
+    if not path.exists():
+        return fallback
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 @lru_cache(maxsize=1)
 def teams() -> dict[str, TeamProfile]:
+    history = historical_results_summary().get("teams", {})
     return {
         row["id"]: TeamProfile(
             id=row["id"],
@@ -26,7 +34,7 @@ def teams() -> dict[str, TeamProfile]:
             elo=float(row["elo"]),
             attack=float(row["attack"]),
             defence=float(row["defence"]),
-            form_index=float(row.get("form_index", 0.0)),
+            form_index=float(history.get(row["id"], {}).get("form_index", row.get("form_index", 0.0))),
             injury_impact=float(row.get("injury_impact", 0.0)),
         )
         for row in _read_json("teams.json")
@@ -46,6 +54,22 @@ def odds_snapshots() -> list[dict]:
 @lru_cache(maxsize=1)
 def source_health() -> list[dict]:
     return _read_json("source_health.json")
+
+
+@lru_cache(maxsize=1)
+def live_weather() -> dict[str, dict]:
+    rows = _read_json_optional("live_weather.json", [])
+    return {row["match_id"]: row for row in rows}
+
+
+@lru_cache(maxsize=1)
+def prediction_markets() -> list[dict]:
+    return _read_json_optional("prediction_markets.json", [])
+
+
+@lru_cache(maxsize=1)
+def historical_results_summary() -> dict:
+    return _read_json_optional("historical_results_summary.json", {"teams": {}})
 
 
 def fixture_by_id(match_id: str) -> dict:
@@ -74,3 +98,10 @@ def odds_for_match(match_id: str, market_type: str | None = None) -> list[dict]:
         rows = [row for row in rows if row["market_type"] == market_type]
     return rows
 
+
+def weather_for_fixture(match_id: str) -> dict | None:
+    return live_weather().get(match_id)
+
+
+def team_history(team_id: str) -> dict | None:
+    return historical_results_summary().get("teams", {}).get(team_id)

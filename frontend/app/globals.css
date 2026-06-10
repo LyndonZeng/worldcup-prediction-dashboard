@@ -1197,11 +1197,24 @@ tr:last-child td {
   border-bottom: 0;
 }
 
-.titleRow strong {
+.titleTeamCell {
+  min-width: 0;
+}
+
+.titleTeamCell strong {
+  display: block;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.titleTeamCell em {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
 }
 
 .rank {

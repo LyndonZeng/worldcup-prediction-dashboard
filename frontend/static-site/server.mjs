@@ -8,21 +8,26 @@ const host = process.env.HOST || "0.0.0.0";
 const port = Number(process.env.PORT || 3000);
 
 const contentTypes = {
+  ".b64": "text/plain; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".html": "text/html; charset=utf-8"
 };
 
 function contentType(pathname) {
+  if (pathname.includes(".b64.")) return contentTypes[".b64"];
   if (pathname.endsWith(".json")) return contentTypes[".json"];
   return contentTypes[".html"];
 }
 
 createServer(async (request, response) => {
-  const pathname = new URL(request.url || "/", `http://${request.headers.host}`).pathname;
-  const filename = pathname === "/data.json" ? "data.json" : "index.html";
+  const url = new URL(request.url || "/", `http://${request.headers.host}`);
+  const pathname = url.pathname;
+  let filename = "index.html";
+  if (pathname === "/data.json") filename = "data.json";
+  if (pathname.startsWith("/data.json.gz.b64.")) filename = pathname.slice(1);
   try {
     let body = await readFile(join(root, filename), "utf8");
-    if (filename === "index.html") {
+    if (filename === "index.html" && !url.searchParams.has("noembed")) {
       const data = await readFile(join(root, "data.json"), "utf8");
       body = body.replace("<script>", `<script>window.__DASHBOARD_DATA__ = ${data.replaceAll("<", "\\u003c")};\n`);
     }

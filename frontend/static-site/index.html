@@ -625,6 +625,26 @@
         border-bottom: 1px solid var(--line);
       }
 
+      .title-team {
+        min-width: 0;
+      }
+
+      .title-team strong,
+      .title-team em {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .title-team em {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        font-style: normal;
+      }
+
       .mini {
         height: 8px;
         overflow: hidden;
@@ -1285,6 +1305,7 @@
     <script>
       const API = "http://127.0.0.1:8000";
       const embeddedData = window.__DASHBOARD_DATA__ || null;
+      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4"];
       let state = { matches: [], tournament: null, sources: [], selected: null, group: "ALL", query: "", tab: "handicap" };
 
       const fallback = {
@@ -1313,8 +1334,25 @@
         }
       }
 
+      async function getCompressedJson(paths) {
+        if (!("DecompressionStream" in window)) return null;
+        try {
+          const chunks = await Promise.all(paths.map(async (path) => {
+            const response = await fetch(path, { cache: "no-store" });
+            if (!response.ok) throw new Error("missing chunk");
+            return response.text();
+          }));
+          const binary = atob(chunks.join("").replace(/\s/g, ""));
+          const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+          const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+          return JSON.parse(await new Response(stream).text());
+        } catch {
+          return null;
+        }
+      }
+
       async function boot() {
-        const localData = embeddedData || await getJson("./data.json", null);
+        const localData = embeddedData || await getCompressedJson(compressedDataChunks) || await getJson("./data.json", null);
         if (localData && localData.matches && localData.tournament && localData.sources) {
           state.matches = localData.matches;
           state.tournament = localData.tournament;
@@ -1679,7 +1717,10 @@
           <div class="title-row">
             <span class="muted">${index + 1}</span>
             ${flag({ flag_code: item.flag_code, name: item.team })}
-            <strong>${item.team}</strong>
+            <div class="title-team">
+              <strong>${item.team}</strong>
+              <em>${item.market_probability == null ? "暂无市场" : `市场 ${pct(item.market_probability)}`}${item.model_market_delta == null ? "" : ` · 差异 ${signed(item.model_market_delta)}`}</em>
+            </div>
             <div class="mini"><i style="width:${Math.max(2, item.title_probability * 100)}%"></i></div>
             <span class="mono">${pct(item.title_probability)}</span>
           </div>

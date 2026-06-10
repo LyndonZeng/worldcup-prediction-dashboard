@@ -401,6 +401,9 @@ def write_static_payload() -> None:
     data_store.fixtures.cache_clear()
     data_store.odds_snapshots.cache_clear()
     data_store.source_health.cache_clear()
+    data_store.live_weather.cache_clear()
+    data_store.prediction_markets.cache_clear()
+    data_store.historical_results_summary.cache_clear()
     payload = {
         "matches": [compact_match(match) for match in all_matches()],
         "tournament": compact_tournament(tournament_probabilities()),
