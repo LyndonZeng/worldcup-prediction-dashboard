@@ -10,7 +10,7 @@ from .odds import model_lean
 from .score_model import MatchAdjustments, predict_match
 
 DEFAULT_HANDICAP_LINES = [-2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
-MODEL_VERSION = "wc26-v0.2-factor-aware-ah"
+MODEL_VERSION = "wc26-v0.3-full-group-seed-ah"
 
 
 def prediction_for_fixture(fixture: dict) -> dict:
@@ -89,24 +89,40 @@ def tournament_probabilities() -> dict:
         team_id: max(0.02, team.elo / 1850 + team.attack - 0.35 * team.injury_impact)
         for team_id, team in teams.items()
     }
-    total = sum(value**5 for value in strengths.values())
+    total = sum(value**6 for value in strengths.values())
+    final_total = sum(value**5 for value in strengths.values())
+    groups: dict[str, list[tuple[str, float]]] = {}
+    for team_id, team in teams.items():
+        groups.setdefault(team.group, []).append((team_id, strengths[team_id]))
+    group_ranks = {
+        team_id: rank
+        for group in groups.values()
+        for rank, (team_id, _strength) in enumerate(sorted(group, key=lambda row: row[1], reverse=True), start=1)
+    }
     title = []
     for team_id, strength in strengths.items():
         team = teams[team_id]
+        group_rank = group_ranks[team_id]
+        rank_base = {1: 0.88, 2: 0.70, 3: 0.44, 4: 0.19}[group_rank]
+        group_avg = sum(value for _team_id, value in groups[team.group]) / len(groups[team.group])
+        reach_r32 = _clamp(rank_base + (strength - group_avg) * 0.20, 0.08, 0.97)
         title.append(
             {
                 "team_id": team_id,
                 "team": team.name,
                 "flag_code": team.flag_code,
                 "group": team.group,
-                "title_probability": round((strength**5) / total, 6),
-                "reach_final": round(min(0.62, (strength**4) / sum(v**4 for v in strengths.values()) * 2.2), 6),
-                "reach_r32": round(min(0.97, 0.52 + (strength - 0.72) * 0.28), 6),
+                "title_probability": round((strength**6) / total, 6),
+                "reach_final": round(min(0.62, (strength**5) / final_total * 2.0), 6),
+                "reach_r32": round(reach_r32, 6),
+                "group_rank_proxy": group_rank,
             }
         )
     return {
         "model_version": MODEL_VERSION,
         "n_simulations": 100000,
+        "format": "12 groups of four; top two plus eight best third-place teams reach the round of 32",
+        "data_quality": "full 48-team public schedule seed; event, injury, weather and sportsbook feeds still require live provider backfill",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "teams": sorted(title, key=lambda row: row["title_probability"], reverse=True),
     }
@@ -118,7 +134,7 @@ def model_run() -> dict:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "score_model": "Poisson scoreline prior with factor-aware adjustments for process stats, availability, weather and travel",
         "handicap_engine": "Asian handicap probabilities derived from scoreline matrix",
-        "calibration_status": "seed mode; walk-forward calibration planned after data backfill",
+        "calibration_status": "v0.3 full 48-team seed; walk-forward calibration starts after historical results, injury and closing-line backfill",
         "public_boundary": "Information display only; no staking or betting instruction.",
     }
 
@@ -154,7 +170,7 @@ def _team_form(home, away) -> dict:
         "home": _form_profile(home),
         "away": _form_profile(away),
         "elo_gap": round(home.elo - away.elo, 1),
-        "data_source": "seed profile; replace with international_results backfill",
+        "data_source": "48-team seed profile; replace with international_results and event-data backfill",
     }
 
 
@@ -186,7 +202,7 @@ def _availability(home, away) -> dict:
     return {
         "home": _availability_profile(home),
         "away": _availability_profile(away),
-        "source": "lineup/injury adapter placeholder",
+        "source": "lineup/injury adapter placeholder; player names are projected watchlist entries",
         "updated_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -211,6 +227,10 @@ def _key_players(team) -> list[dict]:
         "rsa": ["P. Tau", "T. Mokoena", "R. Williams"],
         "kor": ["Son H-m", "Lee K-i", "Kim M-j"],
         "cze": ["P. Schick", "T. Soucek", "V. Coufal"],
+        "can": ["A. Davies", "J. David", "S. Eustaquio"],
+        "bih": ["E. Dzeko", "M. Pjanic", "S. Kolasinac"],
+        "qat": ["A. Afif", "Almoez Ali", "A. Hassan"],
+        "sui": ["G. Xhaka", "M. Akanji", "B. Embolo"],
         "usa": ["C. Pulisic", "T. Adams", "W. McKennie"],
         "par": ["M. Almiron", "G. Gomez", "J. Enciso"],
         "tur": ["H. Calhanoglu", "A. Guler", "K. Akturkoglu"],
@@ -223,6 +243,34 @@ def _key_players(team) -> list[dict]:
         "ecu": ["M. Caicedo", "P. Estupinan", "E. Valencia"],
         "civ": ["S. Haller", "F. Kessie", "O. Diomande"],
         "cur": ["L. Bacuna", "J. Bacuna", "E. Room"],
+        "ned": ["V. van Dijk", "F. de Jong", "C. Gakpo"],
+        "jpn": ["T. Kubo", "K. Mitoma", "W. Endo"],
+        "swe": ["A. Isak", "D. Kulusevski", "V. Gyokeres"],
+        "tun": ["Y. Msakni", "E. Skhiri", "B. Dahmen"],
+        "bel": ["K. De Bruyne", "J. Doku", "R. Lukaku"],
+        "egy": ["M. Salah", "O. Marmoush", "M. Elneny"],
+        "irn": ["M. Taremi", "S. Azmoun", "A. Jahanbakhsh"],
+        "nzl": ["C. Wood", "S. Singh", "L. Cacace"],
+        "esp": ["L. Yamal", "Pedri", "Rodri"],
+        "cpv": ["R. Mendes", "G. Rodrigues", "Vozinha"],
+        "ksa": ["S. Al-Dawsari", "M. Kanno", "A. Al-Bulaihi"],
+        "uru": ["F. Valverde", "D. Nunez", "R. Araujo"],
+        "fra": ["K. Mbappe", "A. Griezmann", "A. Tchouameni"],
+        "sen": ["S. Mane", "K. Koulibaly", "E. Mendy"],
+        "irq": ["A. Hussein", "Z. Iqbal", "I. Bayesh"],
+        "nor": ["E. Haaland", "M. Odegaard", "A. Sorloth"],
+        "arg": ["L. Messi", "J. Alvarez", "A. Mac Allister"],
+        "alg": ["R. Mahrez", "I. Bennacer", "A. Gouiri"],
+        "aut": ["M. Sabitzer", "D. Alaba", "K. Laimer"],
+        "jor": ["Y. Al-Naimat", "M. Al-Taamari", "N. Al-Rawabdeh"],
+        "por": ["C. Ronaldo", "B. Fernandes", "R. Leao"],
+        "cod": ["C. Bakambu", "Y. Wissa", "C. Mbemba"],
+        "uzb": ["E. Shomurodov", "J. Masharipov", "A. Fayzullaev"],
+        "col": ["L. Diaz", "J. Rodriguez", "J. Lerma"],
+        "eng": ["H. Kane", "J. Bellingham", "B. Saka"],
+        "cro": ["L. Modric", "J. Gvardiol", "M. Kovacic"],
+        "gha": ["M. Kudus", "T. Partey", "I. Williams"],
+        "pan": ["A. Godoy", "I. Diaz", "M. Murillo"],
     }
     names = player_names.get(team.id, [f"{team.fifa_code} FW", f"{team.fifa_code} MID", f"{team.fifa_code} CB"])
     base = [
@@ -231,7 +279,7 @@ def _key_players(team) -> list[dict]:
         ("defence", max(0.50, min(0.9, 0.69 + team.defence - team.injury_impact * 1.5))),
     ]
     return [
-        {"name": name, "role": role, "status": "fit", "rating": round(rating, 2)}
+        {"name": name, "role": role, "status": "projected", "rating": round(rating, 2)}
         for name, (role, rating) in zip(names, base)
     ]
 
@@ -245,7 +293,15 @@ def _weather_context(fixture: dict) -> dict:
         "Arlington": (29, 64, 12, "indoor watch"),
         "Atlanta": (28, 68, 9, "indoor watch"),
         "Toronto": (21, 55, 14, "cool"),
+        "Vancouver": (19, 58, 12, "indoor watch"),
         "Santa Clara": (22, 52, 15, "dry"),
+        "Seattle": (18, 62, 10, "cool"),
+        "Philadelphia": (27, 66, 12, "humid"),
+        "Boston": (23, 64, 13, "humid"),
+        "Miami": (31, 74, 14, "heat"),
+        "Kansas City": (29, 61, 16, "plains wind"),
+        "Guadalajara": (27, 43, 10, "altitude-lite"),
+        "Monterrey": (33, 58, 12, "heat"),
     }
     temperature, humidity, wind, tag = city_profiles.get(fixture["city"], (24, 58, 10, "normal"))
     return {
@@ -262,7 +318,7 @@ def _tactical_match_profile(home, away, fixture: dict, context) -> dict:
     return {
         "home": _tactical_profile(home, fixture, context.home_mult),
         "away": _tactical_profile(away, fixture, context.away_mult),
-        "source": "seed-derived process metrics; replace with event data backfill",
+        "source": "48-team seed-derived process metrics; replace with event data backfill",
         "data_quality": "proxy",
     }
 
@@ -406,7 +462,15 @@ def _projected_travel_km(team, fixture: dict) -> int:
         "Arlington": 5900,
         "Atlanta": 5400,
         "Toronto": 4700,
+        "Vancouver": 6100,
         "Santa Clara": 6500,
+        "Seattle": 5900,
+        "Philadelphia": 5200,
+        "Boston": 5000,
+        "Miami": 5700,
+        "Kansas City": 5900,
+        "Guadalajara": 7600,
+        "Monterrey": 7300,
     }
     return int(city_load.get(fixture["city"], 5600) + max(0, 1700 - team.elo) * 3)
 

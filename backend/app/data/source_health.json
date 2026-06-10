@@ -1,10 +1,56 @@
 [
-  {"source": "football-data.org", "status": "configured_optional", "freshness": "pending_api_key", "purpose": "fixtures and scores"},
-  {"source": "martj42 international_results", "status": "adapter_ready", "freshness": "seed", "purpose": "historical results"},
-  {"source": "StatsBomb / Opta event feed", "status": "schema_ready", "freshness": "proxy_until_provider", "purpose": "shots, possession, PPDA, xG, xGA and set pieces"},
-  {"source": "Open-Meteo", "status": "adapter_ready", "freshness": "forecast_window_only", "purpose": "weather, wind and heat context"},
-  {"source": "Lineup / injury feed", "status": "schema_ready", "freshness": "sample_until_provider", "purpose": "player availability and minutes load"},
-  {"source": "Club minutes tracker", "status": "schema_ready", "freshness": "sample_until_provider", "purpose": "player form, workload and role ratings"},
-  {"source": "Polymarket Gamma", "status": "adapter_ready", "freshness": "public_no_key", "purpose": "prediction market prices"},
-  {"source": "The Odds API / TheStatsAPI", "status": "configured_optional", "freshness": "pending_api_key", "purpose": "legal sportsbook odds"}
+  {
+    "source": "FIFA / public match schedule",
+    "status": "seeded",
+    "freshness": "2026-06-10 public schedule snapshot",
+    "purpose": "48-team groups and 72 group fixtures"
+  },
+  {
+    "source": "football-data.org",
+    "status": "configured_optional",
+    "freshness": "pending_api_key",
+    "purpose": "fixtures, scores and post-match validation"
+  },
+  {
+    "source": "martj42 international_results",
+    "status": "adapter_ready",
+    "freshness": "historical_backfill_pending",
+    "purpose": "historical international results for ELO calibration"
+  },
+  {
+    "source": "StatsBomb / Opta event feed",
+    "status": "schema_ready",
+    "freshness": "proxy_until_provider",
+    "purpose": "shots, possession, PPDA, xG, xGA and set pieces"
+  },
+  {
+    "source": "Open-Meteo",
+    "status": "adapter_ready",
+    "freshness": "forecast_window_only",
+    "purpose": "weather, wind and heat context"
+  },
+  {
+    "source": "Lineup / injury feed",
+    "status": "schema_ready",
+    "freshness": "sample_until_provider",
+    "purpose": "player availability, injury risk and minutes load"
+  },
+  {
+    "source": "Club minutes tracker",
+    "status": "schema_ready",
+    "freshness": "sample_until_provider",
+    "purpose": "player form, workload and role ratings"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "status": "adapter_ready",
+    "freshness": "public_no_key",
+    "purpose": "prediction market prices"
+  },
+  {
+    "source": "The Odds API / TheStatsAPI",
+    "status": "configured_optional",
+    "freshness": "sample_consensus_proxy_pending_api_key",
+    "purpose": "legal sportsbook odds and Asian handicap lines"
+  }
 ]

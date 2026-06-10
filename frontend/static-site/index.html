@@ -1411,7 +1411,7 @@
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("样例赛程", `${state.matches.length} 场`, "结构适配全量 104 场"),
+          metric("小组赛覆盖", `${state.matches.length} 场`, "48 队 · 12 组 · 72 场"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
           metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? top.team : "等待模拟"),
           metric("当前置信度", pct(confidence), "由市场、伤病、天气完整度估计")
@@ -1690,7 +1690,7 @@
         document.getElementById("source-count").textContent = `${state.sources.length} sources`;
         document.getElementById("sources").innerHTML = state.sources.map((source) => `
           <div class="source">
-            <div><strong>${source.source}</strong><span>${source.purpose}</span></div>
+            <div><strong>${source.source}</strong><span>${source.purpose} · ${source.freshness || "unknown freshness"}</span></div>
             <em>${source.status}</em>
           </div>
         `).join("");

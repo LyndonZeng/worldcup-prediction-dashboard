@@ -4,96 +4,1300 @@
     "match_number": 1,
     "stage": "Group",
     "group": "A",
-    "kickoff_utc": "2026-06-11T18:00:00Z",
+    "kickoff_utc": "2026-06-11T19:00:00Z",
     "venue": "Estadio Azteca",
     "city": "Mexico City",
     "home_team_id": "mex",
     "away_team_id": "rsa",
-    "context": {"home_mult": 0.99, "away_mult": 0.94, "notes": ["Mexico City altitude", "host opener"]}
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.02,
+      "away_mult": 0.96,
+      "notes": [
+        "altitude watch",
+        "host crowd",
+        "host opener"
+      ]
+    }
   },
   {
     "id": "wc26-002",
     "match_number": 2,
     "stage": "Group",
-    "group": "D",
-    "kickoff_utc": "2026-06-12T01:00:00Z",
-    "venue": "SoFi Stadium",
-    "city": "Inglewood",
-    "home_team_id": "usa",
-    "away_team_id": "par",
-    "context": {"home_mult": 1.02, "away_mult": 0.98, "notes": ["host crowd", "long travel for away side"]}
+    "group": "A",
+    "kickoff_utc": "2026-06-12T02:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "kor",
+    "away_team_id": "cze",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
   },
   {
     "id": "wc26-003",
     "match_number": 3,
     "stage": "Group",
-    "group": "C",
-    "kickoff_utc": "2026-06-13T18:00:00Z",
-    "venue": "MetLife Stadium",
-    "city": "East Rutherford",
-    "home_team_id": "bra",
-    "away_team_id": "sco",
-    "context": {"home_mult": 1.0, "away_mult": 1.0, "notes": []}
+    "group": "B",
+    "kickoff_utc": "2026-06-12T19:00:00Z",
+    "venue": "BMO Field",
+    "city": "Toronto",
+    "home_team_id": "can",
+    "away_team_id": "bih",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.02,
+      "away_mult": 1.0,
+      "notes": [
+        "Canada opener",
+        "host crowd"
+      ]
+    }
   },
   {
     "id": "wc26-004",
     "match_number": 4,
     "stage": "Group",
-    "group": "E",
-    "kickoff_utc": "2026-06-14T19:00:00Z",
-    "venue": "NRG Stadium",
-    "city": "Houston",
-    "home_team_id": "ger",
-    "away_team_id": "cur",
-    "context": {"home_mult": 1.0, "away_mult": 0.99, "notes": ["indoor venue reduces weather uncertainty"]}
+    "group": "D",
+    "kickoff_utc": "2026-06-13T01:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "usa",
+    "away_team_id": "par",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.02,
+      "away_mult": 1.0,
+      "notes": [
+        "United States opener",
+        "host crowd"
+      ]
+    }
   },
   {
     "id": "wc26-005",
     "match_number": 5,
     "stage": "Group",
-    "group": "D",
-    "kickoff_utc": "2026-06-14T22:00:00Z",
-    "venue": "AT&T Stadium",
-    "city": "Arlington",
-    "home_team_id": "tur",
-    "away_team_id": "aus",
-    "context": {"home_mult": 1.0, "away_mult": 0.98, "notes": ["travel load watch"]}
+    "group": "B",
+    "kickoff_utc": "2026-06-13T19:00:00Z",
+    "venue": "Levi's Stadium",
+    "city": "Santa Clara",
+    "home_team_id": "qat",
+    "away_team_id": "sui",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
   },
   {
     "id": "wc26-006",
     "match_number": 6,
     "stage": "Group",
     "group": "C",
-    "kickoff_utc": "2026-06-15T01:00:00Z",
-    "venue": "Mercedes-Benz Stadium",
-    "city": "Atlanta",
-    "home_team_id": "mar",
-    "away_team_id": "hai",
-    "context": {"home_mult": 1.01, "away_mult": 0.99, "notes": []}
+    "kickoff_utc": "2026-06-13T22:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "bra",
+    "away_team_id": "mar",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
   },
   {
     "id": "wc26-007",
     "match_number": 7,
     "stage": "Group",
-    "group": "A",
-    "kickoff_utc": "2026-06-15T19:00:00Z",
-    "venue": "BMO Field",
-    "city": "Toronto",
-    "home_team_id": "kor",
-    "away_team_id": "cze",
-    "context": {"home_mult": 1.0, "away_mult": 1.0, "notes": []}
+    "group": "C",
+    "kickoff_utc": "2026-06-14T01:00:00Z",
+    "venue": "Gillette Stadium",
+    "city": "Boston",
+    "home_team_id": "hai",
+    "away_team_id": "sco",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
   },
   {
     "id": "wc26-008",
     "match_number": 8,
     "stage": "Group",
+    "group": "D",
+    "kickoff_utc": "2026-06-14T04:00:00Z",
+    "venue": "BC Place",
+    "city": "Vancouver",
+    "home_team_id": "aus",
+    "away_team_id": "tur",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction",
+        "travel load watch"
+      ]
+    }
+  },
+  {
+    "id": "wc26-009",
+    "match_number": 9,
+    "stage": "Group",
     "group": "E",
+    "kickoff_utc": "2026-06-14T17:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "ger",
+    "away_team_id": "cur",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-010",
+    "match_number": 10,
+    "stage": "Group",
+    "group": "F",
+    "kickoff_utc": "2026-06-14T20:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "ned",
+    "away_team_id": "jpn",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-011",
+    "match_number": 11,
+    "stage": "Group",
+    "group": "E",
+    "kickoff_utc": "2026-06-14T23:00:00Z",
+    "venue": "Lincoln Financial Field",
+    "city": "Philadelphia",
+    "home_team_id": "civ",
+    "away_team_id": "ecu",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-012",
+    "match_number": 12,
+    "stage": "Group",
+    "group": "F",
+    "kickoff_utc": "2026-06-15T02:00:00Z",
+    "venue": "Estadio BBVA",
+    "city": "Monterrey",
+    "home_team_id": "swe",
+    "away_team_id": "tun",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 0.99,
+      "notes": [
+        "Mexico travel and climate watch"
+      ]
+    }
+  },
+  {
+    "id": "wc26-013",
+    "match_number": 13,
+    "stage": "Group",
+    "group": "H",
+    "kickoff_utc": "2026-06-15T16:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "esp",
+    "away_team_id": "cpv",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-014",
+    "match_number": 14,
+    "stage": "Group",
+    "group": "G",
+    "kickoff_utc": "2026-06-15T19:00:00Z",
+    "venue": "Lumen Field",
+    "city": "Seattle",
+    "home_team_id": "bel",
+    "away_team_id": "egy",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-015",
+    "match_number": 15,
+    "stage": "Group",
+    "group": "H",
+    "kickoff_utc": "2026-06-15T22:00:00Z",
+    "venue": "Hard Rock Stadium",
+    "city": "Miami",
+    "home_team_id": "ksa",
+    "away_team_id": "uru",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-016",
+    "match_number": 16,
+    "stage": "Group",
+    "group": "G",
+    "kickoff_utc": "2026-06-16T01:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "irn",
+    "away_team_id": "nzl",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-017",
+    "match_number": 17,
+    "stage": "Group",
+    "group": "I",
+    "kickoff_utc": "2026-06-16T19:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "fra",
+    "away_team_id": "sen",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-018",
+    "match_number": 18,
+    "stage": "Group",
+    "group": "I",
     "kickoff_utc": "2026-06-16T22:00:00Z",
+    "venue": "Gillette Stadium",
+    "city": "Boston",
+    "home_team_id": "irq",
+    "away_team_id": "nor",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-019",
+    "match_number": 19,
+    "stage": "Group",
+    "group": "J",
+    "kickoff_utc": "2026-06-17T01:00:00Z",
+    "venue": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "home_team_id": "arg",
+    "away_team_id": "alg",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-020",
+    "match_number": 20,
+    "stage": "Group",
+    "group": "J",
+    "kickoff_utc": "2026-06-17T04:00:00Z",
     "venue": "Levi's Stadium",
     "city": "Santa Clara",
-    "home_team_id": "ecu",
+    "home_team_id": "aut",
+    "away_team_id": "jor",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-021",
+    "match_number": 21,
+    "stage": "Group",
+    "group": "K",
+    "kickoff_utc": "2026-06-17T17:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "por",
+    "away_team_id": "cod",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-022",
+    "match_number": 22,
+    "stage": "Group",
+    "group": "L",
+    "kickoff_utc": "2026-06-17T20:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "eng",
+    "away_team_id": "cro",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-023",
+    "match_number": 23,
+    "stage": "Group",
+    "group": "L",
+    "kickoff_utc": "2026-06-17T23:00:00Z",
+    "venue": "BMO Field",
+    "city": "Toronto",
+    "home_team_id": "gha",
+    "away_team_id": "pan",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-024",
+    "match_number": 24,
+    "stage": "Group",
+    "group": "K",
+    "kickoff_utc": "2026-06-18T02:00:00Z",
+    "venue": "Estadio Azteca",
+    "city": "Mexico City",
+    "home_team_id": "uzb",
+    "away_team_id": "col",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 0.98,
+      "away_mult": 0.96,
+      "notes": [
+        "altitude watch"
+      ]
+    }
+  },
+  {
+    "id": "wc26-025",
+    "match_number": 25,
+    "stage": "Group",
+    "group": "A",
+    "kickoff_utc": "2026-06-18T16:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "cze",
+    "away_team_id": "rsa",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-026",
+    "match_number": 26,
+    "stage": "Group",
+    "group": "B",
+    "kickoff_utc": "2026-06-18T19:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "sui",
+    "away_team_id": "bih",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-027",
+    "match_number": 27,
+    "stage": "Group",
+    "group": "B",
+    "kickoff_utc": "2026-06-18T22:00:00Z",
+    "venue": "BC Place",
+    "city": "Vancouver",
+    "home_team_id": "can",
+    "away_team_id": "qat",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.02,
+      "away_mult": 1.0,
+      "notes": [
+        "host crowd",
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-028",
+    "match_number": 28,
+    "stage": "Group",
+    "group": "A",
+    "kickoff_utc": "2026-06-19T01:00:00Z",
+    "venue": "Estadio Akron",
+    "city": "Guadalajara",
+    "home_team_id": "mex",
+    "away_team_id": "kor",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.02,
+      "away_mult": 0.99,
+      "notes": [
+        "Mexico travel and climate watch",
+        "host crowd"
+      ]
+    }
+  },
+  {
+    "id": "wc26-029",
+    "match_number": 29,
+    "stage": "Group",
+    "group": "D",
+    "kickoff_utc": "2026-06-19T19:00:00Z",
+    "venue": "Lumen Field",
+    "city": "Seattle",
+    "home_team_id": "usa",
+    "away_team_id": "aus",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.02,
+      "away_mult": 1.0,
+      "notes": [
+        "host crowd"
+      ]
+    }
+  },
+  {
+    "id": "wc26-030",
+    "match_number": 30,
+    "stage": "Group",
+    "group": "C",
+    "kickoff_utc": "2026-06-19T22:00:00Z",
+    "venue": "Gillette Stadium",
+    "city": "Boston",
+    "home_team_id": "sco",
+    "away_team_id": "mar",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-031",
+    "match_number": 31,
+    "stage": "Group",
+    "group": "C",
+    "kickoff_utc": "2026-06-20T00:30:00Z",
+    "venue": "Lincoln Financial Field",
+    "city": "Philadelphia",
+    "home_team_id": "bra",
+    "away_team_id": "hai",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-032",
+    "match_number": 32,
+    "stage": "Group",
+    "group": "D",
+    "kickoff_utc": "2026-06-20T03:00:00Z",
+    "venue": "Levi's Stadium",
+    "city": "Santa Clara",
+    "home_team_id": "tur",
+    "away_team_id": "par",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-033",
+    "match_number": 33,
+    "stage": "Group",
+    "group": "F",
+    "kickoff_utc": "2026-06-20T17:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "ned",
+    "away_team_id": "swe",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-034",
+    "match_number": 34,
+    "stage": "Group",
+    "group": "E",
+    "kickoff_utc": "2026-06-20T20:00:00Z",
+    "venue": "BMO Field",
+    "city": "Toronto",
+    "home_team_id": "ger",
     "away_team_id": "civ",
-    "context": {"home_mult": 1.0, "away_mult": 1.0, "notes": ["player availability low confidence"]}
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-035",
+    "match_number": 35,
+    "stage": "Group",
+    "group": "E",
+    "kickoff_utc": "2026-06-21T00:00:00Z",
+    "venue": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "home_team_id": "ecu",
+    "away_team_id": "cur",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-036",
+    "match_number": 36,
+    "stage": "Group",
+    "group": "F",
+    "kickoff_utc": "2026-06-21T04:00:00Z",
+    "venue": "Estadio BBVA",
+    "city": "Monterrey",
+    "home_team_id": "tun",
+    "away_team_id": "jpn",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 0.99,
+      "notes": [
+        "Mexico travel and climate watch"
+      ]
+    }
+  },
+  {
+    "id": "wc26-037",
+    "match_number": 37,
+    "stage": "Group",
+    "group": "H",
+    "kickoff_utc": "2026-06-21T16:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "esp",
+    "away_team_id": "ksa",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-038",
+    "match_number": 38,
+    "stage": "Group",
+    "group": "G",
+    "kickoff_utc": "2026-06-21T19:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "bel",
+    "away_team_id": "irn",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-039",
+    "match_number": 39,
+    "stage": "Group",
+    "group": "H",
+    "kickoff_utc": "2026-06-21T22:00:00Z",
+    "venue": "Hard Rock Stadium",
+    "city": "Miami",
+    "home_team_id": "uru",
+    "away_team_id": "cpv",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-040",
+    "match_number": 40,
+    "stage": "Group",
+    "group": "G",
+    "kickoff_utc": "2026-06-22T01:00:00Z",
+    "venue": "BC Place",
+    "city": "Vancouver",
+    "home_team_id": "nzl",
+    "away_team_id": "egy",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-041",
+    "match_number": 41,
+    "stage": "Group",
+    "group": "J",
+    "kickoff_utc": "2026-06-22T17:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "arg",
+    "away_team_id": "aut",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-042",
+    "match_number": 42,
+    "stage": "Group",
+    "group": "I",
+    "kickoff_utc": "2026-06-22T21:00:00Z",
+    "venue": "Lincoln Financial Field",
+    "city": "Philadelphia",
+    "home_team_id": "fra",
+    "away_team_id": "irq",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-043",
+    "match_number": 43,
+    "stage": "Group",
+    "group": "I",
+    "kickoff_utc": "2026-06-23T00:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "nor",
+    "away_team_id": "sen",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-044",
+    "match_number": 44,
+    "stage": "Group",
+    "group": "J",
+    "kickoff_utc": "2026-06-23T03:00:00Z",
+    "venue": "Levi's Stadium",
+    "city": "Santa Clara",
+    "home_team_id": "jor",
+    "away_team_id": "alg",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-045",
+    "match_number": 45,
+    "stage": "Group",
+    "group": "K",
+    "kickoff_utc": "2026-06-23T17:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "por",
+    "away_team_id": "uzb",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-046",
+    "match_number": 46,
+    "stage": "Group",
+    "group": "L",
+    "kickoff_utc": "2026-06-23T20:00:00Z",
+    "venue": "Gillette Stadium",
+    "city": "Boston",
+    "home_team_id": "eng",
+    "away_team_id": "gha",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-047",
+    "match_number": 47,
+    "stage": "Group",
+    "group": "L",
+    "kickoff_utc": "2026-06-23T23:00:00Z",
+    "venue": "BMO Field",
+    "city": "Toronto",
+    "home_team_id": "pan",
+    "away_team_id": "cro",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-048",
+    "match_number": 48,
+    "stage": "Group",
+    "group": "K",
+    "kickoff_utc": "2026-06-24T02:00:00Z",
+    "venue": "Estadio Akron",
+    "city": "Guadalajara",
+    "home_team_id": "col",
+    "away_team_id": "cod",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 0.99,
+      "notes": [
+        "Mexico travel and climate watch"
+      ]
+    }
+  },
+  {
+    "id": "wc26-049",
+    "match_number": 49,
+    "stage": "Group",
+    "group": "B",
+    "kickoff_utc": "2026-06-24T19:00:00Z",
+    "venue": "BC Place",
+    "city": "Vancouver",
+    "home_team_id": "sui",
+    "away_team_id": "can",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.02,
+      "notes": [
+        "host crowd",
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-050",
+    "match_number": 50,
+    "stage": "Group",
+    "group": "B",
+    "kickoff_utc": "2026-06-24T19:00:00Z",
+    "venue": "Lumen Field",
+    "city": "Seattle",
+    "home_team_id": "bih",
+    "away_team_id": "qat",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-051",
+    "match_number": 51,
+    "stage": "Group",
+    "group": "C",
+    "kickoff_utc": "2026-06-24T22:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "mar",
+    "away_team_id": "hai",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-052",
+    "match_number": 52,
+    "stage": "Group",
+    "group": "C",
+    "kickoff_utc": "2026-06-24T22:00:00Z",
+    "venue": "Hard Rock Stadium",
+    "city": "Miami",
+    "home_team_id": "sco",
+    "away_team_id": "bra",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-053",
+    "match_number": 53,
+    "stage": "Group",
+    "group": "A",
+    "kickoff_utc": "2026-06-25T01:00:00Z",
+    "venue": "Estadio BBVA",
+    "city": "Monterrey",
+    "home_team_id": "rsa",
+    "away_team_id": "kor",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 0.99,
+      "notes": [
+        "Mexico travel and climate watch"
+      ]
+    }
+  },
+  {
+    "id": "wc26-054",
+    "match_number": 54,
+    "stage": "Group",
+    "group": "A",
+    "kickoff_utc": "2026-06-25T01:00:00Z",
+    "venue": "Estadio Azteca",
+    "city": "Mexico City",
+    "home_team_id": "cze",
+    "away_team_id": "mex",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 0.98,
+      "away_mult": 0.98,
+      "notes": [
+        "altitude watch",
+        "host crowd"
+      ]
+    }
+  },
+  {
+    "id": "wc26-055",
+    "match_number": 55,
+    "stage": "Group",
+    "group": "E",
+    "kickoff_utc": "2026-06-25T20:00:00Z",
+    "venue": "Lincoln Financial Field",
+    "city": "Philadelphia",
+    "home_team_id": "cur",
+    "away_team_id": "civ",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-056",
+    "match_number": 56,
+    "stage": "Group",
+    "group": "E",
+    "kickoff_utc": "2026-06-25T20:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "ecu",
+    "away_team_id": "ger",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-057",
+    "match_number": 57,
+    "stage": "Group",
+    "group": "F",
+    "kickoff_utc": "2026-06-25T23:00:00Z",
+    "venue": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "home_team_id": "tun",
+    "away_team_id": "ned",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-058",
+    "match_number": 58,
+    "stage": "Group",
+    "group": "F",
+    "kickoff_utc": "2026-06-25T23:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "jpn",
+    "away_team_id": "swe",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-059",
+    "match_number": 59,
+    "stage": "Group",
+    "group": "D",
+    "kickoff_utc": "2026-06-26T02:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "tur",
+    "away_team_id": "usa",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.02,
+      "notes": [
+        "host crowd"
+      ]
+    }
+  },
+  {
+    "id": "wc26-060",
+    "match_number": 60,
+    "stage": "Group",
+    "group": "D",
+    "kickoff_utc": "2026-06-26T02:00:00Z",
+    "venue": "Levi's Stadium",
+    "city": "Santa Clara",
+    "home_team_id": "par",
+    "away_team_id": "aus",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-061",
+    "match_number": 61,
+    "stage": "Group",
+    "group": "I",
+    "kickoff_utc": "2026-06-26T19:00:00Z",
+    "venue": "Gillette Stadium",
+    "city": "Boston",
+    "home_team_id": "nor",
+    "away_team_id": "fra",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-062",
+    "match_number": 62,
+    "stage": "Group",
+    "group": "I",
+    "kickoff_utc": "2026-06-26T19:00:00Z",
+    "venue": "BMO Field",
+    "city": "Toronto",
+    "home_team_id": "sen",
+    "away_team_id": "irq",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-063",
+    "match_number": 63,
+    "stage": "Group",
+    "group": "H",
+    "kickoff_utc": "2026-06-27T00:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "cpv",
+    "away_team_id": "ksa",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-064",
+    "match_number": 64,
+    "stage": "Group",
+    "group": "H",
+    "kickoff_utc": "2026-06-27T00:00:00Z",
+    "venue": "Estadio Akron",
+    "city": "Guadalajara",
+    "home_team_id": "uru",
+    "away_team_id": "esp",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 0.99,
+      "notes": [
+        "Mexico travel and climate watch"
+      ]
+    }
+  },
+  {
+    "id": "wc26-065",
+    "match_number": 65,
+    "stage": "Group",
+    "group": "G",
+    "kickoff_utc": "2026-06-27T03:00:00Z",
+    "venue": "BC Place",
+    "city": "Vancouver",
+    "home_team_id": "nzl",
+    "away_team_id": "bel",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-066",
+    "match_number": 66,
+    "stage": "Group",
+    "group": "G",
+    "kickoff_utc": "2026-06-27T03:00:00Z",
+    "venue": "Lumen Field",
+    "city": "Seattle",
+    "home_team_id": "egy",
+    "away_team_id": "irn",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-067",
+    "match_number": 67,
+    "stage": "Group",
+    "group": "L",
+    "kickoff_utc": "2026-06-27T21:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "pan",
+    "away_team_id": "eng",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-068",
+    "match_number": 68,
+    "stage": "Group",
+    "group": "L",
+    "kickoff_utc": "2026-06-27T21:00:00Z",
+    "venue": "Lincoln Financial Field",
+    "city": "Philadelphia",
+    "home_team_id": "cro",
+    "away_team_id": "gha",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-069",
+    "match_number": 69,
+    "stage": "Group",
+    "group": "K",
+    "kickoff_utc": "2026-06-27T23:30:00Z",
+    "venue": "Hard Rock Stadium",
+    "city": "Miami",
+    "home_team_id": "col",
+    "away_team_id": "por",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-070",
+    "match_number": 70,
+    "stage": "Group",
+    "group": "K",
+    "kickoff_utc": "2026-06-27T23:30:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "cod",
+    "away_team_id": "uzb",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
+  },
+  {
+    "id": "wc26-071",
+    "match_number": 71,
+    "stage": "Group",
+    "group": "J",
+    "kickoff_utc": "2026-06-28T02:00:00Z",
+    "venue": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "home_team_id": "alg",
+    "away_team_id": "aut",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": []
+    }
+  },
+  {
+    "id": "wc26-072",
+    "match_number": 72,
+    "stage": "Group",
+    "group": "J",
+    "kickoff_utc": "2026-06-28T02:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "jor",
+    "away_team_id": "arg",
+    "source_quality": "public_schedule_seed",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "indoor or retractable-roof weather reduction"
+      ]
+    }
   }
 ]
-
