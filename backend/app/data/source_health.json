@@ -14,7 +14,7 @@
   {
     "source": "martj42 international_results",
     "status": "live",
-    "freshness": "49472 historical rows; 48 teams covered at 2026-06-10T20:36:14.373937+00:00",
+    "freshness": "49477 historical rows; 48 teams covered at 2026-06-11T18:48:35.726252+00:00",
     "purpose": "historical international results for form calibration"
   },
   {
@@ -26,7 +26,7 @@
   {
     "source": "Open-Meteo",
     "status": "live",
-    "freshness": "57/72 forecast rows at 2026-06-10T20:34:21.996088+00:00",
+    "freshness": "61/72 forecast rows at 2026-06-11T18:46:47.544673+00:00",
     "purpose": "weather, wind and heat context"
   },
   {
@@ -44,8 +44,8 @@
   {
     "source": "Polymarket Gamma",
     "status": "live",
-    "freshness": "48 relevant World Cup markets after strict filter at 2026-06-10T20:38:00.318383+00:00",
-    "purpose": "prediction market prices for World Cup-related events"
+    "freshness": "60 markets at 2026-06-11T18:48:34.596762+00:00",
+    "purpose": "prediction market prices"
   },
   {
     "source": "The Odds API / TheStatsAPI",
