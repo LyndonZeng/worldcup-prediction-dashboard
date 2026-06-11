@@ -438,6 +438,9 @@ def compact_match(match: dict) -> dict:
         "weather": match["weather"],
         "factor_breakdown": match["factor_breakdown"],
         "model_inputs": match["model_inputs"],
+        "probability_intervals": match["probability_intervals"],
+        "matchup": match["matchup"],
+        "risk_register": match["risk_register"],
         "lambda_home": match["lambda_home"],
         "lambda_away": match["lambda_away"],
         "p_home": match["p_home"],
@@ -454,8 +457,13 @@ def compact_form(form: dict) -> dict:
         "elo": form["elo"],
         "form_index": form["form_index"],
         "last_10": form["last_10"],
+        "goals_for": form["goals_for"],
+        "goals_against": form["goals_against"],
         "xg_for": form["xg_for"],
         "xg_against": form["xg_against"],
+        "clean_sheet_rate": form["clean_sheet_rate"],
+        "latest_result_date": form["latest_result_date"],
+        "source": form["source"],
     }
 
 
@@ -464,6 +472,12 @@ def compact_availability(profile: dict) -> dict:
         "risk": profile["risk"],
         "available_starters": profile["available_starters"],
         "minutes_load": profile["minutes_load"],
+        "qdr_index": profile["qdr_index"],
+        "key_dependency": profile["key_dependency"],
+        "rotation_capacity": profile["rotation_capacity"],
+        "source": profile["source"],
+        "data_quality": profile["data_quality"],
+        "used_in_core_prediction": profile["used_in_core_prediction"],
         "key_players": [
             {
                 "name": player["name"],
@@ -483,6 +497,9 @@ def compact_handicap(row: dict) -> dict:
         "source": row["source"],
         "captured_at": row["captured_at"],
         "market_status": row["market_status"],
+        "closing_status": row["closing_status"],
+        "clv": row["clv"],
+        "backtest_sample": row["backtest_sample"],
         "lean": row["lean"],
     }
 
@@ -505,6 +522,17 @@ def compact_tournament(tournament: dict) -> dict:
         "format": tournament["format"],
         "data_quality": tournament["data_quality"],
         "generated_at": tournament["generated_at"],
+        "title_anchor": tournament["title_anchor"],
+        "projected_matches_total": tournament["projected_matches_total"],
+        "group_stage_matches": tournament["group_stage_matches"],
+        "knockout_projected_matches": tournament["knockout_projected_matches"],
+        "group_table": tournament["group_table"],
+        "qualified_thirds": tournament["qualified_thirds"],
+        "bracket": tournament["bracket"],
+        "monte_carlo": tournament["monte_carlo"],
+        "market_validation": tournament["market_validation"],
+        "goal_scale_sanity": tournament["goal_scale_sanity"],
+        "sanity_checks": tournament["sanity_checks"],
         "teams": tournament["teams"],
     }
 

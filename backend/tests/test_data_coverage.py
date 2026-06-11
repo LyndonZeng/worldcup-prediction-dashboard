@@ -29,6 +29,24 @@ class DataCoverageTest(unittest.TestCase):
             1.0,
             places=5,
         )
+        self.assertEqual(tournament["projected_matches_total"], 104)
+        self.assertEqual(tournament["group_stage_matches"], 72)
+        self.assertEqual(tournament["knockout_projected_matches"], 32)
+        self.assertEqual(
+            sum(len(round_row["matches"]) for round_row in tournament["bracket"]["rounds"]),
+            32,
+        )
+        self.assertIn("raw_title_probability", tournament["teams"][0])
+        self.assertIn("title_anchor", tournament)
+
+    def test_prediction_factors_separate_real_inputs_from_proxies(self):
+        match = all_matches()[0]
+        used = [row for row in match["factor_breakdown"] if row["used_in_model"]]
+        display_only = [row for row in match["factor_breakdown"] if not row["used_in_model"]]
+        self.assertTrue(used)
+        self.assertTrue(display_only)
+        self.assertTrue(any(row["data_quality"] == "proxy" for row in display_only))
+        self.assertTrue(any(row["category"] == "待接入" for row in display_only))
 
     def test_optional_public_snapshots_are_safe_to_read(self):
         self.assertIsInstance(data_store.prediction_markets(), list)

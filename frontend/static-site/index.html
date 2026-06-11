@@ -1185,6 +1185,75 @@
         background: rgba(255, 95, 114, 0.26);
       }
 
+      .data-chip,
+      .factor-meta span {
+        display: inline-flex;
+        min-height: 22px;
+        align-items: center;
+        padding: 0 7px;
+        border: 1px solid rgba(102, 183, 255, 0.2);
+        border-radius: 7px;
+        color: #d9e9ff;
+        background: rgba(102, 183, 255, 0.09);
+        font-size: 11px;
+        font-weight: 760;
+      }
+
+      .factor-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 5px;
+      }
+
+      .factor-meta .unused {
+        border-color: rgba(242, 193, 78, 0.28);
+        color: #ffe7a4;
+        background: rgba(242, 193, 78, 0.1);
+      }
+
+      .source-note {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .bracket-board {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .bracket-round {
+        display: grid;
+        gap: 7px;
+      }
+
+      .bracket-round h3 {
+        color: var(--amber);
+        font-size: 13px;
+      }
+
+      .path-row {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr) 48px minmax(0, 1fr) 68px;
+        gap: 8px;
+        align-items: center;
+        min-height: 38px;
+        padding: 7px 9px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.045);
+        font-size: 12px;
+      }
+
+      .path-row strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
       @media (max-width: 1040px) {
         .deck,
         .controls {
@@ -1305,7 +1374,7 @@
     <script>
       const API = "http://127.0.0.1:8000";
       const embeddedData = window.__DASHBOARD_DATA__ || null;
-      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4"];
+      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4", "data.json.gz.b64.5"];
       let state = { matches: [], tournament: null, sources: [], selected: null, group: "ALL", query: "", tab: "handicap" };
 
       const fallback = {
@@ -1449,10 +1518,10 @@
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("小组赛覆盖", `${state.matches.length} 场`, "48 队 · 12 组 · 72 场"),
+          metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
-          metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? top.team : "等待模拟"),
-          metric("当前置信度", pct(confidence), "由市场、伤病、天气完整度估计")
+          metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? `${top.team} · 裸模型 ${pct(top.raw_title_probability)}` : "等待模拟"),
+          metric("公开市场", `${state.tournament?.title_anchor?.coverage || 0} 队`, `锚定权重 ${pct(state.tournament?.title_anchor?.weight || 0)}`)
         ].join("");
       }
 
@@ -1505,6 +1574,7 @@
             ${tabButton("stats", "技术统计")}
             ${tabButton("model", "模型因子")}
             ${tabButton("history", "球队历史")}
+            ${tabButton("matchup", "战术爆冷")}
             ${tabButton("players", "球员天气")}
           </div>
           <div id="tab-content">${tabContent(match)}</div>
@@ -1542,6 +1612,7 @@
         if (state.tab === "stats") return technicalPanel(match);
         if (state.tab === "model") return modelPanel(match);
         if (state.tab === "history") return historyPanel(match);
+        if (state.tab === "matchup") return matchupPanel(match);
         if (state.tab === "players") return playersPanel(match);
         return handicapTable(match);
       }
@@ -1561,7 +1632,7 @@
                     <td><strong>${pct(row.away.positive_probability)}</strong><small>半赢 ${pct(row.away.half_win)} · 半输 ${pct(row.away.half_loss)}</small></td>
                     <td>${pct(row.home.push)}</td>
                     <td><span class="mono">${odds(row.home.fair_decimal_odds)}</span><small>客 ${odds(row.away.fair_decimal_odds)}</small></td>
-                    <td><span class="mono">${row.market_status === "missing" ? "暂无市场" : odds(row.home.market_decimal_odds)}</span><small>${row.market_status === "missing" ? row.source : `客 ${odds(row.away.market_decimal_odds)}`}</small></td>
+                    <td><span class="mono">${row.market_status === "available" ? odds(row.home.market_decimal_odds) : row.market_status === "proxy" ? "样例盘口" : "暂无市场"}</span><small>${row.market_status === "available" ? `客 ${odds(row.away.market_decimal_odds)}` : row.source} · ${row.closing_status || "closing pending"}</small></td>
                     <td><span class="lean ${row.lean === "home" ? "home-lean" : row.lean === "away" ? "away-lean" : ""}">${row.lean === "home" ? "主队" : row.lean === "away" ? "客队" : "观察"}</span></td>
                   </tr>
                 `).join("")}
@@ -1598,8 +1669,65 @@
             <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
               ${tile("ELO", Math.round(form.elo))}
               ${tile("状态指数", signed(form.form_index))}
-              ${tile("近似 xG", form.xg_for.toFixed(2))}
-              ${tile("近似 xGA", form.xg_against.toFixed(2))}
+              ${tile("真实近况进球", Number(form.goals_for ?? 0).toFixed(1))}
+              ${tile("真实近况失球", Number(form.goals_against ?? 0).toFixed(1))}
+              ${tile("代理 xG", form.xg_for.toFixed(2))}
+              ${tile("代理 xGA", form.xg_against.toFixed(2))}
+            </div>
+            <p class="source-note">${form.source || "seed_proxy"}${form.latest_result_date ? ` · 最新赛果 ${form.latest_result_date}` : ""}</p>
+          </div>
+        `;
+      }
+
+      function matchupPanel(match) {
+        const interval = match.probability_intervals;
+        const matchup = match.matchup;
+        return `
+          <div class="grid">
+            ${tile("爆冷类型", matchup?.upset_profile?.label || "-")}
+            ${tile("爆冷胜率", pct(matchup?.upset_profile?.upset_win_probability))}
+            ${tile("平局压力", pct(matchup?.draw_pressure))}
+            ${tile("风格相克", matchup?.style_clash || "-")}
+          </div>
+          <div class="split" style="margin-top:10px">
+            <div class="subpanel">
+              <h3>战术边际</h3>
+              <div class="rail-body" style="padding:10px 0 0">
+                ${(matchup?.tactical_edges || []).map((edge) => {
+                  const left = Math.max(0, -edge.home_edge) * 50;
+                  const right = Math.max(0, edge.home_edge) * 50;
+                  return `
+                    <div class="factor">
+                      <div>
+                        <strong>${edge.label}</strong>
+                        <em>${edge.category} · ${edge.data_quality}</em>
+                      </div>
+                      <div class="track"><i class="edge-away" style="width:${left}%"></i><b></b><i class="edge-home" style="width:${right}%"></i></div>
+                      <strong class="mono">${signed(edge.home_edge)}</strong>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+            <div class="subpanel">
+              <h3>不确定区间</h3>
+              <div class="grid" style="grid-template-columns:1fr;margin-top:10px">
+                ${tile(match.home_team.name, `${pct(interval?.home?.low)} - ${pct(interval?.home?.high)}`)}
+                ${tile("平局", `${pct(interval?.draw?.low)} - ${pct(interval?.draw?.high)}`)}
+                ${tile(match.away_team.name, `${pct(interval?.away?.low)} - ${pct(interval?.away?.high)}`)}
+              </div>
+              <p class="source-note">${interval?.method || ""}</p>
+            </div>
+          </div>
+          <div class="subpanel" style="margin-top:10px">
+            <h3>负面因子否决记录</h3>
+            <div class="rail-body" style="padding:10px 0 0">
+              ${(match.risk_register || []).map((risk) => `
+                <div class="source">
+                  <div><strong>${risk.message}</strong><span>${risk.category} · ${risk.key}</span></div>
+                  <em>${risk.severity}</em>
+                </div>
+              `).join("") || `<p class="muted">当前没有额外否决项。</p>`}
             </div>
           </div>
         `;
@@ -1667,7 +1795,16 @@
           const right = Math.max(0, factor.home_edge) * 50;
           return `
             <div class="factor">
-              <div><strong>${factor.factor}</strong><em>权重 ${pct(factor.weight)}</em></div>
+              <div>
+                <strong>${factor.factor}</strong>
+                <em>权重 ${pct(factor.weight)} · ${factor.source || "source pending"}</em>
+                <div class="factor-meta">
+                  <span class="${factor.used_in_model ? "" : "unused"}">${factor.used_in_model ? "参与预测" : (factor.category || "仅展示")}</span>
+                  <span>${factor.category || "未分级"}</span>
+                  <span>${factor.status || "unknown"}</span>
+                  <span>${factor.data_quality || "unknown"}</span>
+                </div>
+              </div>
               <div class="track"><i class="edge-away" style="width:${left}%"></i><b></b><i class="edge-home" style="width:${right}%"></i></div>
               <strong class="mono">${signed(factor.home_edge)}</strong>
             </div>
@@ -1685,6 +1822,7 @@
               <span>风速 <strong>${match.weather.wind_kph} km/h</strong></span>
               <span>场地 <strong>${match.weather.venue_effect}</strong></span>
             </div>
+            <p class="source-note">${match.weather.source || "weather source pending"} · ${match.weather.status || "unknown"}${match.weather.captured_at ? ` · ${shortTime(match.weather.captured_at)}` : ""}</p>
           </div>
         `;
       }
@@ -1693,8 +1831,9 @@
         return `
           <div class="subpanel availability">
             <div class="availability-head">${team(teamInfo)}<span class="risk ${profile.risk}">${profile.risk === "elevated" ? "偏高" : profile.risk === "medium" ? "中等" : "低风险"}</span></div>
-            <p class="muted">${profile.available_starters}/11 首发可用 · 负荷 ${pct(profile.minutes_load)}</p>
+            <p class="muted">${profile.available_starters}/11 首发可用 · 负荷 ${pct(profile.minutes_load)} · QDR ${pct(profile.qdr_index || 0)} · 核心依赖 ${pct(profile.key_dependency || 0)} · 轮换 ${pct(profile.rotation_capacity || 0)}</p>
             ${profile.key_players.slice(0, 3).map((player) => `<div class="player"><span>${player.name}</span><em>${player.role}</em><strong>${pct(player.rating)}</strong></div>`).join("")}
+            <p class="source-note">${profile.source || "player feed pending"} · ${profile.data_quality || "proxy"}</p>
           </div>
         `;
       }
@@ -1712,19 +1851,78 @@
 
       function renderTournament() {
         const teams = state.tournament?.teams || [];
-        document.getElementById("sim-count").textContent = `${Number(state.tournament?.n_simulations || 0).toLocaleString()} sims`;
-        document.getElementById("tournament").innerHTML = teams.slice(0, 10).map((item, index) => `
+        const anchor = state.tournament?.title_anchor;
+        document.getElementById("sim-count").textContent = `${state.tournament?.projected_matches_total || 104} match path`;
+        const titleRows = teams.slice(0, 10).map((item, index) => `
           <div class="title-row">
             <span class="muted">${index + 1}</span>
             ${flag({ flag_code: item.flag_code, name: item.team })}
             <div class="title-team">
               <strong>${item.team}</strong>
-              <em>${item.market_probability == null ? "暂无市场" : `市场 ${pct(item.market_probability)}`}${item.model_market_delta == null ? "" : ` · 差异 ${signed(item.model_market_delta)}`}</em>
+              <em>最终 ${pct(item.title_probability)} · MC裸模型 ${pct(item.raw_title_probability)} · 四强 ${pct(item.reach_sf)} · 决赛 ${pct(item.reach_final)}${item.market_probability == null ? " · 暂无市场" : ` · 市场 ${pct(item.market_probability)}`}${item.model_market_delta == null ? "" : ` · 裸差 ${signed(item.model_market_delta)}`}</em>
             </div>
             <div class="mini"><i style="width:${Math.max(2, item.title_probability * 100)}%"></i></div>
             <span class="mono">${pct(item.title_probability)}</span>
           </div>
         `).join("");
+        const bracket = bracketBoard(state.tournament?.bracket);
+        document.getElementById("tournament").innerHTML = `
+          <div class="subpanel" style="margin:12px">
+            <span class="data-chip">${anchor?.source || "market"} · 覆盖 ${anchor?.coverage || 0} 队 · 锚定 ${pct(anchor?.weight || 0)}</span>
+            <p class="source-note">${state.tournament?.data_quality || ""} · Monte Carlo ${Number(state.tournament?.monte_carlo?.n_simulations || 0).toLocaleString()} 次 · seed ${state.tournament?.monte_carlo?.seed || "-"}</p>
+          </div>
+          ${titleRows}
+          ${goalScale(state.tournament?.goal_scale_sanity)}
+          ${marketValidation(state.tournament?.market_validation)}
+          ${bracket}
+        `;
+      }
+
+      function goalScale(goalScale) {
+        if (!goalScale) return "";
+        return `
+          <div class="subpanel" style="margin:12px">
+            <span class="data-chip">进球尺度 ${goalScale.average_goals_per_match} 球/场 · 预计总进球 ${goalScale.estimated_tournament_goals}</span>
+            <p class="source-note">金靴 sanity band ${goalScale.golden_boot_goal_band} 球 · ${goalScale.status}</p>
+          </div>
+        `;
+      }
+
+      function marketValidation(validation) {
+        if (!validation) return "";
+        return `
+          <div class="subpanel" style="margin:12px">
+            <span class="data-chip">盘口闭盘验证：${validation.true_market_line_status}</span>
+            <p class="source-note">legal AH ${validation.legal_asian_handicap_rows || 0} · proxy AH ${validation.proxy_asian_handicap_rows || 0} · closing ${validation.closing_line_status} · CLV ${validation.clv_status}</p>
+          </div>
+        `;
+      }
+
+      function bracketBoard(bracket) {
+        if (!bracket?.rounds?.length) return "";
+        const rounds = bracket.rounds.filter((round) => ["R32", "R16", "QF", "SF", "Final"].includes(round.round));
+        return `
+          <div class="bracket-board">
+            <div class="subpanel">
+              <span class="data-chip">路径冠军：${bracket.champion?.team || "-"}</span>
+              <p class="source-note">${bracket.source || ""}</p>
+            </div>
+            ${rounds.map((round) => `
+              <div class="bracket-round">
+                <h3>${round.label}</h3>
+                ${round.matches.slice(0, round.round === "R32" ? 4 : 8).map((match) => `
+                  <div class="path-row">
+                    <span class="mono">#${match.match_number}</span>
+                    <strong>${match.home.team}</strong>
+                    <span class="muted">vs</span>
+                    <strong>${match.away.team}</strong>
+                    <span class="mono">${pct(match.winner_probability)}</span>
+                  </div>
+                `).join("")}
+              </div>
+            `).join("")}
+          </div>
+        `;
       }
 
       function renderSources() {
@@ -1739,8 +1937,18 @@
 
       function confidenceScore(match) {
         const marketShare = match.handicap_preview.filter((row) => row.market_status === "available").length / Math.max(1, match.handicap_preview.length);
-        const injuryPenalty = Math.min(0.14, match.home_team.injury_impact + match.away_team.injury_impact);
-        return Math.max(0.45, Math.min(0.91, 0.63 + marketShare * 0.22 - injuryPenalty));
+        const realFactors = match.factor_breakdown.filter((factor) => factor.used_in_model && factor.data_quality !== "proxy").length / Math.max(1, match.factor_breakdown.length);
+        const proxyPenalty = match.factor_breakdown.some((factor) => !factor.used_in_model) ? 0.05 : 0;
+        const injuryPenalty = Math.min(0.12, match.home_team.injury_impact + match.away_team.injury_impact);
+        return Math.max(0.45, Math.min(0.91, 0.58 + marketShare * 0.18 + realFactors * 0.16 - proxyPenalty - injuryPenalty));
+      }
+
+      function shortTime(value) {
+        try {
+          return new Date(value).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+        } catch (_error) {
+          return value;
+        }
       }
 
       boot();

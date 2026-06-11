@@ -2,15 +2,42 @@
 from __future__ import annotations
 
 import math
+import random
+import unicodedata
 from datetime import datetime, timezone
 
 from . import data_store
 from .handicap import asian_market_from_matrix
 from .odds import model_lean
-from .score_model import MatchAdjustments, predict_match
+from .score_model import MatchAdjustments, MatchContext, predict_match
 
 DEFAULT_HANDICAP_LINES = [-2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
-MODEL_VERSION = "wc26-v0.3-full-group-seed-ah"
+MODEL_VERSION = "wc26-v0.5-monte-carlo-factor-tiers"
+TITLE_MARKET_ANCHOR_WEIGHT = 0.55
+MONTE_CARLO_RUNS = 4000
+MONTE_CARLO_SEED = 20260612
+
+R32_SLOTS = [
+    (("RU", "A"), ("RU", "B")),
+    (("W", "E"), ("3RD", "ABCDF")),
+    (("W", "F"), ("RU", "C")),
+    (("W", "C"), ("RU", "F")),
+    (("W", "I"), ("3RD", "CDFGH")),
+    (("RU", "E"), ("RU", "I")),
+    (("W", "A"), ("3RD", "CEFHI")),
+    (("W", "L"), ("3RD", "EHIJK")),
+    (("W", "D"), ("3RD", "BEFIJ")),
+    (("W", "G"), ("3RD", "AEHIJ")),
+    (("RU", "K"), ("RU", "L")),
+    (("W", "H"), ("RU", "J")),
+    (("W", "B"), ("3RD", "EFGIJ")),
+    (("W", "J"), ("RU", "H")),
+    (("W", "K"), ("3RD", "DEIJL")),
+    (("RU", "D"), ("RU", "G")),
+]
+R16_PAIRS = [(1, 4), (0, 2), (3, 5), (6, 7), (10, 11), (8, 9), (13, 15), (12, 14)]
+QF_PAIRS = [(0, 1), (4, 5), (2, 3), (6, 7)]
+SF_PAIRS = [(0, 1), (2, 3)]
 
 
 def prediction_for_fixture(fixture: dict) -> dict:
@@ -20,6 +47,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
     factor_breakdown = _factor_breakdown(home, away, fixture, context)
     adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
     prediction = predict_match(home, away, context, adjustments)
+    matchup = _matchup_profile(home, away, fixture, context, prediction, factor_breakdown)
     return {
         "match_id": fixture["id"],
         "model_version": MODEL_VERSION,
@@ -34,6 +62,9 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "weather": _weather_context(fixture),
         "factor_breakdown": factor_breakdown,
         "model_inputs": _model_input_summary(adjustments, factor_breakdown),
+        "probability_intervals": _probability_intervals(prediction, factor_breakdown),
+        "matchup": matchup,
+        "risk_register": _risk_register(home, away, fixture, prediction, factor_breakdown, matchup),
         **{key: value for key, value in prediction.items() if key != "scoreline_matrix"},
     }
 
@@ -53,6 +84,7 @@ def handicaps_for_fixture(fixture: dict, lines: list[float] | None = None) -> di
     rows = []
     for line in lines:
         market = _best_market(fixture["id"], line)
+        market_is_legal = _is_legal_market(market)
         row = asian_market_from_matrix(
             matrix,
             line,
@@ -61,7 +93,10 @@ def handicaps_for_fixture(fixture: dict, lines: list[float] | None = None) -> di
         )
         row["source"] = market["bookmaker"] if market else "model_fair_line"
         row["captured_at"] = market.get("captured_at") if market else None
-        row["market_status"] = "available" if market else "missing"
+        row["market_status"] = "available" if market_is_legal else ("proxy" if market else "missing")
+        row["closing_status"] = "pending_closing_line" if market_is_legal else "pending_legal_odds_api"
+        row["clv"] = None
+        row["backtest_sample"] = 0
         row["lean"] = model_lean(row["home"]["expected_return"], row["away"]["expected_return"])
         rows.append(row)
     return {
@@ -85,30 +120,39 @@ def all_matches() -> list[dict]:
 
 def tournament_probabilities() -> dict:
     teams = data_store.teams()
-    market_probabilities = _polymarket_title_probabilities(teams)
-    strengths = {
-        team_id: max(0.02, team.elo / 1850 + team.attack - 0.35 * team.injury_impact)
-        for team_id, team in teams.items()
+    strengths = _team_strengths(teams)
+    raw_market_probabilities = _polymarket_title_probabilities(teams)
+    market_probabilities = _normalize_probabilities(raw_market_probabilities)
+    projection = _tournament_projection(teams)
+    simulation = _monte_carlo_tournament(teams, MONTE_CARLO_RUNS, MONTE_CARLO_SEED)
+    raw_title_probabilities = {
+        team_id: simulation["teams"][team_id]["title_probability"]
+        for team_id in teams
     }
-    total = sum(value**6 for value in strengths.values())
-    final_total = sum(value**5 for value in strengths.values())
-    groups: dict[str, list[tuple[str, float]]] = {}
-    for team_id, team in teams.items():
-        groups.setdefault(team.group, []).append((team_id, strengths[team_id]))
-    group_ranks = {
-        team_id: rank
-        for group in groups.values()
-        for rank, (team_id, _strength) in enumerate(sorted(group, key=lambda row: row[1], reverse=True), start=1)
-    }
+    group_ranks = projection["group_ranks"]
+    anchor_weight = TITLE_MARKET_ANCHOR_WEIGHT if market_probabilities else 0.0
+    anchored_scores = {}
+    for team_id, raw_probability in raw_title_probabilities.items():
+        market_probability = market_probabilities.get(team_id)
+        anchored_scores[team_id] = (
+            raw_probability
+            if market_probability is None
+            else raw_probability * (1 - anchor_weight) + market_probability * anchor_weight
+        )
+    title_probabilities = _normalize_probabilities(anchored_scores)
+    rounded_title_probabilities = _rounded_probabilities(title_probabilities)
     title = []
     for team_id, strength in strengths.items():
         team = teams[team_id]
         group_rank = group_ranks[team_id]
         rank_base = {1: 0.88, 2: 0.70, 3: 0.44, 4: 0.19}[group_rank]
-        group_avg = sum(value for _team_id, value in groups[team.group]) / len(groups[team.group])
+        group_avg = sum(value for value_id, value in strengths.items() if teams[value_id].group == team.group) / 4
         reach_r32 = _clamp(rank_base + (strength - group_avg) * 0.20, 0.08, 0.97)
         market_probability = market_probabilities.get(team_id)
-        title_probability = round((strength**6) / total, 6)
+        raw_market_probability = raw_market_probabilities.get(team_id)
+        raw_title_probability = raw_title_probabilities[team_id]
+        title_probability = rounded_title_probabilities[team_id]
+        simulated = simulation["teams"][team_id]
         title.append(
             {
                 "team_id": team_id,
@@ -116,59 +160,582 @@ def tournament_probabilities() -> dict:
                 "flag_code": team.flag_code,
                 "group": team.group,
                 "title_probability": title_probability,
-                "market_probability": market_probability,
+                "raw_title_probability": round(raw_title_probability, 6),
+                "market_probability": round(market_probability, 6) if market_probability is not None else None,
+                "raw_market_probability": round(raw_market_probability, 6) if raw_market_probability is not None else None,
+                "title_anchor_weight": anchor_weight if market_probability is not None else 0.0,
                 "model_market_delta": (
-                    round(title_probability - market_probability, 6)
+                    round(raw_title_probability - market_probability, 6)
                     if market_probability is not None
                     else None
                 ),
                 "market_source": "Polymarket Gamma" if market_probability is not None else None,
-                "reach_final": round(min(0.62, (strength**5) / final_total * 2.0), 6),
-                "reach_r32": round(reach_r32, 6),
-                "group_rank_proxy": group_rank,
+                "reach_r32": round(simulated["reach_r32"], 6),
+                "reach_r16": round(simulated["reach_r16"], 6),
+                "reach_qf": round(simulated["reach_qf"], 6),
+                "reach_sf": round(simulated["reach_sf"], 6),
+                "reach_final": round(simulated["reach_final"], 6),
+                "title_confidence_interval": simulated["title_confidence_interval"],
+                "deterministic_reach_r32": round(reach_r32, 6),
+                "projected_group_position": group_rank,
             }
         )
     return {
         "model_version": MODEL_VERSION,
-        "n_simulations": 100000,
+        "n_simulations": simulation["n_simulations"],
         "format": "12 groups of four; top two plus eight best third-place teams reach the round of 32",
-        "data_quality": "full 48-team public schedule seed; event, injury, weather and sportsbook feeds still require live provider backfill",
+        "data_quality": "public snapshots plus transparent priors; event, live injury and sportsbook feeds still require provider backfill",
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "title_anchor": {
+            "source": "Polymarket Gamma",
+            "coverage": len(market_probabilities),
+            "weight": anchor_weight,
+            "method": "normalize public Yes prices across matched teams, then blend with raw model title probability",
+        },
+        "projected_matches_total": 104,
+        "group_stage_matches": 72,
+        "knockout_projected_matches": 32,
+        "group_table": projection["group_table"],
+        "qualified_thirds": projection["qualified_thirds"],
+        "bracket": projection["bracket"],
+        "monte_carlo": {
+            "n_simulations": simulation["n_simulations"],
+            "seed": simulation["seed"],
+            "source": simulation["source"],
+            "round_probability_fields": ["reach_r32", "reach_r16", "reach_qf", "reach_sf", "reach_final", "title_probability"],
+        },
+        "market_validation": _market_validation_summary(),
+        "goal_scale_sanity": _goal_scale_sanity(simulation),
+        "sanity_checks": {
+            "title_probability_sum": round(sum(title_probabilities.values()), 6),
+            "raw_title_probability_sum": round(sum(raw_title_probabilities.values()), 6),
+            "market_probability_sum": round(sum(market_probabilities.values()), 6) if market_probabilities else None,
+            "projected_knockout_matches": sum(len(round_row["matches"]) for round_row in projection["bracket"]["rounds"]),
+            "average_group_goals_per_match": simulation["average_group_goals_per_match"],
+        },
         "teams": sorted(title, key=lambda row: row["title_probability"], reverse=True),
     }
+
+
+def _goal_scale_sanity(simulation: dict) -> dict:
+    goals_per_match = simulation["average_group_goals_per_match"]
+    estimated_total_goals = goals_per_match * 104
+    if estimated_total_goals >= 280:
+        golden_boot_band = "7-10"
+    elif estimated_total_goals >= 245:
+        golden_boot_band = "6-8"
+    else:
+        golden_boot_band = "5-7"
+    return {
+        "average_goals_per_match": goals_per_match,
+        "estimated_tournament_goals": round(estimated_total_goals, 1),
+        "golden_boot_goal_band": golden_boot_band,
+        "status": "sanity_check_only_pending_player_shot_model",
+    }
+
+
+def _team_strengths(teams: dict) -> dict[str, float]:
+    return {
+        team_id: max(0.02, team.elo / 1850 + team.attack + team.form_index * 0.22 - 0.35 * team.injury_impact)
+        for team_id, team in teams.items()
+    }
+
+
+def _normalize_probabilities(values: dict[str, float]) -> dict[str, float]:
+    total = sum(max(0.0, value) for value in values.values())
+    if total <= 0:
+        return {}
+    return {key: max(0.0, value) / total for key, value in values.items()}
+
+
+def _rounded_probabilities(values: dict[str, float], places: int = 6) -> dict[str, float]:
+    keys = list(values)
+    if not keys:
+        return {}
+    rounded = {}
+    running = 0.0
+    for key in keys[:-1]:
+        rounded[key] = round(values[key], places)
+        running += rounded[key]
+    rounded[keys[-1]] = round(_clamp(1.0 - running, 0.0, 1.0), places)
+    return rounded
+
+
+def _tournament_projection(teams: dict) -> dict:
+    standings = _project_group_tables()
+    group_table = []
+    group_ranks = {}
+    third_rows = []
+    for group in sorted(standings):
+        rows = standings[group]
+        group_table.append({"group": group, "rows": rows})
+        for row in rows:
+            group_ranks[row["team_id"]] = row["position"]
+        third_rows.append(rows[2])
+    qualified_thirds = sorted(
+        third_rows,
+        key=lambda row: (row["expected_points"], row["expected_goal_difference"], row["expected_goals_for"], row["team"]),
+        reverse=True,
+    )[:8]
+    bracket = _project_bracket(teams, standings, qualified_thirds)
+    return {
+        "group_table": group_table,
+        "group_ranks": group_ranks,
+        "qualified_thirds": qualified_thirds,
+        "bracket": bracket,
+    }
+
+
+def _monte_carlo_tournament(teams: dict, n_simulations: int, seed: int) -> dict:
+    rng = random.Random(seed)
+    fixture_distributions = [
+        (
+            fixture,
+            _matrix_cumulative(score_matrix_for_fixture(fixture)),
+        )
+        for fixture in data_store.fixtures()
+    ]
+    counts = {
+        team_id: {
+            "reach_r32": 0,
+            "reach_r16": 0,
+            "reach_qf": 0,
+            "reach_sf": 0,
+            "reach_final": 0,
+            "title_probability": 0,
+        }
+        for team_id in teams
+    }
+    neutral_cache: dict[tuple[str, str], float] = {}
+    total_group_goals = 0
+
+    for _index in range(n_simulations):
+        standings = _simulate_group_stage(teams, fixture_distributions, rng)
+        total_group_goals += standings.pop("_total_goals")
+        third_rows = [rows[2] for rows in standings.values()]
+        qualified_thirds = sorted(
+            third_rows,
+            key=lambda row: (row["points"], row["goal_difference"], row["goals_for"], rng.random()),
+            reverse=True,
+        )[:8]
+        third_assignment = _assign_third_place_slots({row["group"] for row in qualified_thirds})
+        qualifiers = [row for rows in standings.values() for row in rows[:2]] + qualified_thirds
+        for row in qualifiers:
+            counts[row["team_id"]]["reach_r32"] += 1
+
+        r32 = []
+        for match_index, (home_slot, away_slot) in enumerate(R32_SLOTS):
+            home = _resolve_sim_slot(home_slot, standings, third_assignment, match_index)
+            away = _resolve_sim_slot(away_slot, standings, third_assignment, match_index)
+            winner, loser = _sample_neutral_tie(home, away, neutral_cache, rng)
+            counts[winner["team_id"]]["reach_r16"] += 1
+            r32.append({"winner": winner, "loser": loser})
+
+        r16 = _simulate_knockout_round(r32, R16_PAIRS, neutral_cache, rng, counts, "reach_qf")
+        qf = _simulate_knockout_round(r16, QF_PAIRS, neutral_cache, rng, counts, "reach_sf")
+        sf = _simulate_knockout_round(qf, SF_PAIRS, neutral_cache, rng, counts, "reach_final")
+        final_winner, _final_loser = _sample_neutral_tie(sf[0]["winner"], sf[1]["winner"], neutral_cache, rng)
+        counts[final_winner["team_id"]]["title_probability"] += 1
+
+    team_probs = {}
+    for team_id, row in counts.items():
+        title_probability = row["title_probability"] / n_simulations
+        team_probs[team_id] = {
+            "reach_r32": row["reach_r32"] / n_simulations,
+            "reach_r16": row["reach_r16"] / n_simulations,
+            "reach_qf": row["reach_qf"] / n_simulations,
+            "reach_sf": row["reach_sf"] / n_simulations,
+            "reach_final": row["reach_final"] / n_simulations,
+            "title_probability": title_probability,
+            "title_confidence_interval": _binomial_interval(title_probability, n_simulations),
+        }
+
+    return {
+        "n_simulations": n_simulations,
+        "seed": seed,
+        "source": "seeded Monte Carlo from group-stage scoreline matrices and official 32-team knockout path",
+        "average_group_goals_per_match": round(total_group_goals / max(1, n_simulations * len(fixture_distributions)), 3),
+        "teams": team_probs,
+    }
+
+
+def _simulate_group_stage(teams: dict, fixture_distributions: list[tuple[dict, list[tuple[float, int, int]]]], rng: random.Random) -> dict:
+    stats = {
+        team_id: {
+            "team_id": team_id,
+            "team": team.name,
+            "flag_code": team.flag_code,
+            "group": team.group,
+            "points": 0,
+            "goals_for": 0,
+            "goals_against": 0,
+            "wins": 0,
+        }
+        for team_id, team in teams.items()
+    }
+    total_goals = 0
+    for fixture, cumulative in fixture_distributions:
+        home_id = fixture["home_team_id"]
+        away_id = fixture["away_team_id"]
+        home_goals, away_goals = _sample_score(cumulative, rng)
+        total_goals += home_goals + away_goals
+        stats[home_id]["goals_for"] += home_goals
+        stats[home_id]["goals_against"] += away_goals
+        stats[away_id]["goals_for"] += away_goals
+        stats[away_id]["goals_against"] += home_goals
+        if home_goals > away_goals:
+            stats[home_id]["points"] += 3
+            stats[home_id]["wins"] += 1
+        elif away_goals > home_goals:
+            stats[away_id]["points"] += 3
+            stats[away_id]["wins"] += 1
+        else:
+            stats[home_id]["points"] += 1
+            stats[away_id]["points"] += 1
+
+    grouped: dict[str, list[dict]] = {}
+    for row in stats.values():
+        row["goal_difference"] = row["goals_for"] - row["goals_against"]
+        grouped.setdefault(row["group"], []).append(row)
+
+    ranked = {
+        group: [
+            {**row, "position": index}
+            for index, row in enumerate(
+                sorted(
+                    rows,
+                    key=lambda row: (
+                        row["points"],
+                        row["goal_difference"],
+                        row["goals_for"],
+                        row["wins"],
+                        rng.random(),
+                    ),
+                    reverse=True,
+                ),
+                start=1,
+            )
+        ]
+        for group, rows in grouped.items()
+    }
+    ranked["_total_goals"] = total_goals
+    return ranked
+
+
+def _matrix_cumulative(matrix: list[list[float]]) -> list[tuple[float, int, int]]:
+    cumulative = []
+    running = 0.0
+    for home_goals, row in enumerate(matrix):
+        for away_goals, probability in enumerate(row):
+            running += probability
+            cumulative.append((running, home_goals, away_goals))
+    cumulative[-1] = (1.0, cumulative[-1][1], cumulative[-1][2])
+    return cumulative
+
+
+def _sample_score(cumulative: list[tuple[float, int, int]], rng: random.Random) -> tuple[int, int]:
+    draw = rng.random()
+    for threshold, home_goals, away_goals in cumulative:
+        if draw <= threshold:
+            return home_goals, away_goals
+    return cumulative[-1][1], cumulative[-1][2]
+
+
+def _resolve_sim_slot(slot: tuple[str, str], standings: dict[str, list[dict]], third_assignment: dict[int, str], match_index: int) -> dict:
+    kind, group = slot
+    if kind == "W":
+        return standings[group][0]
+    if kind == "RU":
+        return standings[group][1]
+    third_group = third_assignment.get(match_index)
+    if third_group is None:
+        third_group = sorted(set(group))[0]
+    return standings[third_group][2]
+
+
+def _simulate_knockout_round(
+    previous: list[dict],
+    pairs: list[tuple[int, int]],
+    neutral_cache: dict[tuple[str, str], float],
+    rng: random.Random,
+    counts: dict[str, dict],
+    reach_key: str,
+) -> list[dict]:
+    out = []
+    for left, right in pairs:
+        winner, loser = _sample_neutral_tie(previous[left]["winner"], previous[right]["winner"], neutral_cache, rng)
+        counts[winner["team_id"]][reach_key] += 1
+        out.append({"winner": winner, "loser": loser})
+    return out
+
+
+def _sample_neutral_tie(home: dict, away: dict, neutral_cache: dict[tuple[str, str], float], rng: random.Random) -> tuple[dict, dict]:
+    key = (home["team_id"], away["team_id"])
+    if key not in neutral_cache:
+        neutral_cache[key] = _neutral_advancement_probability(
+            data_store.team_by_id(home["team_id"]),
+            data_store.team_by_id(away["team_id"]),
+        )
+    if rng.random() < neutral_cache[key]:
+        return home, away
+    return away, home
+
+
+def _binomial_interval(probability: float, n: int) -> dict:
+    margin = 1.96 * math.sqrt(max(0.0, probability * (1 - probability)) / max(1, n))
+    return {
+        "low": round(_clamp(probability - margin, 0.0, 1.0), 6),
+        "high": round(_clamp(probability + margin, 0.0, 1.0), 6),
+    }
+
+
+def _project_group_tables() -> dict[str, list[dict]]:
+    teams = data_store.teams()
+    stats = {
+        team_id: {
+            "team_id": team_id,
+            "team": team.name,
+            "flag_code": team.flag_code,
+            "group": team.group,
+            "expected_points": 0.0,
+            "expected_goals_for": 0.0,
+            "expected_goals_against": 0.0,
+            "win_probability_sum": 0.0,
+        }
+        for team_id, team in teams.items()
+    }
+    for fixture in data_store.fixtures():
+        prediction = prediction_for_fixture(fixture)
+        home_id = fixture["home_team_id"]
+        away_id = fixture["away_team_id"]
+        stats[home_id]["expected_points"] += 3 * prediction["p_home"] + prediction["p_draw"]
+        stats[away_id]["expected_points"] += 3 * prediction["p_away"] + prediction["p_draw"]
+        stats[home_id]["expected_goals_for"] += prediction["lambda_home"]
+        stats[home_id]["expected_goals_against"] += prediction["lambda_away"]
+        stats[away_id]["expected_goals_for"] += prediction["lambda_away"]
+        stats[away_id]["expected_goals_against"] += prediction["lambda_home"]
+        stats[home_id]["win_probability_sum"] += prediction["p_home"]
+        stats[away_id]["win_probability_sum"] += prediction["p_away"]
+
+    groups: dict[str, list[dict]] = {}
+    for team_id, row in stats.items():
+        row["expected_goal_difference"] = row["expected_goals_for"] - row["expected_goals_against"]
+        groups.setdefault(row["group"], []).append(row)
+
+    out = {}
+    for group, rows in groups.items():
+        ranked = sorted(
+            rows,
+            key=lambda row: (
+                row["expected_points"],
+                row["expected_goal_difference"],
+                row["expected_goals_for"],
+                row["win_probability_sum"],
+                row["team"],
+            ),
+            reverse=True,
+        )
+        out[group] = [
+            {
+                **row,
+                "position": index,
+                "expected_points": round(row["expected_points"], 3),
+                "expected_goals_for": round(row["expected_goals_for"], 3),
+                "expected_goals_against": round(row["expected_goals_against"], 3),
+                "expected_goal_difference": round(row["expected_goal_difference"], 3),
+                "win_probability_sum": round(row["win_probability_sum"], 3),
+            }
+            for index, row in enumerate(ranked, start=1)
+        ]
+    return out
+
+
+def _project_bracket(teams: dict, standings: dict[str, list[dict]], qualified_thirds: list[dict]) -> dict:
+    third_groups = {row["group"] for row in qualified_thirds}
+    third_assignment = _assign_third_place_slots(third_groups)
+    rounds = []
+
+    r32_matches = []
+    for index, (home_slot, away_slot) in enumerate(R32_SLOTS, start=73):
+        match = _projected_tie(
+            index,
+            "R32",
+            _resolve_bracket_slot(home_slot, standings, third_assignment, index - 73),
+            _resolve_bracket_slot(away_slot, standings, third_assignment, index - 73),
+            home_slot,
+            away_slot,
+        )
+        r32_matches.append(match)
+    rounds.append({"round": "R32", "label": "32 强", "matches": r32_matches})
+
+    r16_matches = _round_from_previous(r32_matches, R16_PAIRS, 89, "R16", "16 强")
+    rounds.append({"round": "R16", "label": "16 强", "matches": r16_matches})
+    qf_matches = _round_from_previous(r16_matches, QF_PAIRS, 97, "QF", "1/4 决赛")
+    rounds.append({"round": "QF", "label": "1/4 决赛", "matches": qf_matches})
+    sf_matches = _round_from_previous(qf_matches, SF_PAIRS, 101, "SF", "半决赛")
+    rounds.append({"round": "SF", "label": "半决赛", "matches": sf_matches})
+
+    third_place = _projected_tie(103, "Third Place", sf_matches[0]["loser"], sf_matches[1]["loser"])
+    final = _projected_tie(104, "Final", sf_matches[0]["winner"], sf_matches[1]["winner"])
+    rounds.append({"round": "Third Place", "label": "三四名", "matches": [third_place]})
+    rounds.append({"round": "Final", "label": "决赛", "matches": [final]})
+
+    return {
+        "source": "deterministic path from current match probabilities; not a Monte Carlo distribution",
+        "third_place_assignment": third_assignment,
+        "champion": final["winner"],
+        "rounds": rounds,
+    }
+
+
+def _assign_third_place_slots(selected_groups: set[str]) -> dict[int, str]:
+    slots = [
+        (index, slot[1])
+        for index, pair in enumerate(R32_SLOTS)
+        for slot in pair
+        if slot[0] == "3RD"
+    ]
+
+    def backtrack(position: int, remaining: set[str], assigned: dict[int, str]) -> dict[int, str] | None:
+        if position == len(slots):
+            return assigned
+        slot_index, eligible = slots[position]
+        for group in sorted(remaining):
+            if group not in eligible:
+                continue
+            next_assigned = dict(assigned)
+            next_assigned[slot_index] = group
+            resolved = backtrack(position + 1, remaining - {group}, next_assigned)
+            if resolved is not None:
+                return resolved
+        return None
+
+    return backtrack(0, set(selected_groups), {}) or {}
+
+
+def _resolve_bracket_slot(slot: tuple[str, str], standings: dict[str, list[dict]], third_assignment: dict[int, str], match_index: int) -> dict:
+    kind, group = slot
+    if kind == "W":
+        return standings[group][0]
+    if kind == "RU":
+        return standings[group][1]
+    third_group = third_assignment.get(match_index)
+    if third_group is None:
+        third_group = sorted(set(group))[0]
+    return standings[third_group][2]
+
+
+def _round_from_previous(previous: list[dict], pairs: list[tuple[int, int]], start_number: int, round_key: str, label: str) -> list[dict]:
+    return [
+        _projected_tie(start_number + index, round_key, previous[left]["winner"], previous[right]["winner"])
+        for index, (left, right) in enumerate(pairs)
+    ]
+
+
+def _projected_tie(
+    match_number: int,
+    round_key: str,
+    home: dict,
+    away: dict,
+    home_slot: tuple[str, str] | None = None,
+    away_slot: tuple[str, str] | None = None,
+) -> dict:
+    home_team = data_store.team_by_id(home["team_id"])
+    away_team = data_store.team_by_id(away["team_id"])
+    home_advancement_probability = _neutral_advancement_probability(home_team, away_team)
+    home_wins = home_advancement_probability >= 0.5
+    winner = home if home_wins else away
+    loser = away if home_wins else home
+    return {
+        "match_number": match_number,
+        "round": round_key,
+        "home": _bracket_team(home),
+        "away": _bracket_team(away),
+        "home_slot": _slot_label(home_slot),
+        "away_slot": _slot_label(away_slot),
+        "home_advancement_probability": round(home_advancement_probability, 6),
+        "winner_probability": round(max(home_advancement_probability, 1 - home_advancement_probability), 6),
+        "winner": _bracket_team(winner),
+        "loser": _bracket_team(loser),
+    }
+
+
+def _neutral_advancement_probability(home, away) -> float:
+    forward = predict_match(home, away, MatchContext(), MatchAdjustments())
+    reverse = predict_match(away, home, MatchContext(), MatchAdjustments())
+    forward_home = forward["p_home"] + forward["p_draw"] * 0.5
+    reverse_away = 1 - (reverse["p_home"] + reverse["p_draw"] * 0.5)
+    return _clamp((forward_home + reverse_away) / 2, 0.03, 0.97)
+
+
+def _bracket_team(row: dict) -> dict:
+    return {
+        "team_id": row["team_id"],
+        "team": row["team"],
+        "flag_code": row["flag_code"],
+        "group": row["group"],
+        "group_position": row.get("position"),
+        "expected_points": row.get("expected_points"),
+    }
+
+
+def _slot_label(slot: tuple[str, str] | None) -> str | None:
+    if slot is None:
+        return None
+    kind, group = slot
+    if kind == "W":
+        return f"{group}组第1"
+    if kind == "RU":
+        return f"{group}组第2"
+    return f"小组第3候选 {group}"
 
 
 def _polymarket_title_probabilities(teams: dict) -> dict[str, float]:
     aliases = {}
     for team_id, team in teams.items():
-        aliases[team.name.lower()] = team_id
-        aliases[team.fifa_code.lower()] = team_id
+        aliases[_market_key(team.name)] = team_id
+        aliases[_market_key(team.fifa_code)] = team_id
     aliases.update(
         {
             "usa": "usa",
             "united states": "usa",
             "ivory coast": "civ",
-            "côte d'ivoire": "civ",
-            "cote d'ivoire": "civ",
+            "cote d ivoire": "civ",
             "czech republic": "cze",
+            "czechia": "cze",
             "curacao": "cur",
-            "curaçao": "cur",
             "cape verde": "cpv",
             "cabo verde": "cpv",
             "dr congo": "cod",
+            "congo dr": "cod",
             "democratic republic of congo": "cod",
+            "bosnia herzegovina": "bih",
+            "bosnia and herzegovina": "bih",
+            "turkiye": "tur",
+            "turkey": "tur",
         }
     )
     out: dict[str, float] = {}
     for market in data_store.prediction_markets():
-        question = str(market.get("question") or "").lower()
+        raw_question = str(market.get("question") or "")
+        question = _market_key(raw_question)
         if "world cup" not in question or "win" not in question:
             continue
-        team_id = None
-        for name, candidate_id in aliases.items():
-            if name and name in question:
-                team_id = candidate_id
-                break
+        subject = question
+        if subject.startswith("will "):
+            subject = subject[5:]
+        if " win the " in subject:
+            subject = subject.split(" win the ", 1)[0]
+        team_id = aliases.get(subject)
+        if team_id is None:
+            team_id = next(
+                (
+                    candidate_id
+                    for name, candidate_id in sorted(aliases.items(), key=lambda row: len(row[0]), reverse=True)
+                    if len(name) > 3 and name in question
+                ),
+                None,
+            )
         if not team_id:
             continue
         yes = next((row for row in market.get("outcomes", []) if str(row.get("name", "")).lower() == "yes"), None)
@@ -177,14 +744,78 @@ def _polymarket_title_probabilities(teams: dict) -> dict[str, float]:
     return out
 
 
+def _market_key(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+    return " ".join(
+        "".join(char.lower() if char.isalnum() else " " for char in normalized).split()
+    )
+
+
 def model_run() -> dict:
     return {
         "model_version": MODEL_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "score_model": "Poisson scoreline prior with factor-aware adjustments for process stats, availability, weather and travel",
+        "score_model": "Poisson scoreline prior using public historical results, rating priors, fixture context, venue and travel; weather is display-only for 1X2",
         "handicap_engine": "Asian handicap probabilities derived from scoreline matrix",
-        "calibration_status": "v0.3 full 48-team seed; walk-forward calibration starts after historical results, injury and closing-line backfill",
+        "calibration_status": "v0.5 seeded Monte Carlo public snapshot model; live event, injury and closing-line calibration remain pending provider access",
         "public_boundary": "Information display only; no staking or betting instruction.",
+        "market_validation": _market_validation_summary(),
+        "factor_policy": [
+            {
+                "name": "martj42 international results",
+                "category": "透明先验",
+                "status": "used_in_model_pending_walk_forward",
+                "role": "recent form and goals-for/goals-against snapshot",
+            },
+            {
+                "name": "Open-Meteo",
+                "category": "仅展示",
+                "status": "display_only_for_1x2",
+                "role": "weather, wind and heat context; not promoted to win/loss model until backtested",
+            },
+            {
+                "name": "Polymarket Gamma",
+                "category": "透明先验",
+                "status": "used_in_title_anchor",
+                "role": "public title-market anchor after normalization",
+            },
+            {
+                "name": "technical process metrics",
+                "category": "仅展示",
+                "status": "display_proxy_only",
+                "role": "possession, shots, xG, PPDA and card rates are seed-derived until event data is connected",
+            },
+            {
+                "name": "player availability",
+                "category": "仅展示",
+                "status": "qdr_proxy_pending_feed",
+                "role": "QDR, dependency and rotation risk are shown as squad-depth proxies until lineup/injury provider is connected",
+            },
+            {
+                "name": "Asian handicap closing line",
+                "category": "待接入",
+                "status": "blocked_without_legal_odds_api",
+                "role": "true market line, closing line, CLV and ROI backtest require a licensed odds source",
+            },
+        ],
+    }
+
+
+def _market_validation_summary() -> dict:
+    odds_rows = data_store.odds_snapshots()
+    ah_rows = [row for row in odds_rows if row.get("market_type") == "asian_handicap"]
+    legal_ah_rows = [row for row in ah_rows if _is_legal_market(row)]
+    proxy_ah_rows = [row for row in ah_rows if not _is_legal_market(row)]
+    return {
+        "asian_handicap_rows": len(ah_rows),
+        "legal_asian_handicap_rows": len(legal_ah_rows),
+        "proxy_asian_handicap_rows": len(proxy_ah_rows),
+        "true_market_line_status": "available" if legal_ah_rows else "pending_legal_odds_api",
+        "closing_line_status": "pending_closing_snapshots",
+        "clv_status": "not_computable_without_closing_line",
+        "backtest_metrics_ready": False,
+        "planned_metrics": ["Asian handicap hit rate", "CLV", "Brier", "log-loss", "ROI as research-only diagnostic"],
+        "public_note": "No betting instruction is generated; market gaps stay visible instead of being filled with synthetic odds.",
     }
 
 
@@ -197,6 +828,13 @@ def _best_market(match_id: str, line: float) -> dict | None:
     if not markets:
         return None
     return sorted(markets, key=lambda row: row["captured_at"], reverse=True)[0]
+
+
+def _is_legal_market(market: dict | None) -> bool:
+    if not market:
+        return False
+    bookmaker = str(market.get("bookmaker") or "").lower()
+    return "proxy" not in bookmaker and "sample" not in bookmaker
 
 
 def _team_summary(team) -> dict:
@@ -269,10 +907,19 @@ def _availability_profile(team) -> dict:
         risk = "elevated"
     elif team.injury_impact >= 0.015:
         risk = "medium"
+    qdr_index = _clamp(0.62 + team.attack * 0.7 + team.defence * 0.45 + team.form_index * 0.5 - team.injury_impact * 4.5, 0.22, 0.92)
+    key_dependency = _clamp(0.58 + team.attack * 0.45 - team.defence * 0.25 + team.injury_impact * 6, 0.28, 0.88)
+    rotation_capacity = _clamp(0.58 + (team.elo - 1600) / 760 + team.defence * 0.35 - team.injury_impact * 3.2, 0.24, 0.9)
     return {
         "risk": risk,
         "available_starters": int(max(8, min(11, round(11 - team.injury_impact * 70)))),
         "minutes_load": round(max(0.18, min(0.82, 0.44 + team.form_index * 0.9 + team.injury_impact * 4)), 2),
+        "qdr_index": round(qdr_index, 3),
+        "key_dependency": round(key_dependency, 3),
+        "rotation_capacity": round(rotation_capacity, 3),
+        "source": "seed squad-depth proxy; connect injury/lineup API before using as live player status",
+        "data_quality": "proxy_pending_player_feed",
+        "used_in_core_prediction": False,
         "key_players": _key_players(team),
     }
 
@@ -425,6 +1072,194 @@ def _tactical_profile(team, fixture: dict, context_mult: float) -> dict:
     }
 
 
+def _matchup_profile(home, away, fixture: dict, context, prediction: dict, factor_breakdown: list[dict]) -> dict:
+    home_tactical = _tactical_profile(home, fixture, context.home_mult)
+    away_tactical = _tactical_profile(away, fixture, context.away_mult)
+    favorite = home if prediction["p_home"] >= prediction["p_away"] else away
+    underdog = away if favorite.id == home.id else home
+    favorite_probability = max(prediction["p_home"], prediction["p_away"])
+    underdog_probability = min(prediction["p_home"], prediction["p_away"])
+    draw_pressure = prediction["p_draw"]
+    set_piece_edge = home_tactical["set_piece_xg_share"] - away_tactical["set_piece_xg_share"]
+    press_edge = home_tactical["press_intensity_idx"] - away_tactical["press_intensity_idx"]
+    transition_edge = (home.attack - away.defence) - (away.attack - home.defence)
+    rotation_gap = _availability_profile(home)["qdr_index"] - _availability_profile(away)["qdr_index"]
+    upset_type = _upset_type(
+        favorite,
+        underdog,
+        favorite_probability,
+        underdog_probability,
+        draw_pressure,
+        set_piece_edge if underdog.id == home.id else -set_piece_edge,
+        transition_edge if underdog.id == home.id else -transition_edge,
+        fixture,
+    )
+    return {
+        "style_clash": _style_clash(home_tactical, away_tactical),
+        "tactical_edges": [
+            {
+                "name": "press_vs_buildup",
+                "home_edge": round(_clamp(press_edge / 55, -1, 1), 3),
+                "label": "高压对出球",
+                "data_quality": "proxy",
+                "category": "仅展示",
+            },
+            {
+                "name": "set_piece_matchup",
+                "home_edge": round(_clamp(set_piece_edge * 7, -1, 1), 3),
+                "label": "定位球错位",
+                "data_quality": "proxy",
+                "category": "仅展示",
+            },
+            {
+                "name": "transition_matchup",
+                "home_edge": round(_clamp(transition_edge * 3.5, -1, 1), 3),
+                "label": "转换进攻",
+                "data_quality": "transparent_prior",
+                "category": "透明先验",
+            },
+            {
+                "name": "rotation_depth",
+                "home_edge": round(_clamp(rotation_gap * 2, -1, 1), 3),
+                "label": "轮换深度/QDR",
+                "data_quality": "proxy_pending_player_feed",
+                "category": "仅展示",
+            },
+        ],
+        "upset_profile": upset_type,
+        "favorite": favorite.name,
+        "underdog": underdog.name,
+        "favorite_probability": round(favorite_probability, 6),
+        "underdog_probability": round(underdog_probability, 6),
+        "draw_pressure": round(draw_pressure, 6),
+        "model_dependency_note": "tactical edges are displayed as analysis until event data is connected; only transition prior overlaps with the score model inputs.",
+    }
+
+
+def _style_clash(home_profile: dict, away_profile: dict) -> str:
+    if home_profile["press_intensity_idx"] - away_profile["press_intensity_idx"] > 12:
+        return "主队高压压迫客队出球"
+    if away_profile["press_intensity_idx"] - home_profile["press_intensity_idx"] > 12:
+        return "客队高压压迫主队出球"
+    if abs(home_profile["possession_pct"] - away_profile["possession_pct"]) >= 10:
+        return "控球权倾斜，低控球方更依赖转换"
+    if max(home_profile["set_piece_xg_share"], away_profile["set_piece_xg_share"]) >= 0.30:
+        return "定位球权重偏高"
+    return "风格接近，结果更依赖临场效率"
+
+
+def _upset_type(
+    favorite,
+    underdog,
+    favorite_probability: float,
+    underdog_probability: float,
+    draw_pressure: float,
+    underdog_set_piece_edge: float,
+    underdog_transition_edge: float,
+    fixture: dict,
+) -> dict:
+    if favorite_probability < 0.42:
+        label = "均势误差型"
+        severity = "medium"
+    elif underdog_probability >= 0.28:
+        label = "实力接近型"
+        severity = "medium"
+    elif underdog_transition_edge > 0.06:
+        label = "转换偷袭型"
+        severity = "medium"
+    elif underdog_set_piece_edge > 0.025:
+        label = "定位球爆点型"
+        severity = "medium"
+    elif draw_pressure >= 0.30:
+        label = "低比分拖入平局型"
+        severity = "low"
+    else:
+        label = "低概率爆冷"
+        severity = "low"
+    if _projected_travel_km(favorite, fixture) - _projected_travel_km(underdog, fixture) > 1500:
+        label = f"{label} / 旅程疲劳"
+        severity = "medium"
+    return {
+        "label": label,
+        "severity": severity,
+        "favorite": favorite.name,
+        "underdog": underdog.name,
+        "upset_win_probability": round(underdog_probability, 6),
+        "draw_probability": round(draw_pressure, 6),
+    }
+
+
+def _probability_intervals(prediction: dict, factor_breakdown: list[dict]) -> dict:
+    proxy_count = sum(1 for row in factor_breakdown if row.get("category") in {"仅展示", "待接入"})
+    pending_count = sum(1 for row in factor_breakdown if row.get("category") == "待接入")
+    half_width = _clamp(0.035 + proxy_count * 0.009 + pending_count * 0.014, 0.04, 0.12)
+    return {
+        "method": "heuristic uncertainty band from missing live feeds and proxy inputs; not a calibrated Bayesian posterior yet",
+        "home": _probability_band(prediction["p_home"], half_width),
+        "draw": _probability_band(prediction["p_draw"], half_width * 0.8),
+        "away": _probability_band(prediction["p_away"], half_width),
+    }
+
+
+def _probability_band(value: float, half_width: float) -> dict:
+    return {
+        "point": round(value, 6),
+        "low": round(_clamp(value - half_width, 0.0, 1.0), 6),
+        "high": round(_clamp(value + half_width, 0.0, 1.0), 6),
+    }
+
+
+def _risk_register(home, away, fixture: dict, prediction: dict, factor_breakdown: list[dict], matchup: dict) -> list[dict]:
+    rows = []
+    if any(row.get("category") == "待接入" for row in factor_breakdown):
+        rows.append(
+            {
+                "key": "market_feed_missing",
+                "severity": "high",
+                "category": "待接入",
+                "message": "真实亚洲让球盘口、closing line、CLV 仍需合法赔率 API。",
+            }
+        )
+    if any(row.get("data_quality") == "proxy" for row in factor_breakdown):
+        rows.append(
+            {
+                "key": "event_stats_proxy",
+                "severity": "medium",
+                "category": "仅展示",
+                "message": "控球率、射门、PPDA、定位球和牌数目前是代理画像，不进入核心预测。",
+            }
+        )
+    weather = _weather_context(fixture)
+    if weather.get("status") == "forecast":
+        rows.append(
+            {
+                "key": "weather_display_only",
+                "severity": "low",
+                "category": "仅展示",
+                "message": "天气采用 Open-Meteo 快照展示；未作为 1X2 胜负因子。",
+            }
+        )
+    if max(_projected_travel_km(home, fixture), _projected_travel_km(away, fixture)) >= 7000:
+        rows.append(
+            {
+                "key": "travel_load",
+                "severity": "medium",
+                "category": "透明先验",
+                "message": "存在较高旅程负荷，已用小权重进入进球修正。",
+            }
+        )
+    if matchup["favorite_probability"] < 0.45 or prediction["p_draw"] > 0.31:
+        rows.append(
+            {
+                "key": "wide_interval_match",
+                "severity": "medium",
+                "category": "透明先验",
+                "message": "胜负分布较扁，爆冷/平局概率需要重点观察。",
+            }
+        )
+    return rows
+
+
 def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
     elo_edge = max(-1, min(1, (home.elo - away.elo) / 240))
     attack_edge = max(-1, min(1, (home.attack - away.attack) * 4))
@@ -433,36 +1268,112 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
     availability_edge = max(-1, min(1, (away.injury_impact - home.injury_impact) * 12))
     weather_edge = max(-1, min(1, (context.home_mult - context.away_mult) * 3))
     process_edge = max(-1, min(1, (_process_score(home) - _process_score(away)) / 24))
+    history = data_store.historical_results_summary()
+    weather = _weather_context(fixture)
     return [
-        {"factor": "ELO strength", "home_edge": round(elo_edge, 3), "weight": 0.22},
-        {"factor": "Process stats", "home_edge": round(process_edge, 3), "weight": 0.20},
-        {"factor": "Attack quality", "home_edge": round(attack_edge, 3), "weight": 0.15},
-        {"factor": "Defensive control", "home_edge": round(defence_edge, 3), "weight": 0.14},
-        {"factor": "Recent form", "home_edge": round(form_edge, 3), "weight": 0.10},
-        {"factor": "Player availability", "home_edge": round(availability_edge, 3), "weight": 0.10},
-        {"factor": "Weather / travel", "home_edge": round(weather_edge, 3), "weight": 0.09},
+        {
+            "factor": "Rating prior",
+            "home_edge": round(elo_edge, 3),
+            "weight": 0.28,
+            "used_in_model": True,
+            "status": "rating_prior",
+            "category": "透明先验",
+            "backtest_status": "pending_walk_forward",
+            "source": "team seed profile plus historical-form refresh",
+            "data_quality": "transparent_prior",
+        },
+        {
+            "factor": "Attack / defence prior",
+            "home_edge": round((attack_edge + defence_edge) / 2, 3),
+            "weight": 0.22,
+            "used_in_model": True,
+            "status": "rating_prior",
+            "category": "透明先验",
+            "backtest_status": "pending_walk_forward",
+            "source": "team seed profile",
+            "data_quality": "transparent_prior",
+        },
+        {
+            "factor": "Recent results",
+            "home_edge": round(form_edge, 3),
+            "weight": 0.18,
+            "used_in_model": True,
+            "status": "verified_snapshot",
+            "category": "透明先验",
+            "backtest_status": "pending_walk_forward",
+            "source": history.get("source", "martj42 international_results"),
+            "data_quality": "public_results" if history.get("teams") else "seed_fallback",
+        },
+        {
+            "factor": "Fixture / venue / travel",
+            "home_edge": round(weather_edge, 3),
+            "weight": 0.14,
+            "used_in_model": True,
+            "status": "used_in_context",
+            "category": "透明先验",
+            "backtest_status": "pending_walk_forward",
+            "source": "public schedule, venue context and travel proxy",
+            "data_quality": "public_schedule",
+        },
+        {
+            "factor": "Weather forecast",
+            "home_edge": 0.0,
+            "weight": 0.0,
+            "used_in_model": False,
+            "status": weather["status"],
+            "category": "仅展示",
+            "backtest_status": "not_promoted_to_1x2",
+            "source": weather["source"],
+            "data_quality": "live_forecast" if weather["status"] == "forecast" else "fallback_climate",
+        },
+        {
+            "factor": "Squad availability prior",
+            "home_edge": round(availability_edge, 3),
+            "weight": 0.10,
+            "used_in_model": True,
+            "status": "seed_prior_pending_injury_feed",
+            "category": "透明先验",
+            "backtest_status": "pending_live_injury_feed",
+            "source": "seed injury-impact prior; live injury API not connected",
+            "data_quality": "transparent_prior",
+        },
+        {
+            "factor": "Technical process metrics",
+            "home_edge": round(process_edge, 3),
+            "weight": 0.0,
+            "used_in_model": False,
+            "status": "display_proxy_only",
+            "category": "仅展示",
+            "backtest_status": "pending_event_data",
+            "source": "seed-derived possession, shots, xG, PPDA and card estimates",
+            "data_quality": "proxy",
+        },
+        {
+            "factor": "Legal AH market / closing line",
+            "home_edge": 0.0,
+            "weight": 0.0,
+            "used_in_model": False,
+            "status": "pending_legal_odds_api",
+            "category": "待接入",
+            "backtest_status": "blocked_without_closing_line",
+            "source": "requires licensed sportsbook odds provider",
+            "data_quality": "missing",
+        },
     ]
 
 
 def _model_adjustments(home, away, fixture: dict, context, factor_breakdown: list[dict]) -> MatchAdjustments:
     edges = {row["factor"]: row["home_edge"] for row in factor_breakdown}
     contextual_edge = (
-        edges["Process stats"] * 0.50
-        + edges["Player availability"] * 0.28
-        + edges["Weather / travel"] * 0.22
+        edges["Fixture / venue / travel"] * 0.55
+        + edges["Squad availability prior"] * 0.25
+        + edges["Recent results"] * 0.20
     )
-    weather = _weather_context(fixture)
-    heat_stress = max(0, weather["temperature_c"] - 27) * 0.009
-    humidity_stress = max(0, weather["humidity_pct"] - 65) * 0.002
-    wind_stress = max(0, weather["wind_kph"] - 18) * 0.004
-    avg_press = (_press_score(home) + _press_score(away)) / 2
-    tempo_lift = (avg_press - 50) * 0.0014
-
     home_fatigue = _fatigue_goal_multiplier(home, fixture)
     away_fatigue = _fatigue_goal_multiplier(away, fixture)
     home_goal_mult = _clamp(math.exp(0.30 * contextual_edge) * home_fatigue, 0.78, 1.24)
     away_goal_mult = _clamp(math.exp(-0.30 * contextual_edge) * away_fatigue, 0.78, 1.24)
-    total_goal_mult = _clamp(1 + tempo_lift - heat_stress - humidity_stress - wind_stress, 0.86, 1.10)
+    total_goal_mult = 1.0
     return MatchAdjustments(
         home_goal_mult=home_goal_mult,
         away_goal_mult=away_goal_mult,
@@ -471,13 +1382,18 @@ def _model_adjustments(home, away, fixture: dict, context, factor_breakdown: lis
 
 
 def _model_input_summary(adjustments: MatchAdjustments, factor_breakdown: list[dict]) -> dict:
-    weighted_context_edge = sum(row["home_edge"] * row["weight"] for row in factor_breakdown)
+    weighted_context_edge = sum(
+        row["home_edge"] * row["weight"]
+        for row in factor_breakdown
+        if row.get("used_in_model")
+    )
     return {
         "weighted_context_edge": round(weighted_context_edge, 3),
         "home_goal_multiplier": round(adjustments.home_goal_mult, 3),
         "away_goal_multiplier": round(adjustments.away_goal_mult, 3),
         "total_goal_multiplier": round(adjustments.total_goal_mult, 3),
         "applied_to": "expected goals before scoreline and handicap probability generation",
+        "proxy_metrics_policy": "technical process metrics are displayed but not used until event-data backfill is connected",
     }
 
 
