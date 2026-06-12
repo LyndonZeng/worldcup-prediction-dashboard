@@ -14,7 +14,7 @@
   {
     "source": "martj42 international_results",
     "status": "live",
-    "freshness": "49477 historical rows; 48 teams covered at 2026-06-11T18:48:35.726252+00:00",
+    "freshness": "49477 historical rows; 48 teams covered at 2026-06-12T18:45:06.667099+00:00",
     "purpose": "historical international results for form calibration"
   },
   {
@@ -26,7 +26,7 @@
   {
     "source": "Open-Meteo",
     "status": "live",
-    "freshness": "61/72 forecast rows at 2026-06-11T18:46:47.544673+00:00",
+    "freshness": "70/72 forecast rows at 2026-06-12T18:43:40.276365+00:00",
     "purpose": "weather, wind and heat context"
   },
   {
@@ -44,7 +44,7 @@
   {
     "source": "Polymarket Gamma",
     "status": "live",
-    "freshness": "60 markets at 2026-06-11T18:48:34.596762+00:00",
+    "freshness": "60 markets at 2026-06-12T18:45:04.605572+00:00",
     "purpose": "prediction market prices"
   },
   {
@@ -52,5 +52,11 @@
     "status": "configured_optional",
     "freshness": "sample_consensus_proxy_pending_api_key",
     "purpose": "legal sportsbook odds and Asian handicap lines"
+  },
+  {
+    "source": "ESPN public scoreboard",
+    "status": "live_public",
+    "freshness": "72 matched events; 2 completed; 0 in-play at 2026-06-12T18:43:28.387024+00:00",
+    "purpose": "no-key live score, status and basic public match stats"
   }
 ]

@@ -63,6 +63,12 @@ def live_weather() -> dict[str, dict]:
 
 
 @lru_cache(maxsize=1)
+def live_matches() -> dict[str, dict]:
+    rows = _read_json_optional("live_matches.json", [])
+    return {row["match_id"]: row for row in rows}
+
+
+@lru_cache(maxsize=1)
 def prediction_markets() -> list[dict]:
     return _read_json_optional("prediction_markets.json", [])
 
@@ -101,6 +107,10 @@ def odds_for_match(match_id: str, market_type: str | None = None) -> list[dict]:
 
 def weather_for_fixture(match_id: str) -> dict | None:
     return live_weather().get(match_id)
+
+
+def live_match_for_fixture(match_id: str) -> dict | None:
+    return live_matches().get(match_id)
 
 
 def team_history(team_id: str) -> dict | None:

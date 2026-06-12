@@ -15,6 +15,7 @@ except ImportError:  # keeps local tests usable before optional deps are install
         return fn if fn else lambda wrapped: wrapped
 
 from app.adapters.football_data import fetch_world_cup_matches
+from app.adapters.espn_live import fetch_live_match_statuses
 from app.adapters.international_results import fetch_results_csv, parse_results, summarize_team_results
 from app.adapters.odds_api import fetch_world_cup_odds
 from app.adapters.open_meteo import (
@@ -44,6 +45,24 @@ def refresh_fixtures():
 @task
 def refresh_odds():
     return {"source": "odds_api", "rows": len(fetch_world_cup_odds(markets="h2h,spreads,totals"))}
+
+
+@task
+def refresh_live_matches():
+    captured_at = datetime.now(timezone.utc).isoformat()
+    fixtures = _read_json("fixtures.json")
+    teams = _read_json("teams.json")
+    rows = fetch_live_match_statuses(fixtures, teams)
+    _write_json("live_matches.json", rows)
+    completed = sum(1 for row in rows if row["completed"])
+    in_play = sum(1 for row in rows if row["status_state"] == "in")
+    return {
+        "source": "espn_public_scoreboard",
+        "rows": len(rows),
+        "completed_rows": completed,
+        "in_play_rows": in_play,
+        "captured_at": rows[0]["captured_at"] if rows else captured_at,
+    }
 
 
 @task
@@ -122,6 +141,7 @@ def refresh_all():
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "fixtures": refresh_fixtures(),
         "odds": refresh_odds(),
+        "live_matches": refresh_live_matches(),
         "weather": refresh_weather(),
         "prediction_markets": refresh_prediction_markets(),
         "historical_results": refresh_historical_results(),
@@ -162,6 +182,13 @@ def update_source_health(report: dict) -> None:
         "live" if history["rows"] else "empty",
         f'{history["rows"]} historical rows; {history["teams_covered"]} teams covered at {history["captured_at"]}',
         "historical international results for form calibration",
+    )
+    live_matches = report["live_matches"]
+    set_row(
+        "ESPN public scoreboard",
+        "live_public" if live_matches["rows"] else "empty",
+        f'{live_matches["rows"]} matched events; {live_matches["completed_rows"]} completed; {live_matches["in_play_rows"]} in-play at {live_matches["captured_at"]}',
+        "no-key live score, status and basic public match stats",
     )
     _write_json("source_health.json", list(by_name.values()))
 

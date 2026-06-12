@@ -1,5 +1,6 @@
 import unittest
 
+from app.adapters.espn_live import normalize_events
 from app.adapters.international_results import parse_results, summarize_team_results
 from app.adapters.open_meteo import normalize_daily_weather
 from app.adapters.polymarket import is_world_cup_event, normalize_markets
@@ -57,6 +58,59 @@ class PublicDataAdaptersTest(unittest.TestCase):
     def test_polymarket_world_cup_filter_rejects_unrelated_events(self):
         self.assertTrue(is_world_cup_event({"title": "2026 FIFA World Cup winner"}))
         self.assertFalse(is_world_cup_event({"title": "New Rihanna Album before GTA VI?"}))
+
+    def test_espn_live_normalization_matches_aliases_and_stats(self):
+        fixtures = [
+            {
+                "id": "wc26-003",
+                "match_number": 3,
+                "kickoff_utc": "2026-06-12T19:00:00Z",
+                "home_team_id": "can",
+                "away_team_id": "bih",
+            }
+        ]
+        teams = [
+            {"id": "can", "name": "Canada", "fifa_code": "CAN"},
+            {"id": "bih", "name": "Bosnia and Herzegovina", "fifa_code": "BIH"},
+        ]
+        events = [
+            {
+                "id": "760416",
+                "date": "2026-06-12T19:00Z",
+                "status": {
+                    "clock": 5400.0,
+                    "displayClock": "90'",
+                    "period": 2,
+                    "type": {"state": "post", "completed": True, "description": "Full Time", "detail": "FT"},
+                },
+                "competitions": [
+                    {
+                        "competitors": [
+                            {
+                                "homeAway": "home",
+                                "score": "1",
+                                "winner": True,
+                                "team": {"displayName": "Canada", "abbreviation": "CAN"},
+                                "statistics": [{"name": "totalShots", "displayValue": "14"}],
+                            },
+                            {
+                                "homeAway": "away",
+                                "score": "0",
+                                "team": {"displayName": "Bosnia-Herzegovina", "abbreviation": "BIH"},
+                                "statistics": [{"name": "possessionPct", "displayValue": "47.2"}],
+                            },
+                        ]
+                    }
+                ],
+            }
+        ]
+        rows = normalize_events(fixtures, teams, events, "2026-06-13T00:00:00+00:00")
+        self.assertEqual(rows[0]["match_id"], "wc26-003")
+        self.assertTrue(rows[0]["completed"])
+        self.assertEqual(rows[0]["home_score"], 1)
+        self.assertEqual(rows[0]["away_team_id"], "bih")
+        self.assertEqual(rows[0]["home_stats"]["shots"], 14)
+        self.assertEqual(rows[0]["away_stats"]["possession_pct"], 47.2)
 
 
 if __name__ == "__main__":

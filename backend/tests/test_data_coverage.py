@@ -51,6 +51,7 @@ class DataCoverageTest(unittest.TestCase):
     def test_optional_public_snapshots_are_safe_to_read(self):
         self.assertIsInstance(data_store.prediction_markets(), list)
         self.assertIsInstance(data_store.live_weather(), dict)
+        self.assertIsInstance(data_store.live_matches(), dict)
         self.assertIn("teams", data_store.historical_results_summary())
 
 

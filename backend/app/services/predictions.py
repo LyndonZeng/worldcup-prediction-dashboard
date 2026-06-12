@@ -44,6 +44,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
     home = data_store.team_by_id(fixture["home_team_id"])
     away = data_store.team_by_id(fixture["away_team_id"])
     context = data_store.context_for_fixture(fixture)
+    live_status = _live_status(fixture)
     factor_breakdown = _factor_breakdown(home, away, fixture, context)
     adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
     prediction = predict_match(home, away, context, adjustments)
@@ -56,8 +57,9 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "away_team": _team_summary(away),
         "fixture": fixture,
         "context": {"notes": list(context.notes), "home_mult": context.home_mult, "away_mult": context.away_mult},
+        "live_status": live_status,
         "team_form": _team_form(home, away),
-        "tactical_profile": _tactical_match_profile(home, away, fixture, context),
+        "tactical_profile": _tactical_match_profile(home, away, fixture, context, live_status),
         "availability": _availability(home, away),
         "weather": _weather_context(fixture),
         "factor_breakdown": factor_breakdown,
@@ -67,6 +69,40 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "risk_register": _risk_register(home, away, fixture, prediction, factor_breakdown, matchup),
         **{key: value for key, value in prediction.items() if key != "scoreline_matrix"},
     }
+
+
+def _live_status(fixture: dict) -> dict | None:
+    live = data_store.live_match_for_fixture(fixture["id"])
+    if not live:
+        return None
+    return {
+        "source": live.get("source"),
+        "source_quality": live.get("source_quality"),
+        "captured_at": live.get("captured_at"),
+        "status_state": live.get("status_state"),
+        "status_description": live.get("status_description"),
+        "status_detail": live.get("status_detail"),
+        "completed": bool(live.get("completed")),
+        "display_clock": live.get("display_clock"),
+        "period": live.get("period"),
+        "home_score": live.get("home_score"),
+        "away_score": live.get("away_score"),
+        "winner_team_id": live.get("winner_team_id"),
+        "attendance": live.get("attendance"),
+        "home_stats": live.get("home_stats") or {},
+        "away_stats": live.get("away_stats") or {},
+    }
+
+
+def _completed_score(fixture: dict) -> tuple[int, int] | None:
+    live = data_store.live_match_for_fixture(fixture["id"])
+    if not live or not live.get("completed"):
+        return None
+    home_score = live.get("home_score")
+    away_score = live.get("away_score")
+    if home_score is None or away_score is None:
+        return None
+    return int(home_score), int(away_score)
 
 
 def score_matrix_for_fixture(fixture: dict) -> list[list[float]]:
@@ -292,6 +328,7 @@ def _monte_carlo_tournament(teams: dict, n_simulations: int, seed: int) -> dict:
         (
             fixture,
             _matrix_cumulative(score_matrix_for_fixture(fixture)),
+            _completed_score(fixture),
         )
         for fixture in data_store.fixtures()
     ]
@@ -359,7 +396,7 @@ def _monte_carlo_tournament(teams: dict, n_simulations: int, seed: int) -> dict:
     }
 
 
-def _simulate_group_stage(teams: dict, fixture_distributions: list[tuple[dict, list[tuple[float, int, int]]]], rng: random.Random) -> dict:
+def _simulate_group_stage(teams: dict, fixture_distributions: list[tuple[dict, list[tuple[float, int, int]], tuple[int, int] | None]], rng: random.Random) -> dict:
     stats = {
         team_id: {
             "team_id": team_id,
@@ -374,10 +411,10 @@ def _simulate_group_stage(teams: dict, fixture_distributions: list[tuple[dict, l
         for team_id, team in teams.items()
     }
     total_goals = 0
-    for fixture, cumulative in fixture_distributions:
+    for fixture, cumulative, completed_score in fixture_distributions:
         home_id = fixture["home_team_id"]
         away_id = fixture["away_team_id"]
-        home_goals, away_goals = _sample_score(cumulative, rng)
+        home_goals, away_goals = completed_score if completed_score else _sample_score(cumulative, rng)
         total_goals += home_goals + away_goals
         stats[home_id]["goals_for"] += home_goals
         stats[home_id]["goals_against"] += away_goals
@@ -505,17 +542,29 @@ def _project_group_tables() -> dict[str, list[dict]]:
         for team_id, team in teams.items()
     }
     for fixture in data_store.fixtures():
-        prediction = prediction_for_fixture(fixture)
         home_id = fixture["home_team_id"]
         away_id = fixture["away_team_id"]
-        stats[home_id]["expected_points"] += 3 * prediction["p_home"] + prediction["p_draw"]
-        stats[away_id]["expected_points"] += 3 * prediction["p_away"] + prediction["p_draw"]
-        stats[home_id]["expected_goals_for"] += prediction["lambda_home"]
-        stats[home_id]["expected_goals_against"] += prediction["lambda_away"]
-        stats[away_id]["expected_goals_for"] += prediction["lambda_away"]
-        stats[away_id]["expected_goals_against"] += prediction["lambda_home"]
-        stats[home_id]["win_probability_sum"] += prediction["p_home"]
-        stats[away_id]["win_probability_sum"] += prediction["p_away"]
+        completed_score = _completed_score(fixture)
+        if completed_score:
+            home_goals, away_goals = completed_score
+            stats[home_id]["expected_points"] += 3 if home_goals > away_goals else 1 if home_goals == away_goals else 0
+            stats[away_id]["expected_points"] += 3 if away_goals > home_goals else 1 if home_goals == away_goals else 0
+            stats[home_id]["expected_goals_for"] += home_goals
+            stats[home_id]["expected_goals_against"] += away_goals
+            stats[away_id]["expected_goals_for"] += away_goals
+            stats[away_id]["expected_goals_against"] += home_goals
+            stats[home_id]["win_probability_sum"] += 1 if home_goals > away_goals else 0
+            stats[away_id]["win_probability_sum"] += 1 if away_goals > home_goals else 0
+        else:
+            prediction = prediction_for_fixture(fixture)
+            stats[home_id]["expected_points"] += 3 * prediction["p_home"] + prediction["p_draw"]
+            stats[away_id]["expected_points"] += 3 * prediction["p_away"] + prediction["p_draw"]
+            stats[home_id]["expected_goals_for"] += prediction["lambda_home"]
+            stats[home_id]["expected_goals_against"] += prediction["lambda_away"]
+            stats[away_id]["expected_goals_for"] += prediction["lambda_away"]
+            stats[away_id]["expected_goals_against"] += prediction["lambda_home"]
+            stats[home_id]["win_probability_sum"] += prediction["p_home"]
+            stats[away_id]["win_probability_sum"] += prediction["p_away"]
 
     groups: dict[str, list[dict]] = {}
     for team_id, row in stats.items():
@@ -1032,12 +1081,25 @@ def _weather_context(fixture: dict) -> dict:
     }
 
 
-def _tactical_match_profile(home, away, fixture: dict, context) -> dict:
+def _tactical_match_profile(home, away, fixture: dict, context, live_status: dict | None = None) -> dict:
+    home_profile = _tactical_profile(home, fixture, context.home_mult)
+    away_profile = _tactical_profile(away, fixture, context.away_mult)
+    if live_status:
+        home_profile = _apply_live_stats(home_profile, live_status.get("home_stats") or {})
+        away_profile = _apply_live_stats(away_profile, live_status.get("away_stats") or {})
     return {
-        "home": _tactical_profile(home, fixture, context.home_mult),
-        "away": _tactical_profile(away, fixture, context.away_mult),
-        "source": "48-team seed-derived process metrics; replace with event data backfill",
-        "data_quality": "proxy",
+        "home": home_profile,
+        "away": away_profile,
+        "source": (
+            "ESPN public scoreboard basic stats + seed-derived xG/PPDA"
+            if live_status and (live_status.get("home_stats") or live_status.get("away_stats"))
+            else "48-team seed-derived process metrics; replace with event data backfill"
+        ),
+        "data_quality": (
+            "mixed_live_public_proxy"
+            if live_status and (live_status.get("home_stats") or live_status.get("away_stats"))
+            else "proxy"
+        ),
     }
 
 
@@ -1070,6 +1132,24 @@ def _tactical_profile(team, fixture: dict, context_mult: float) -> dict:
         "travel_fatigue_level": _fatigue_level(travel_km),
         "environment_stress": round(_clamp(1 - context_mult, 0, 0.22), 3),
     }
+
+
+def _apply_live_stats(profile: dict, stats: dict) -> dict:
+    if not stats:
+        return profile
+    out = dict(profile)
+    if stats.get("possession_pct") is not None:
+        out["possession_pct"] = round(float(stats["possession_pct"]), 1)
+    if stats.get("shots") is not None:
+        out["shots_per_game"] = round(float(stats["shots"]), 1)
+    if stats.get("shots_on_target") is not None:
+        out["shots_on_target_per_game"] = round(float(stats["shots_on_target"]), 1)
+    out["live_corners"] = stats.get("corners")
+    out["live_fouls_committed"] = stats.get("fouls_committed")
+    out["live_assists"] = stats.get("assists")
+    out["live_goals"] = stats.get("goals")
+    out["live_public_stats"] = True
+    return out
 
 
 def _matchup_profile(home, away, fixture: dict, context, prediction: dict, factor_breakdown: list[dict]) -> dict:

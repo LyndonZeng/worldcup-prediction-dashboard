@@ -402,6 +402,7 @@ def write_static_payload() -> None:
     data_store.odds_snapshots.cache_clear()
     data_store.source_health.cache_clear()
     data_store.live_weather.cache_clear()
+    data_store.live_matches.cache_clear()
     data_store.prediction_markets.cache_clear()
     data_store.historical_results_summary.cache_clear()
     payload = {
@@ -422,6 +423,7 @@ def compact_match(match: dict) -> dict:
             key: match["fixture"][key]
             for key in ["id", "match_number", "stage", "group", "kickoff_utc", "venue", "city", "home_team_id", "away_team_id"]
         },
+        "live_status": match["live_status"],
         "team_form": {
             "home": compact_form(match["team_form"]["home"]),
             "away": compact_form(match["team_form"]["away"]),
