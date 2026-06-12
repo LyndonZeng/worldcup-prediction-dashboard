@@ -1,7 +1,9 @@
 import unittest
 
+from app.adapters.football_data import normalize_matches as normalize_football_data_matches
 from app.adapters.espn_live import normalize_events
 from app.adapters.international_results import parse_results, summarize_team_results
+from app.adapters.odds_api import normalize_odds
 from app.adapters.open_meteo import normalize_daily_weather
 from app.adapters.polymarket import is_world_cup_event, normalize_markets
 
@@ -111,6 +113,97 @@ class PublicDataAdaptersTest(unittest.TestCase):
         self.assertEqual(rows[0]["away_team_id"], "bih")
         self.assertEqual(rows[0]["home_stats"]["shots"], 14)
         self.assertEqual(rows[0]["away_stats"]["possession_pct"], 47.2)
+
+    def test_football_data_normalization_matches_seed_fixtures(self):
+        fixtures = [
+            {
+                "id": "wc26-001",
+                "match_number": 1,
+                "kickoff_utc": "2026-06-11T19:00:00Z",
+                "home_team_id": "mex",
+                "away_team_id": "rsa",
+            }
+        ]
+        teams = [
+            {"id": "mex", "name": "Mexico", "fifa_code": "MEX"},
+            {"id": "rsa", "name": "South Africa", "fifa_code": "RSA"},
+        ]
+        rows = normalize_football_data_matches(
+            fixtures,
+            teams,
+            [
+                {
+                    "id": 1,
+                    "utcDate": "2026-06-11T19:00:00Z",
+                    "status": "FINISHED",
+                    "stage": "GROUP_STAGE",
+                    "homeTeam": {"name": "Mexico", "tla": "MEX"},
+                    "awayTeam": {"name": "South Africa", "tla": "RSA"},
+                    "score": {"winner": "HOME_TEAM", "fullTime": {"home": 2, "away": 0}},
+                }
+            ],
+            "2026-06-13T00:00:00+00:00",
+        )
+        self.assertEqual(rows[0]["match_id"], "wc26-001")
+        self.assertEqual(rows[0]["home_score"], 2)
+        self.assertEqual(rows[0]["winner_team_id"], "mex")
+
+    def test_odds_api_normalization_outputs_handicap_rows(self):
+        fixtures = [
+            {
+                "id": "wc26-001",
+                "match_number": 1,
+                "kickoff_utc": "2026-06-11T19:00:00Z",
+                "home_team_id": "mex",
+                "away_team_id": "rsa",
+            }
+        ]
+        teams = [
+            {"id": "mex", "name": "Mexico", "fifa_code": "MEX"},
+            {"id": "rsa", "name": "South Africa", "fifa_code": "RSA"},
+        ]
+        rows = normalize_odds(
+            [
+                {
+                    "id": "odds-1",
+                    "commence_time": "2026-06-11T19:00:00Z",
+                    "home_team": "Mexico",
+                    "away_team": "South Africa",
+                    "bookmakers": [
+                        {
+                            "key": "pinnacle",
+                            "title": "Pinnacle",
+                            "last_update": "2026-06-11T12:00:00Z",
+                            "markets": [
+                                {
+                                    "key": "spreads",
+                                    "outcomes": [
+                                        {"name": "Mexico", "price": 1.91, "point": -1.0},
+                                        {"name": "South Africa", "price": 1.93, "point": 1.0},
+                                    ],
+                                },
+                                {
+                                    "key": "totals",
+                                    "outcomes": [
+                                        {"name": "Over", "price": 1.88, "point": 2.5},
+                                        {"name": "Under", "price": 1.96, "point": 2.5},
+                                    ],
+                                },
+                            ],
+                        }
+                    ],
+                }
+            ],
+            fixtures,
+            teams,
+            "2026-06-13T00:00:00+00:00",
+        )
+        handicap = [row for row in rows if row["market_type"] == "asian_handicap"][0]
+        total = [row for row in rows if row["market_type"] == "over_under"][0]
+        self.assertEqual(handicap["match_id"], "wc26-001")
+        self.assertEqual(handicap["line"], -1.0)
+        self.assertEqual(handicap["bookmaker"], "Pinnacle")
+        self.assertEqual(total["line"], 2.5)
 
 
 if __name__ == "__main__":

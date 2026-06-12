@@ -14,10 +14,10 @@ except ImportError:  # keeps local tests usable before optional deps are install
     def task(fn=None, **_kwargs):
         return fn if fn else lambda wrapped: wrapped
 
-from app.adapters.football_data import fetch_world_cup_matches
+from app.adapters.football_data import fetch_world_cup_matches, normalize_matches as normalize_football_data_matches
 from app.adapters.espn_live import fetch_live_match_statuses
 from app.adapters.international_results import fetch_results_csv, parse_results, summarize_team_results
-from app.adapters.odds_api import fetch_world_cup_odds
+from app.adapters.odds_api import fetch_world_cup_odds, normalize_odds
 from app.adapters.open_meteo import (
     climate_fallback_for_city,
     coordinates_for_city,
@@ -33,18 +33,49 @@ def _read_json(name: str):
     return json.loads((DATA_DIR / name).read_text(encoding="utf-8"))
 
 
+def _read_json_optional(name: str, fallback):
+    path = DATA_DIR / name
+    if not path.exists():
+        return fallback
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def _write_json(name: str, value) -> None:
     (DATA_DIR / name).write_text(json.dumps(value, indent=2, sort_keys=False) + "\n", encoding="utf-8")
 
 
 @task
 def refresh_fixtures():
-    return {"source": "football-data.org", "rows": len(fetch_world_cup_matches())}
+    captured_at = datetime.now(timezone.utc).isoformat()
+    fixtures = _read_json("fixtures.json")
+    teams = _read_json("teams.json")
+    raw_rows = fetch_world_cup_matches()
+    rows = normalize_football_data_matches(fixtures, teams, raw_rows, captured_at)
+    _write_json("football_data_matches.json", rows)
+    return {
+        "source": "football-data.org",
+        "raw_rows": len(raw_rows),
+        "rows": len(rows),
+        "captured_at": captured_at,
+    }
 
 
 @task
 def refresh_odds():
-    return {"source": "odds_api", "rows": len(fetch_world_cup_odds(markets="h2h,spreads,totals"))}
+    captured_at = datetime.now(timezone.utc).isoformat()
+    fixtures = _read_json("fixtures.json")
+    teams = _read_json("teams.json")
+    raw_rows = fetch_world_cup_odds(markets="h2h,spreads,totals")
+    rows = normalize_odds(raw_rows, fixtures, teams, captured_at)
+    if rows:
+        _write_json("odds_snapshots.json", rows)
+    return {
+        "source": "odds_api",
+        "raw_rows": len(raw_rows),
+        "rows": len(rows),
+        "captured_at": captured_at,
+        "written": bool(rows),
+    }
 
 
 @task
@@ -52,13 +83,17 @@ def refresh_live_matches():
     captured_at = datetime.now(timezone.utc).isoformat()
     fixtures = _read_json("fixtures.json")
     teams = _read_json("teams.json")
-    rows = fetch_live_match_statuses(fixtures, teams)
+    football_data_rows = _read_json_optional("football_data_matches.json", [])
+    espn_rows = fetch_live_match_statuses(fixtures, teams)
+    rows = merge_live_rows(football_data_rows, espn_rows)
     _write_json("live_matches.json", rows)
     completed = sum(1 for row in rows if row["completed"])
     in_play = sum(1 for row in rows if row["status_state"] == "in")
     return {
-        "source": "espn_public_scoreboard",
+        "source": "espn_public_scoreboard+football_data",
         "rows": len(rows),
+        "espn_rows": len(espn_rows),
+        "football_data_rows": len(football_data_rows),
         "completed_rows": completed,
         "in_play_rows": in_play,
         "captured_at": rows[0]["captured_at"] if rows else captured_at,
@@ -162,6 +197,20 @@ def update_source_health(report: dict) -> None:
             "purpose": purpose,
         }
 
+    fixtures = report["fixtures"]
+    set_row(
+        "football-data.org",
+        "live" if fixtures["rows"] else ("configured_empty" if fixtures["raw_rows"] == 0 else "unmatched"),
+        f'{fixtures["rows"]}/{fixtures["raw_rows"]} matched World Cup rows at {fixtures["captured_at"]}',
+        "fixtures, scores and post-match validation",
+    )
+    odds = report["odds"]
+    set_row(
+        "The Odds API / TheStatsAPI",
+        "live" if odds["rows"] else ("configured_empty" if odds["raw_rows"] == 0 else "unmatched"),
+        f'{odds["rows"]}/{odds["raw_rows"]} normalized odds rows at {odds["captured_at"]}; written={odds["written"]}',
+        "legal sportsbook odds and Asian handicap lines",
+    )
     weather = report["weather"]
     set_row(
         "Open-Meteo",
@@ -187,10 +236,27 @@ def update_source_health(report: dict) -> None:
     set_row(
         "ESPN public scoreboard",
         "live_public" if live_matches["rows"] else "empty",
-        f'{live_matches["rows"]} matched events; {live_matches["completed_rows"]} completed; {live_matches["in_play_rows"]} in-play at {live_matches["captured_at"]}',
-        "no-key live score, status and basic public match stats",
+        f'{live_matches["rows"]} matched events; ESPN {live_matches["espn_rows"]}; football-data {live_matches["football_data_rows"]}; {live_matches["completed_rows"]} completed; {live_matches["in_play_rows"]} in-play at {live_matches["captured_at"]}',
+        "no-key live score, official score fallback and basic public match stats",
     )
     _write_json("source_health.json", list(by_name.values()))
+
+
+def merge_live_rows(football_data_rows: list[dict], espn_rows: list[dict]) -> list[dict]:
+    merged = {row["match_id"]: dict(row) for row in football_data_rows}
+    for row in espn_rows:
+        existing = merged.get(row["match_id"])
+        if not existing:
+            merged[row["match_id"]] = dict(row)
+            continue
+        combined = dict(existing)
+        for key, value in row.items():
+            if value not in (None, {}, []):
+                combined[key] = value
+        combined["source"] = "ESPN public scoreboard + football-data.org"
+        combined["source_quality"] = "mixed_public_official"
+        merged[row["match_id"]] = combined
+    return sorted(merged.values(), key=lambda row: row["match_number"])
 
 
 if __name__ == "__main__":

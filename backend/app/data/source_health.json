@@ -7,14 +7,14 @@
   },
   {
     "source": "football-data.org",
-    "status": "configured_optional",
-    "freshness": "pending_api_key",
+    "status": "live",
+    "freshness": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
     "purpose": "fixtures, scores and post-match validation"
   },
   {
     "source": "martj42 international_results",
     "status": "live",
-    "freshness": "49477 historical rows; 48 teams covered at 2026-06-12T18:45:06.667099+00:00",
+    "freshness": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
     "purpose": "historical international results for form calibration"
   },
   {
@@ -26,7 +26,7 @@
   {
     "source": "Open-Meteo",
     "status": "live",
-    "freshness": "70/72 forecast rows at 2026-06-12T18:43:40.276365+00:00",
+    "freshness": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
     "purpose": "weather, wind and heat context"
   },
   {
@@ -44,19 +44,19 @@
   {
     "source": "Polymarket Gamma",
     "status": "live",
-    "freshness": "60 markets at 2026-06-12T18:45:04.605572+00:00",
+    "freshness": "60 markets at 2026-06-12T20:42:03.229322+00:00",
     "purpose": "prediction market prices"
   },
   {
     "source": "The Odds API / TheStatsAPI",
-    "status": "configured_optional",
-    "freshness": "sample_consensus_proxy_pending_api_key",
+    "status": "live",
+    "freshness": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
     "purpose": "legal sportsbook odds and Asian handicap lines"
   },
   {
     "source": "ESPN public scoreboard",
     "status": "live_public",
-    "freshness": "72 matched events; 2 completed; 0 in-play at 2026-06-12T18:43:28.387024+00:00",
-    "purpose": "no-key live score, status and basic public match stats"
+    "freshness": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00",
+    "purpose": "no-key live score, official score fallback and basic public match stats"
   }
 ]

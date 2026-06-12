@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from typing import Any
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -21,9 +22,13 @@ def get_text(url: str, *, params: dict[str, Any] | None = None, headers: dict[st
     if params:
         url = f"{url}?{urlencode(params)}"
     request = Request(url, headers=headers or {})
-    with urlopen(request, timeout=timeout) as response:
-        status = response.status
-        body = response.read().decode("utf-8")
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            status = response.status
+            body = response.read().decode("utf-8")
+    except HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise HttpStatusError(exc.code, body) from exc
     if status >= 400:
         raise HttpStatusError(status, body)
     return body
