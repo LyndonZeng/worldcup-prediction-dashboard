@@ -45,6 +45,8 @@ STAT_MAP = {
     "foulsCommitted": "fouls_committed",
     "goalAssists": "assists",
     "totalGoals": "goals",
+    "yellowCards": "yellow_cards",
+    "redCards": "red_cards",
 }
 
 

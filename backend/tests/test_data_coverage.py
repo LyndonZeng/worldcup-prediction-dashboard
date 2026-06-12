@@ -38,6 +38,21 @@ class DataCoverageTest(unittest.TestCase):
         )
         self.assertIn("raw_title_probability", tournament["teams"][0])
         self.assertIn("title_anchor", tournament)
+        self.assertIn("top_scorelines", matches[0])
+        self.assertIn("event_predictions", matches[0])
+
+    def test_event_predictions_are_bounded_and_complete(self):
+        match = all_matches()[0]
+        events = match["event_predictions"]
+        self.assertEqual(events["score"]["top_scorelines"], match["top_scorelines"])
+        self.assertGreater(events["corners"]["total_expected"], 0)
+        self.assertGreater(events["cards"]["total_yellow_expected"], 0)
+        for key in ["over_8_5_probability", "over_9_5_probability"]:
+            self.assertGreaterEqual(events["corners"][key], 0)
+            self.assertLessEqual(events["corners"][key], 1)
+        for key in ["over_3_5_yellow_probability", "over_4_5_yellow_probability", "any_red_probability"]:
+            self.assertGreaterEqual(events["cards"][key], 0)
+            self.assertLessEqual(events["cards"][key], 1)
 
     def test_prediction_factors_separate_real_inputs_from_proxies(self):
         match = all_matches()[0]

@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from . import data_store
 from .handicap import asian_market_from_matrix
 from .odds import model_lean
-from .score_model import MatchAdjustments, MatchContext, predict_match
+from .score_model import MatchAdjustments, MatchContext, poisson_pmf, predict_match
 
 DEFAULT_HANDICAP_LINES = [-2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
 MODEL_VERSION = "wc26-v0.5-monte-carlo-factor-tiers"
@@ -49,6 +49,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
     adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
     prediction = predict_match(home, away, context, adjustments)
     matchup = _matchup_profile(home, away, fixture, context, prediction, factor_breakdown)
+    event_predictions = _event_predictions(home, away, fixture, context, prediction, live_status)
     return {
         "match_id": fixture["id"],
         "model_version": MODEL_VERSION,
@@ -66,6 +67,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "model_inputs": _model_input_summary(adjustments, factor_breakdown),
         "probability_intervals": _probability_intervals(prediction, factor_breakdown),
         "matchup": matchup,
+        "event_predictions": event_predictions,
         "risk_register": _risk_register(home, away, fixture, prediction, factor_breakdown, matchup),
         **{key: value for key, value in prediction.items() if key != "scoreline_matrix"},
     }
@@ -1103,6 +1105,84 @@ def _tactical_match_profile(home, away, fixture: dict, context, live_status: dic
     }
 
 
+def _event_predictions(home, away, fixture: dict, context, prediction: dict, live_status: dict | None) -> dict:
+    home_profile = _tactical_profile(home, fixture, context.home_mult)
+    away_profile = _tactical_profile(away, fixture, context.away_mult)
+    has_live_stats = bool(live_status and (live_status.get("home_stats") or live_status.get("away_stats")))
+    home_live_stats = (live_status or {}).get("home_stats") or {}
+    away_live_stats = (live_status or {}).get("away_stats") or {}
+    home_corners = _team_corner_expectation(home, away, home_profile, away_profile, context.home_mult)
+    away_corners = _team_corner_expectation(away, home, away_profile, home_profile, context.away_mult)
+    home_yellows = _team_yellow_expectation(home, away, home_profile, prediction["p_home"], prediction["p_away"])
+    away_yellows = _team_yellow_expectation(away, home, away_profile, prediction["p_away"], prediction["p_home"])
+    home_red = _red_card_probability(home_profile)
+    away_red = _red_card_probability(away_profile)
+    total_corners = home_corners + away_corners
+    total_yellows = home_yellows + away_yellows
+    return {
+        "source": (
+            "scoreline matrix + transparent cards/corners priors; ESPN public values when available"
+        ),
+        "data_quality": "mixed_live_public_proxy" if has_live_stats else "transparent_prior",
+        "score": {
+            "expected_home_goals": round(prediction["lambda_home"], 2),
+            "expected_away_goals": round(prediction["lambda_away"], 2),
+            "top_scorelines": prediction["top_scorelines"],
+            "actual_home_score": (live_status or {}).get("home_score"),
+            "actual_away_score": (live_status or {}).get("away_score"),
+            "status": (live_status or {}).get("status_description") or (live_status or {}).get("status_state"),
+        },
+        "corners": {
+            "home_expected": round(home_corners, 2),
+            "away_expected": round(away_corners, 2),
+            "total_expected": round(total_corners, 2),
+            "over_8_5_probability": round(_poisson_over(total_corners, 8.5), 6),
+            "over_9_5_probability": round(_poisson_over(total_corners, 9.5), 6),
+            "live_home": home_live_stats.get("corners"),
+            "live_away": away_live_stats.get("corners"),
+        },
+        "cards": {
+            "home_yellow_expected": round(home_yellows, 2),
+            "away_yellow_expected": round(away_yellows, 2),
+            "total_yellow_expected": round(total_yellows, 2),
+            "over_3_5_yellow_probability": round(_poisson_over(total_yellows, 3.5), 6),
+            "over_4_5_yellow_probability": round(_poisson_over(total_yellows, 4.5), 6),
+            "home_red_probability": round(home_red, 6),
+            "away_red_probability": round(away_red, 6),
+            "any_red_probability": round(1 - (1 - home_red) * (1 - away_red), 6),
+            "live_home_yellow": home_live_stats.get("yellow_cards"),
+            "live_away_yellow": away_live_stats.get("yellow_cards"),
+            "live_home_red": home_live_stats.get("red_cards"),
+            "live_away_red": away_live_stats.get("red_cards"),
+        },
+    }
+
+
+def _team_corner_expectation(team, opponent, profile: dict, opponent_profile: dict, context_mult: float) -> float:
+    attack_pressure = team.attack * 5.5 + team.form_index * 1.8
+    shot_volume = (profile["shots_per_game"] - 10.5) * 0.18
+    set_piece_bias = (profile["set_piece_xg_share"] - 0.22) * 5.0
+    opponent_box_time = opponent.defence * -2.0 + opponent_profile["xga_per_game"] * 0.28
+    context_edge = (context_mult - 1.0) * 7.0
+    return _clamp(4.45 + attack_pressure + shot_volume + set_piece_bias + opponent_box_time + context_edge, 2.4, 8.4)
+
+
+def _team_yellow_expectation(team, opponent, profile: dict, own_win_probability: float, opponent_win_probability: float) -> float:
+    underdog_pressure = max(0.0, opponent_win_probability - own_win_probability) * 0.9
+    defensive_load = opponent.attack * 1.3 - team.defence * 1.7
+    fatigue = profile["environment_stress"] * 2.2
+    return _clamp(profile["yellow_card_rate"] + underdog_pressure + defensive_load + fatigue, 0.8, 3.7)
+
+
+def _red_card_probability(profile: dict) -> float:
+    return _clamp(1 - math.exp(-profile["red_card_rate"]), 0.015, 0.24)
+
+
+def _poisson_over(lam: float, line: float) -> float:
+    threshold = math.floor(line) + 1
+    return _clamp(1 - sum(poisson_pmf(k, lam) for k in range(threshold)), 0.0, 1.0)
+
+
 def _tactical_profile(team, fixture: dict, context_mult: float) -> dict:
     xg = _xg_for(team)
     xga = _xg_against(team)
@@ -1148,6 +1228,8 @@ def _apply_live_stats(profile: dict, stats: dict) -> dict:
     out["live_fouls_committed"] = stats.get("fouls_committed")
     out["live_assists"] = stats.get("assists")
     out["live_goals"] = stats.get("goals")
+    out["live_yellow_cards"] = stats.get("yellow_cards")
+    out["live_red_cards"] = stats.get("red_cards")
     out["live_public_stats"] = True
     return out
 

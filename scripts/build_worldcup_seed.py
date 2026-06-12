@@ -442,6 +442,7 @@ def compact_match(match: dict) -> dict:
         "model_inputs": match["model_inputs"],
         "probability_intervals": match["probability_intervals"],
         "matchup": match["matchup"],
+        "event_predictions": match["event_predictions"],
         "risk_register": match["risk_register"],
         "lambda_home": match["lambda_home"],
         "lambda_away": match["lambda_away"],
@@ -450,6 +451,7 @@ def compact_match(match: dict) -> dict:
         "p_away": match["p_away"],
         "p_over_2_5": match["p_over_2_5"],
         "p_btts": match["p_btts"],
+        "top_scorelines": match["top_scorelines"],
         "handicap_preview": [compact_handicap(row) for row in match["handicap_preview"]],
     }
 

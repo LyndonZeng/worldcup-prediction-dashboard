@@ -97,7 +97,44 @@ export type MatchPrediction = {
   p_under_2_5: number;
   p_btts: number;
   top_scorelines: Array<{score: string; probability: number}>;
+  event_predictions: EventPredictions;
   handicap_preview: HandicapRow[];
+};
+
+export type EventPredictions = {
+  source: string;
+  data_quality: string;
+  score: {
+    expected_home_goals: number;
+    expected_away_goals: number;
+    top_scorelines: Array<{score: string; probability: number}>;
+    actual_home_score: number | null;
+    actual_away_score: number | null;
+    status: string | null;
+  };
+  corners: {
+    home_expected: number;
+    away_expected: number;
+    total_expected: number;
+    over_8_5_probability: number;
+    over_9_5_probability: number;
+    live_home: number | null;
+    live_away: number | null;
+  };
+  cards: {
+    home_yellow_expected: number;
+    away_yellow_expected: number;
+    total_yellow_expected: number;
+    over_3_5_yellow_probability: number;
+    over_4_5_yellow_probability: number;
+    home_red_probability: number;
+    away_red_probability: number;
+    any_red_probability: number;
+    live_home_yellow: number | null;
+    live_away_yellow: number | null;
+    live_home_red: number | null;
+    live_away_red: number | null;
+  };
 };
 
 export type TeamFormProfile = {
@@ -129,6 +166,11 @@ export type TacticalProfile = {
   projected_travel_km: number;
   travel_fatigue_level: string;
   environment_stress: number;
+  live_corners?: number | null;
+  live_fouls_committed?: number | null;
+  live_yellow_cards?: number | null;
+  live_red_cards?: number | null;
+  live_public_stats?: boolean;
 };
 
 export type AvailabilityProfile = {

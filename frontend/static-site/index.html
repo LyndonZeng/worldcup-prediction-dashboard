@@ -1375,7 +1375,7 @@
       const API = "http://127.0.0.1:8000";
       const ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard";
       const embeddedData = window.__DASHBOARD_DATA__ || null;
-      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4", "data.json.gz.b64.5"];
+      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4", "data.json.gz.b64.5", "data.json.gz.b64.6"];
       const teamAliases = {
         "bosnia herzegovina": "bih",
         "bosnia and herzegovina": "bih",
@@ -1400,7 +1400,9 @@
         wonCorners: "corners",
         foulsCommitted: "fouls_committed",
         goalAssists: "assists",
-        totalGoals: "goals"
+        totalGoals: "goals",
+        yellowCards: "yellow_cards",
+        redCards: "red_cards"
       };
       let livePollTimer = null;
       let state = { matches: [], tournament: null, sources: [], selected: null, group: "ALL", query: "", tab: "handicap" };
@@ -1639,6 +1641,8 @@
         next.live_fouls_committed = stats.fouls_committed;
         next.live_assists = stats.assists;
         next.live_goals = stats.goals;
+        next.live_yellow_cards = stats.yellow_cards;
+        next.live_red_cards = stats.red_cards;
         next.live_public_stats = true;
         return next;
       }
@@ -1777,6 +1781,7 @@
           ${probability(match)}
           <div class="tabs">
             ${tabButton("handicap", "盘口矩阵")}
+            ${tabButton("events", "比分事件")}
             ${tabButton("stats", "技术统计")}
             ${tabButton("model", "模型因子")}
             ${tabButton("history", "球队历史")}
@@ -1826,6 +1831,7 @@
       }
 
       function tabContent(match) {
+        if (state.tab === "events") return eventsPanel(match);
         if (state.tab === "stats") return technicalPanel(match);
         if (state.tab === "model") return modelPanel(match);
         if (state.tab === "history") return historyPanel(match);
@@ -1872,6 +1878,53 @@
             ${tile("综合边际", signed(match.model_inputs?.weighted_context_edge ?? 0))}
           </div>
           <div class="rail-body">${factorPanel(match)}</div>
+        `;
+      }
+
+      function eventsPanel(match) {
+        const events = match.event_predictions || {};
+        const score = events.score || {};
+        const corners = events.corners || {};
+        const cards = events.cards || {};
+        const scorelines = score.top_scorelines || match.top_scorelines || [];
+        return `
+          <div class="grid">
+            ${tile("预期比分", `${value(score.expected_home_goals ?? match.lambda_home, 2)} : ${value(score.expected_away_goals ?? match.lambda_away, 2)}`)}
+            ${tile("实际比分", actualScore(match, score))}
+            ${tile("角球预测", `${value(corners.home_expected, 1)} : ${value(corners.away_expected, 1)}`)}
+            ${tile("黄牌预测", `${value(cards.home_yellow_expected, 1)} : ${value(cards.away_yellow_expected, 1)}`)}
+            ${tile("总角球", value(corners.total_expected, 1))}
+            ${tile("角球大 8.5", pct(corners.over_8_5_probability))}
+            ${tile("角球大 9.5", pct(corners.over_9_5_probability))}
+            ${tile("总黄牌", value(cards.total_yellow_expected, 1))}
+            ${tile("黄牌大 3.5", pct(cards.over_3_5_yellow_probability))}
+            ${tile("黄牌大 4.5", pct(cards.over_4_5_yellow_probability))}
+            ${tile("出现红牌", pct(cards.any_red_probability))}
+            ${tile("红牌 主/客", `${pct(cards.home_red_probability)} / ${pct(cards.away_red_probability)}`)}
+          </div>
+          <div class="split" style="margin-top:10px">
+            <div class="subpanel">
+              <h3>高概率比分</h3>
+              <div class="rail-body" style="padding:10px 0 0">
+                ${scorelines.map((row) => `
+                  <div class="source">
+                    <div><strong class="mono">${row.score}</strong><span>比分矩阵概率</span></div>
+                    <em>${pct(row.probability)}</em>
+                  </div>
+                `).join("") || `<p class="muted">等待比分矩阵。</p>`}
+              </div>
+            </div>
+            <div class="subpanel">
+              <h3>实时事件校验</h3>
+              <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
+                ${tile(`${match.home_team.name} 角球`, actualValue(corners.live_home))}
+                ${tile(`${match.away_team.name} 角球`, actualValue(corners.live_away))}
+                ${tile(`${match.home_team.name} 黄/红`, `${actualValue(cards.live_home_yellow)} / ${actualValue(cards.live_home_red)}`)}
+                ${tile(`${match.away_team.name} 黄/红`, `${actualValue(cards.live_away_yellow)} / ${actualValue(cards.live_away_red)}`)}
+              </div>
+              <p class="source-note">${events.source || "scoreline matrix + transparent event priors"} · ${events.data_quality || "transparent_prior"}</p>
+            </div>
+          </div>
         `;
       }
 
@@ -1983,6 +2036,7 @@
               ${tile("阵容深度", profile.squad_depth_score.toFixed(1))}
               ${tile("旅程疲劳", fatigueText(profile.travel_fatigue_level))}
               ${profile.live_public_stats ? tile("角球/犯规", `${profile.live_corners ?? "-"} / ${profile.live_fouls_committed ?? "-"}`) : ""}
+              ${profile.live_public_stats ? tile("黄/红实时", `${profile.live_yellow_cards ?? "-"} / ${profile.live_red_cards ?? "-"}`) : ""}
             </div>
             <div class="factor" style="margin-top:10px">
               <div><strong>高压强度</strong><em>预测旅程 ${Number(profile.projected_travel_km).toLocaleString()} km</em></div>
@@ -2058,6 +2112,21 @@
 
       function tile(label, value) {
         return `<div class="tile"><span>${label}</span><strong>${value}</strong></div>`;
+      }
+
+      function value(item, digits = 1) {
+        const number = Number(item);
+        return Number.isFinite(number) ? number.toFixed(digits) : "-";
+      }
+
+      function actualValue(item) {
+        return item === null || item === undefined ? "暂无" : item;
+      }
+
+      function actualScore(match, score) {
+        const home = score.actual_home_score ?? match.live_status?.home_score;
+        const away = score.actual_away_score ?? match.live_status?.away_score;
+        return home === null || home === undefined || away === null || away === undefined ? "未开赛" : `${home} : ${away}`;
       }
 
       function fatigueText(value) {
