@@ -1373,8 +1373,36 @@
 
     <script>
       const API = "http://127.0.0.1:8000";
+      const ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard";
       const embeddedData = window.__DASHBOARD_DATA__ || null;
       const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4", "data.json.gz.b64.5"];
+      const teamAliases = {
+        "bosnia herzegovina": "bih",
+        "bosnia and herzegovina": "bih",
+        "czech republic": "cze",
+        "czechia": "cze",
+        "cote d ivoire": "civ",
+        "ivory coast": "civ",
+        "curacao": "cur",
+        "cape verde": "cpv",
+        "cabo verde": "cpv",
+        "turkiye": "tur",
+        "turkey": "tur",
+        "usa": "usa",
+        "united states": "usa",
+        "congo dr": "cod",
+        "dr congo": "cod"
+      };
+      const statMap = {
+        possessionPct: "possession_pct",
+        totalShots: "shots",
+        shotsOnTarget: "shots_on_target",
+        wonCorners: "corners",
+        foulsCommitted: "fouls_committed",
+        goalAssists: "assists",
+        totalGoals: "goals"
+      };
+      let livePollTimer = null;
       let state = { matches: [], tournament: null, sources: [], selected: null, group: "ALL", query: "", tab: "handicap" };
 
       const fallback = {
@@ -1430,6 +1458,7 @@
           bind();
           render();
           refreshFromApi();
+          startPublicLivePolling();
           return;
         }
         const [matches, tournament, health] = await Promise.all([
@@ -1443,6 +1472,7 @@
         state.selected = state.matches[0] || null;
         bind();
         render();
+        startPublicLivePolling();
       }
 
       async function refreshFromApi() {
@@ -1458,6 +1488,181 @@
         state.sources = health.sources;
         state.selected = state.matches.find((match) => match.match_id === selectedId) || state.matches[0] || null;
         render();
+      }
+
+      function startPublicLivePolling() {
+        if (livePollTimer || !state.matches.length) return;
+        refreshFromEspnPublic();
+        livePollTimer = window.setInterval(refreshFromEspnPublic, 60000);
+      }
+
+      async function refreshFromEspnPublic() {
+        try {
+          const payloads = await Promise.all(liveDateKeys().map(async (dateKey) => {
+            const response = await fetch(`${ESPN_SCOREBOARD}?dates=${dateKey}`, { cache: "no-store" });
+            if (!response.ok) return null;
+            return response.json();
+          }));
+          const rows = normalizeEspnEvents(payloads.flatMap((payload) => payload?.events || []));
+          if (!rows.length) return;
+          const byId = new Map(rows.map((row) => [row.match_id, row]));
+          state.matches = state.matches.map((match) => {
+            const live = byId.get(match.match_id);
+            if (!live) return match;
+            return applyLiveToMatch({ ...match, live_status: live });
+          });
+          const selectedId = state.selected?.match_id;
+          state.selected = state.matches.find((match) => match.match_id === selectedId) || state.matches[0] || null;
+          updateEspnSource(rows);
+          render();
+        } catch (_error) {
+          // Public live polling is best-effort; keep the last static snapshot.
+        }
+      }
+
+      function liveDateKeys() {
+        const out = [];
+        const now = new Date();
+        for (let offset = -1; offset <= 2; offset += 1) {
+          const date = new Date(now.getTime() + offset * 86400000);
+          out.push(dateKeyInZone(date, "America/New_York"));
+        }
+        return Array.from(new Set(out));
+      }
+
+      function dateKeyInZone(date, timeZone) {
+        const parts = new Intl.DateTimeFormat("en-US", {
+          timeZone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).formatToParts(date).reduce((acc, part) => {
+          acc[part.type] = part.value;
+          return acc;
+        }, {});
+        return `${parts.year}${parts.month}${parts.day}`;
+      }
+
+      function normalizeEspnEvents(events) {
+        const aliases = teamAliasMap();
+        const rows = [];
+        const seen = new Set();
+        for (const event of events) {
+          const competition = event.competitions?.[0] || {};
+          const competitors = competition.competitors || [];
+          const home = competitors.find((row) => row.homeAway === "home");
+          const away = competitors.find((row) => row.homeAway === "away");
+          if (!home || !away) continue;
+          const homeId = teamIdForCompetitor(home, aliases);
+          const awayId = teamIdForCompetitor(away, aliases);
+          const match = state.matches.find((candidate) => candidate.fixture.home_team_id === homeId && candidate.fixture.away_team_id === awayId);
+          if (!match || seen.has(match.match_id)) continue;
+          seen.add(match.match_id);
+          const status = event.status || competition.status || {};
+          const type = status.type || {};
+          const liveOrFinal = Boolean(type.completed) || type.state === "in";
+          rows.push({
+            match_id: match.match_id,
+            source: "ESPN public scoreboard",
+            source_quality: "live_public_unofficial",
+            captured_at: new Date().toISOString(),
+            status_state: type.state,
+            status_description: type.description,
+            status_detail: type.detail || type.shortDetail,
+            completed: Boolean(type.completed),
+            display_clock: status.displayClock,
+            period: status.period,
+            home_score: liveOrFinal ? numberOrNull(home.score) : null,
+            away_score: liveOrFinal ? numberOrNull(away.score) : null,
+            winner_team_id: home.winner ? homeId : away.winner ? awayId : null,
+            attendance: liveOrFinal ? competition.attendance : null,
+            home_stats: liveOrFinal ? statsFromCompetitor(home) : {},
+            away_stats: liveOrFinal ? statsFromCompetitor(away) : {}
+          });
+        }
+        return rows;
+      }
+
+      function teamAliasMap() {
+        const aliases = { ...teamAliases };
+        state.matches.forEach((match) => {
+          [match.home_team, match.away_team].forEach((teamInfo) => {
+            aliases[key(teamInfo.name)] = teamInfo.id;
+            aliases[key(teamInfo.fifa_code || "")] = teamInfo.id;
+          });
+        });
+        return aliases;
+      }
+
+      function teamIdForCompetitor(competitor, aliases) {
+        const teamInfo = competitor.team || {};
+        const candidates = [teamInfo.displayName, teamInfo.shortDisplayName, teamInfo.name, teamInfo.location, teamInfo.abbreviation];
+        for (const candidate of candidates) {
+          const teamId = aliases[key(candidate || "")];
+          if (teamId) return teamId;
+        }
+        return null;
+      }
+
+      function statsFromCompetitor(competitor) {
+        const out = {};
+        (competitor.statistics || []).forEach((stat) => {
+          const mapped = statMap[stat.name];
+          if (mapped) out[mapped] = numberOrNull(String(stat.displayValue || "").replace("%", ""));
+        });
+        return out;
+      }
+
+      function applyLiveToMatch(match) {
+        const live = match.live_status;
+        const hasStats = live && (Object.keys(live.home_stats || {}).length || Object.keys(live.away_stats || {}).length);
+        if (!hasStats || !match.tactical_profile) return match;
+        return {
+          ...match,
+          tactical_profile: {
+            ...match.tactical_profile,
+            source: "ESPN public scoreboard basic stats + seed-derived xG/PPDA",
+            data_quality: "mixed_live_public_proxy",
+            home: applyLiveStats(match.tactical_profile.home, live.home_stats),
+            away: applyLiveStats(match.tactical_profile.away, live.away_stats)
+          }
+        };
+      }
+
+      function applyLiveStats(profile, stats) {
+        if (!profile || !stats) return profile;
+        const next = { ...profile };
+        if (stats.possession_pct !== null && stats.possession_pct !== undefined) next.possession_pct = Number(stats.possession_pct);
+        if (stats.shots !== null && stats.shots !== undefined) next.shots_per_game = Number(stats.shots);
+        if (stats.shots_on_target !== null && stats.shots_on_target !== undefined) next.shots_on_target_per_game = Number(stats.shots_on_target);
+        next.live_corners = stats.corners;
+        next.live_fouls_committed = stats.fouls_committed;
+        next.live_assists = stats.assists;
+        next.live_goals = stats.goals;
+        next.live_public_stats = true;
+        return next;
+      }
+
+      function updateEspnSource(rows) {
+        const completed = rows.filter((row) => row.completed).length;
+        const inPlay = rows.filter((row) => row.status_state === "in").length;
+        const source = {
+          source: "ESPN public scoreboard",
+          status: "browser_live_public",
+          freshness: `${rows.length} nearby events; ${completed} completed; ${inPlay} in-play at ${shortTime(new Date().toISOString())}`,
+          purpose: "browser no-key live score, status and basic public match stats"
+        };
+        state.sources = [source, ...state.sources.filter((row) => row.source !== source.source)];
+      }
+
+      function numberOrNull(value) {
+        if (value === null || value === undefined || value === "") return null;
+        const number = Number(value);
+        return Number.isFinite(number) ? number : null;
+      }
+
+      function key(value) {
+        return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
       }
 
       function bind() {
