@@ -1538,9 +1538,9 @@
           return `
             <button class="match-row ${active ? "active" : ""}" data-match="${match.match_id}">
               <span class="match-meta">#${match.fixture.match_number} · ${match.fixture.group}组 · ${dateText(match.fixture.kickoff_utc)}</span>
-              <span class="team-line">${team(match.home_team)}<strong>${pct(match.p_home)}</strong></span>
-              <span class="team-line">${team(match.away_team)}<strong>${pct(match.p_away)}</strong></span>
-              <span class="badges"><em class="badge">${match.weather?.condition || "normal"}</em><em class="badge">${marketRows ? `${marketRows} 市场` : "模型公平盘"}</em></span>
+              <span class="team-line">${team(match.home_team)}<strong>${scoreOrProbability(match, "home")}</strong></span>
+              <span class="team-line">${team(match.away_team)}<strong>${scoreOrProbability(match, "away")}</strong></span>
+              <span class="badges"><em class="badge">${liveLabel(match)}</em><em class="badge">${match.weather?.condition || "normal"}</em><em class="badge">${marketRows ? `${marketRows} 市场` : "模型公平盘"}</em></span>
             </button>
           `;
         }).join("");
@@ -1560,14 +1560,15 @@
             <div>
               <p class="eyebrow">MATCH #${match.fixture.match_number}</p>
               <h2>${match.home_team.name} <span class="muted">vs</span> ${match.away_team.name}</h2>
-              <div class="venue">${dateText(match.fixture.kickoff_utc)} · ${match.fixture.venue} · ${match.fixture.city}</div>
+              <div class="venue">${dateText(match.fixture.kickoff_utc)} · ${match.fixture.venue} · ${match.fixture.city} · ${liveLabel(match)}</div>
             </div>
             <div class="score-lens">
               ${flag(match.home_team, true)}
-              <div><strong>${match.lambda_home.toFixed(2)} : ${match.lambda_away.toFixed(2)}</strong><span class="muted">预期进球</span></div>
+              <div><strong>${scoreLens(match)}</strong><span class="muted">${match.live_status ? "实时/赛果" : "预期进球"}</span></div>
               ${flag(match.away_team, true)}
             </div>
           </header>
+          ${livePanel(match)}
           ${probability(match)}
           <div class="tabs">
             ${tabButton("handicap", "盘口矩阵")}
@@ -1585,6 +1586,17 @@
             renderDetail();
           });
         });
+      }
+
+      function livePanel(match) {
+        if (!match.live_status) return "";
+        const live = match.live_status;
+        return `
+          <div class="subpanel" style="margin:14px 0">
+            <span class="data-chip">${live.source || "live source"} · ${live.source_quality || "live_public"} · ${live.captured_at ? shortTime(live.captured_at) : ""}</span>
+            <p class="source-note">${live.status_description || live.status_state || "-"}${live.display_clock ? ` · ${live.display_clock}` : ""}${live.attendance ? ` · attendance ${Number(live.attendance).toLocaleString()}` : ""}</p>
+          </div>
+        `;
       }
 
       function probability(match) {
@@ -1765,6 +1777,7 @@
               ${tile("黄/红牌率", `${profile.yellow_card_rate.toFixed(2)} / ${profile.red_card_rate.toFixed(2)}`)}
               ${tile("阵容深度", profile.squad_depth_score.toFixed(1))}
               ${tile("旅程疲劳", fatigueText(profile.travel_fatigue_level))}
+              ${profile.live_public_stats ? tile("角球/犯规", `${profile.live_corners ?? "-"} / ${profile.live_fouls_committed ?? "-"}`) : ""}
             </div>
             <div class="factor" style="margin-top:10px">
               <div><strong>高压强度</strong><em>预测旅程 ${Number(profile.projected_travel_km).toLocaleString()} km</em></div>
@@ -1847,6 +1860,28 @@
         if (value === "high") return "高";
         if (value === "medium") return "中";
         return "低";
+      }
+
+      function scoreOrProbability(match, side) {
+        if (match.live_status && match.live_status[`${side}_score`] !== null && match.live_status[`${side}_score`] !== undefined) {
+          return match.live_status[`${side}_score`];
+        }
+        return pct(side === "home" ? match.p_home : match.p_away);
+      }
+
+      function scoreLens(match) {
+        if (match.live_status && match.live_status.home_score !== null && match.live_status.away_score !== null) {
+          return `${match.live_status.home_score} : ${match.live_status.away_score}`;
+        }
+        return `${match.lambda_home.toFixed(2)} : ${match.lambda_away.toFixed(2)}`;
+      }
+
+      function liveLabel(match) {
+        const live = match.live_status;
+        if (!live) return "模型赛前";
+        if (live.completed) return "FT";
+        if (live.status_state === "in") return `LIVE ${live.display_clock || ""}`.trim();
+        return live.status_detail || live.status_description || live.status_state || "赛程";
       }
 
       function renderTournament() {
