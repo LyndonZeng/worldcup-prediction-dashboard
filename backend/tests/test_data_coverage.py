@@ -40,6 +40,9 @@ class DataCoverageTest(unittest.TestCase):
         self.assertIn("title_anchor", tournament)
         self.assertIn("top_scorelines", matches[0])
         self.assertIn("event_predictions", matches[0])
+        lines = {row["line"] for row in matches[0]["handicap_preview"]}
+        self.assertIn(-2.5, lines)
+        self.assertIn(2.5, lines)
 
     def test_event_predictions_are_bounded_and_complete(self):
         match = all_matches()[0]

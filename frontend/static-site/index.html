@@ -1945,6 +1945,7 @@
       function bettingReferences(match) {
         return [
           handicapReference(match),
+          polymarketHandicapReference(match),
           scoreReference(match),
           totalGoalsReference(match),
           cardsReference(match)
@@ -2000,6 +2001,35 @@
           metric_b_label: "覆盖概率",
           metric_b: pct(best.probability),
           note: `${status} 市场 ${odds(best.market)} vs 模型公平 ${odds(best.fair)} · ${best.source}`
+        };
+      }
+
+      function polymarketHandicapReference(match) {
+        const favoriteIsHome = Number(match.p_home || 0) >= Number(match.p_away || 0);
+        const favorite = favoriteIsHome ? match.home_team.name : match.away_team.name;
+        const underdog = favoriteIsHome ? match.away_team.name : match.home_team.name;
+        const minus15 = handicapProbability(match, favoriteIsHome ? -1.5 : 1.5, favoriteIsHome ? "home" : "away");
+        const minus25 = handicapProbability(match, favoriteIsHome ? -2.5 : 2.5, favoriteIsHome ? "home" : "away");
+        const plus15 = handicapProbability(match, favoriteIsHome ? -1.5 : 1.5, favoriteIsHome ? "away" : "home");
+        const plus25 = handicapProbability(match, favoriteIsHome ? -2.5 : 2.5, favoriteIsHome ? "away" : "home");
+        const mainPick = minus15.probability >= 0.5 ? `${favorite} -1.5` : `${underdog} +1.5`;
+        const secondaryPick = minus25.probability >= 0.35 ? `${favorite} -2.5` : `${underdog} +2.5`;
+        return {
+          category: "Polymarket 让球线",
+          pick: `${mainPick} / ${secondaryPick}`,
+          metric_a_label: `${favorite} -1.5 / -2.5`,
+          metric_a: `${pct(minus15.probability)} / ${pct(minus25.probability)}`,
+          metric_b_label: `${underdog} +1.5 / +2.5`,
+          metric_b: `${pct(plus15.probability)} / ${pct(plus25.probability)}`,
+          note: `${matchTimingNote(match)} 这些是模型公平概率，适配 Polymarket 常见 1.5、2.5 线；若市场价格低于/高于公平概率再判断是否有差异。`
+        };
+      }
+
+      function handicapProbability(match, homeLine, side) {
+        const row = (match.handicap_preview || []).find((item) => Number(item.line) === Number(homeLine));
+        return {
+          probability: Number(row?.[side]?.positive_probability || 0),
+          fair: row?.[side]?.fair_decimal_odds || null
         };
       }
 

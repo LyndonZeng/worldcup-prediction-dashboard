@@ -11,7 +11,7 @@ from .handicap import asian_market_from_matrix
 from .odds import model_lean
 from .score_model import MatchAdjustments, MatchContext, poisson_pmf, predict_match
 
-DEFAULT_HANDICAP_LINES = [-2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
+DEFAULT_HANDICAP_LINES = [-2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5]
 MODEL_VERSION = "wc26-v0.5-monte-carlo-factor-tiers"
 TITLE_MARKET_ANCHOR_WEIGHT = 0.55
 MONTE_CARLO_RUNS = 4000
