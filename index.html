@@ -1818,6 +1818,7 @@
           ${probability(match)}
           <div class="tabs">
             ${tabButton("handicap", "盘口矩阵")}
+            ${tabButton("advice", "投注参考")}
             ${tabButton("events", "比分事件")}
             ${tabButton("stats", "技术统计")}
             ${tabButton("model", "模型因子")}
@@ -1883,6 +1884,7 @@
       }
 
       function tabContent(match) {
+        if (state.tab === "advice") return advicePanel(match);
         if (state.tab === "events") return eventsPanel(match);
         if (state.tab === "stats") return technicalPanel(match);
         if (state.tab === "model") return modelPanel(match);
@@ -1915,6 +1917,156 @@
             </table>
           </div>
         `;
+      }
+
+      function advicePanel(match) {
+        const rows = bettingReferences(match);
+        return `
+          <div class="subpanel" style="margin-bottom:10px">
+            <span class="data-chip">模型投注参考 · 非投注建议</span>
+            <p class="source-note">只展示概率、盘口差异和模型倾向；不包含下注指令、仓位、Kelly 或收益承诺。已开赛/已完赛比赛仅用于赛后复盘。</p>
+          </div>
+          <div class="grid">
+            ${rows.map((row) => `
+              <div class="subpanel">
+                <span class="data-chip">${row.category}</span>
+                <h3 style="margin-top:12px">${row.pick}</h3>
+                <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
+                  ${tile(row.metric_a_label, row.metric_a)}
+                  ${tile(row.metric_b_label, row.metric_b)}
+                </div>
+                <p class="source-note">${row.note}</p>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      function bettingReferences(match) {
+        return [
+          handicapReference(match),
+          scoreReference(match),
+          totalGoalsReference(match),
+          cardsReference(match)
+        ];
+      }
+
+      function handicapReference(match) {
+        const status = matchTimingNote(match);
+        const candidates = [];
+        (match.handicap_preview || []).forEach((row) => {
+          if (row.market_status !== "available") return;
+          const homeEdge = expectedReturnFromFair(row.home?.market_decimal_odds, row.home?.fair_decimal_odds);
+          const awayEdge = expectedReturnFromFair(row.away?.market_decimal_odds, row.away?.fair_decimal_odds);
+          if (homeEdge !== null) {
+            candidates.push({
+              side: `${match.home_team.name} ${line(row.line)}`,
+              edge: homeEdge,
+              probability: row.home.positive_probability,
+              market: row.home.market_decimal_odds,
+              fair: row.home.fair_decimal_odds,
+              source: row.source
+            });
+          }
+          if (awayEdge !== null) {
+            candidates.push({
+              side: `${match.away_team.name} ${line(-Number(row.line))}`,
+              edge: awayEdge,
+              probability: row.away.positive_probability,
+              market: row.away.market_decimal_odds,
+              fair: row.away.fair_decimal_odds,
+              source: row.source
+            });
+          }
+        });
+        candidates.sort((a, b) => b.edge - a.edge);
+        const best = candidates[0];
+        if (!best || best.edge < 0.035) {
+          return {
+            category: "让球",
+            pick: "观察",
+            metric_a_label: "可用盘口",
+            metric_a: candidates.length ? `${candidates.length} 个` : "暂无",
+            metric_b_label: "最低阈值",
+            metric_b: "+3.5%",
+            note: `${status} 当前没有超过模型阈值的真实让球盘口。`
+          };
+        }
+        return {
+          category: "让球",
+          pick: best.side,
+          metric_a_label: "模型 edge",
+          metric_a: signed(best.edge),
+          metric_b_label: "覆盖概率",
+          metric_b: pct(best.probability),
+          note: `${status} 市场 ${odds(best.market)} vs 模型公平 ${odds(best.fair)} · ${best.source}`
+        };
+      }
+
+      function scoreReference(match) {
+        const scorelines = match.event_predictions?.score?.top_scorelines || match.top_scorelines || [];
+        const top = scorelines[0];
+        const alternatives = scorelines.slice(1, 3).map((row) => `${row.score} ${pct(row.probability)}`).join(" · ");
+        return {
+          category: "比分",
+          pick: top ? top.score : "观察",
+          metric_a_label: "首选概率",
+          metric_a: top ? pct(top.probability) : "-",
+          metric_b_label: "备选比分",
+          metric_b: alternatives || "-",
+          note: `${matchTimingNote(match)} 精确比分天然波动大，建议只当比分分布参考。`
+        };
+      }
+
+      function totalGoalsReference(match) {
+        const over = Number(match.p_over_2_5 || 0);
+        const under = clamp(1 - over, 0, 1);
+        const pick = over >= under ? "大 2.5" : "小 2.5";
+        const confidence = Math.max(over, under);
+        return {
+          category: "大小球",
+          pick: confidence >= 0.55 ? pick : "观察",
+          metric_a_label: "大 2.5",
+          metric_a: pct(over),
+          metric_b_label: "小 2.5",
+          metric_b: pct(under),
+          note: `${matchTimingNote(match)} 基于比分矩阵总进球分布；未接入真实 O/U 市场 edge 时只显示模型方向。`
+        };
+      }
+
+      function cardsReference(match) {
+        const cards = match.event_predictions?.cards || {};
+        const yellow35 = Number(cards.over_3_5_yellow_probability || 0);
+        const yellow45 = Number(cards.over_4_5_yellow_probability || 0);
+        const red = Number(cards.any_red_probability || 0);
+        let yellowPick = "黄牌观察";
+        if (yellow45 >= 0.55) yellowPick = "黄牌大 4.5";
+        else if (yellow35 >= 0.55) yellowPick = "黄牌大 3.5";
+        else if (yellow35 <= 0.45) yellowPick = "黄牌小 3.5";
+        const redPick = red >= 0.18 ? "红牌风险偏高" : red <= 0.08 ? "红牌偏低" : "红牌观察";
+        return {
+          category: "红黄牌",
+          pick: `${yellowPick} / ${redPick}`,
+          metric_a_label: "黄牌大 3.5",
+          metric_a: pct(yellow35),
+          metric_b_label: "出现红牌",
+          metric_b: pct(red),
+          note: `${matchTimingNote(match)} 黄/红牌来自透明先验和实时公开统计校验，缺少裁判尺度与真实牌市场赔率。`
+        };
+      }
+
+      function expectedReturnFromFair(marketOdds, fairOdds) {
+        const market = Number(marketOdds);
+        const fair = Number(fairOdds);
+        if (!Number.isFinite(market) || !Number.isFinite(fair) || market <= 1 || fair <= 1) return null;
+        return market / fair - 1;
+      }
+
+      function matchTimingNote(match) {
+        const live = match.live_status;
+        if (!live || live.status_state === "pre") return "赛前参考。";
+        if (live.completed || live.status_state === "post") return "已完赛，仅作复盘。";
+        return "比赛进行中，仅作实时研究参考。";
       }
 
       function modelPanel(match) {
