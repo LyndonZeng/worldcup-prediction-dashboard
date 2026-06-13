@@ -227,7 +227,7 @@
 
       .metrics {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 10px;
       }
 
@@ -1754,11 +1754,14 @@
         const top = state.tournament?.teams?.[0];
         const marketCount = state.matches.reduce((sum, match) => sum + match.handicap_preview.filter((row) => row.market_status === "available").length, 0);
         const confidence = state.selected ? confidenceScore(state.selected) : 0;
+        const current = state.selected ? currentWinProjection(state.selected) : null;
+        const currentLeader = current && currentLeaderText(state.selected, current);
         const liveSources = state.sources.filter((source) => source.status !== "planned").length;
         document.getElementById("hero-confidence").textContent = pct(confidence);
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
+          metric("当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
           metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? `${top.team} · 裸模型 ${pct(top.raw_title_probability)}` : "等待模拟"),
@@ -1842,17 +1845,32 @@
       }
 
       function probability(match) {
+        const current = currentWinProjection(match);
         return `
           <div class="prob">
             <div class="prob-labels">
-              <span>${match.home_team.name} ${pct(match.p_home)}</span>
-              <span>平局 ${pct(match.p_draw)}</span>
-              <span>${match.away_team.name} ${pct(match.p_away)}</span>
+              <span>赛前 ${match.home_team.name} ${pct(match.p_home)}</span>
+              <span>赛前平局 ${pct(match.p_draw)}</span>
+              <span>赛前 ${match.away_team.name} ${pct(match.p_away)}</span>
             </div>
             <div class="prob-bar">
               <i class="home" style="width:${Math.max(4, match.p_home * 100)}%"></i>
               <i class="draw" style="width:${Math.max(4, match.p_draw * 100)}%"></i>
               <i class="away" style="width:${Math.max(4, match.p_away * 100)}%"></i>
+            </div>
+            <div class="subpanel" style="margin-top:10px">
+              <span class="data-chip">当前胜率 · ${current.label}</span>
+              <div class="prob-labels" style="margin-top:10px">
+                <span>${match.home_team.name} ${pct(current.home)}</span>
+                <span>平局 ${pct(current.draw)}</span>
+                <span>${match.away_team.name} ${pct(current.away)}</span>
+              </div>
+              <div class="prob-bar">
+                <i class="home" style="width:${Math.max(4, current.home * 100)}%"></i>
+                <i class="draw" style="width:${Math.max(4, current.draw * 100)}%"></i>
+                <i class="away" style="width:${Math.max(4, current.away * 100)}%"></i>
+              </div>
+              <p class="source-note">${current.note}</p>
             </div>
           </div>
         `;
@@ -2159,6 +2177,107 @@
         const home = match.live_status?.home_score ?? score.actual_home_score;
         const away = match.live_status?.away_score ?? score.actual_away_score;
         return home === null || home === undefined || away === null || away === undefined ? "未开赛" : `${home} : ${away}`;
+      }
+
+      function currentWinProjection(match) {
+        const live = match.live_status;
+        if (!hasActualScore(match)) {
+          return {
+            home: match.p_home,
+            draw: match.p_draw,
+            away: match.p_away,
+            label: "赛前模型",
+            note: "未开赛时当前胜率等同于赛前胜平负概率。"
+          };
+        }
+        const homeScore = Number(live.home_score);
+        const awayScore = Number(live.away_score);
+        if (live.completed || live.status_state === "post") {
+          return finalWinProjection(homeScore, awayScore);
+        }
+        if (live.status_state !== "in") {
+          return {
+            home: match.p_home,
+            draw: match.p_draw,
+            away: match.p_away,
+            label: "赛前模型",
+            note: "当前状态不是进行中，暂用赛前胜平负概率。"
+          };
+        }
+        const elapsed = liveMinute(live);
+        const remainingShare = clamp((98 - elapsed) / 98, 0, 1);
+        const homeLambda = Math.max(0.01, Number(match.lambda_home || 0) * remainingShare);
+        const awayLambda = Math.max(0.01, Number(match.lambda_away || 0) * remainingShare);
+        const distribution = remainingOutcomeProjection(homeScore, awayScore, homeLambda, awayLambda);
+        return {
+          ...distribution,
+          label: `实时 ${Math.round(elapsed)}'`,
+          note: `基于当前比分 ${homeScore}:${awayScore}、比赛时间和剩余预期进球估算；不是投注建议。`
+        };
+      }
+
+      function currentLeaderText(match, current) {
+        const rows = [
+          { label: match.home_team.name, probability: current.home },
+          { label: "平局", probability: current.draw },
+          { label: match.away_team.name, probability: current.away }
+        ].sort((a, b) => b.probability - a.probability);
+        return {
+          value: `${rows[0].label} ${pct(rows[0].probability)}`,
+          sub: current.label
+        };
+      }
+
+      function finalWinProjection(homeScore, awayScore) {
+        if (homeScore > awayScore) return { home: 1, draw: 0, away: 0, label: "完赛", note: "比赛已结束，当前胜率等同于赛果。" };
+        if (homeScore < awayScore) return { home: 0, draw: 0, away: 1, label: "完赛", note: "比赛已结束，当前胜率等同于赛果。" };
+        return { home: 0, draw: 1, away: 0, label: "完赛", note: "比赛已结束，当前胜率等同于赛果。" };
+      }
+
+      function remainingOutcomeProjection(homeScore, awayScore, homeLambda, awayLambda) {
+        const maxExtraGoals = 7;
+        const homePmfs = poissonDistribution(homeLambda, maxExtraGoals);
+        const awayPmfs = poissonDistribution(awayLambda, maxExtraGoals);
+        let home = 0;
+        let draw = 0;
+        let away = 0;
+        for (let h = 0; h < homePmfs.length; h += 1) {
+          for (let a = 0; a < awayPmfs.length; a += 1) {
+            const probability = homePmfs[h] * awayPmfs[a];
+            const finalHome = homeScore + h;
+            const finalAway = awayScore + a;
+            if (finalHome > finalAway) home += probability;
+            else if (finalHome === finalAway) draw += probability;
+            else away += probability;
+          }
+        }
+        const total = Math.max(0.000001, home + draw + away);
+        return { home: home / total, draw: draw / total, away: away / total };
+      }
+
+      function poissonDistribution(lambda, maxGoals) {
+        const values = [];
+        let probability = Math.exp(-lambda);
+        let total = 0;
+        for (let goals = 0; goals <= maxGoals; goals += 1) {
+          if (goals > 0) probability *= lambda / goals;
+          values.push(probability);
+          total += probability;
+        }
+        return values.map((value) => value / total);
+      }
+
+      function liveMinute(live) {
+        const clock = String(live.display_clock || "");
+        const match = clock.match(/(\d+)/);
+        if (match) return clamp(Number(match[1]), 0, 98);
+        if (Number(live.period) >= 2) return 75;
+        if (Number(live.period) === 1) return 30;
+        return 45;
+      }
+
+      function clamp(value, low, high) {
+        return Math.max(low, Math.min(high, value));
       }
 
       function fatigueText(value) {
