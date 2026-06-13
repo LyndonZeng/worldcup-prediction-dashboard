@@ -40,9 +40,27 @@ class DataCoverageTest(unittest.TestCase):
         self.assertIn("title_anchor", tournament)
         self.assertIn("top_scorelines", matches[0])
         self.assertIn("event_predictions", matches[0])
+        self.assertIn("market_summary", matches[0])
+        self.assertIn("one_x_two", matches[0]["market_summary"])
+        self.assertIn("over_under_2_5", matches[0]["market_summary"])
         lines = {row["line"] for row in matches[0]["handicap_preview"]}
         self.assertIn(-2.5, lines)
         self.assertIn(2.5, lines)
+
+    def test_market_summary_devig_probabilities_are_bounded(self):
+        matches = all_matches()
+        available = [
+            match["market_summary"]["one_x_two"]
+            for match in matches
+            if match["market_summary"]["one_x_two"]["status"] == "available"
+        ]
+        if not available:
+            self.skipTest("No live 1X2 market snapshot available")
+        probs = available[0]["market_probabilities"]
+        self.assertAlmostEqual(probs["home"] + probs["draw"] + probs["away"], 1.0, places=5)
+        for value in probs.values():
+            self.assertGreaterEqual(value, 0)
+            self.assertLessEqual(value, 1)
 
     def test_event_predictions_are_bounded_and_complete(self):
         match = all_matches()[0]

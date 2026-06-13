@@ -5,10 +5,11 @@ import math
 import random
 import unicodedata
 from datetime import datetime, timezone
+from statistics import mean
 
 from . import data_store
 from .handicap import asian_market_from_matrix
-from .odds import model_lean
+from .odds import devig_three_way, devig_two_way, model_lean
 from .score_model import MatchAdjustments, MatchContext, poisson_pmf, predict_match
 
 DEFAULT_HANDICAP_LINES = [-2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5]
@@ -50,6 +51,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
     prediction = predict_match(home, away, context, adjustments)
     matchup = _matchup_profile(home, away, fixture, context, prediction, factor_breakdown)
     event_predictions = _event_predictions(home, away, fixture, context, prediction, live_status)
+    market_summary = _market_summary(fixture, prediction)
     return {
         "match_id": fixture["id"],
         "model_version": MODEL_VERSION,
@@ -68,6 +70,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "probability_intervals": _probability_intervals(prediction, factor_breakdown),
         "matchup": matchup,
         "event_predictions": event_predictions,
+        "market_summary": market_summary,
         "risk_register": _risk_register(home, away, fixture, prediction, factor_breakdown, matchup),
         **{key: value for key, value in prediction.items() if key != "scoreline_matrix"},
     }
@@ -868,6 +871,121 @@ def _market_validation_summary() -> dict:
         "planned_metrics": ["Asian handicap hit rate", "CLV", "Brier", "log-loss", "ROI as research-only diagnostic"],
         "public_note": "No betting instruction is generated; market gaps stay visible instead of being filled with synthetic odds.",
     }
+
+
+def _market_summary(fixture: dict, prediction: dict) -> dict:
+    return {
+        "one_x_two": _one_x_two_market_summary(fixture["id"], prediction),
+        "over_under_2_5": _over_under_market_summary(fixture["id"], prediction, 2.5),
+    }
+
+
+def _one_x_two_market_summary(match_id: str, prediction: dict) -> dict:
+    model_probs = {
+        "home": prediction["p_home"],
+        "draw": prediction["p_draw"],
+        "away": prediction["p_away"],
+    }
+    markets = [
+        market
+        for market in data_store.odds_for_match(match_id, "1x2")
+        if _is_legal_market(market)
+        and market.get("price_home")
+        and market.get("price_draw")
+        and market.get("price_away")
+    ]
+    base = {
+        "status": "missing",
+        "source": "model_fair_line",
+        "books": 0,
+        "captured_at": None,
+        "model_probabilities": _rounded_probability_dict(model_probs),
+        "fair_decimal_odds": _fair_odds_dict(model_probs),
+        "market_probabilities": None,
+        "model_delta": None,
+    }
+    consensus = []
+    for market in markets:
+        try:
+            consensus.append(devig_three_way(market["price_home"], market["price_draw"], market["price_away"]))
+        except ValueError:
+            continue
+    if not consensus:
+        return base
+    market_probs = {
+        "home": mean(row[0] for row in consensus),
+        "draw": mean(row[1] for row in consensus),
+        "away": mean(row[2] for row in consensus),
+    }
+    return {
+        **base,
+        "status": "available",
+        "source": "The Odds API consensus 1X2",
+        "books": len(consensus),
+        "captured_at": max(market["captured_at"] for market in markets if market.get("captured_at")),
+        "market_probabilities": _rounded_probability_dict(market_probs),
+        "model_delta": _rounded_probability_dict(
+            {key: model_probs[key] - market_probs[key] for key in model_probs}
+        ),
+    }
+
+
+def _over_under_market_summary(match_id: str, prediction: dict, line: float) -> dict:
+    over = prediction.get("p_over_2_5")
+    model_probs = {"over": over, "under": 1 - over}
+    markets = [
+        market
+        for market in data_store.odds_for_match(match_id, "over_under")
+        if _is_legal_market(market)
+        and float(market.get("line") or 0) == float(line)
+        and market.get("price_over")
+        and market.get("price_under")
+    ]
+    base = {
+        "line": line,
+        "status": "missing",
+        "source": "model_fair_line",
+        "books": 0,
+        "captured_at": None,
+        "model_probabilities": _rounded_probability_dict(model_probs),
+        "fair_decimal_odds": _fair_odds_dict(model_probs),
+        "market_probabilities": None,
+        "model_delta": None,
+    }
+    consensus = []
+    for market in markets:
+        try:
+            consensus.append(devig_two_way(market["price_over"], market["price_under"]))
+        except ValueError:
+            continue
+    if not consensus:
+        return base
+    market_probs = {
+        "over": mean(row[0] for row in consensus),
+        "under": mean(row[1] for row in consensus),
+    }
+    return {
+        **base,
+        "status": "available",
+        "source": "The Odds API consensus O/U",
+        "books": len(consensus),
+        "captured_at": max(market["captured_at"] for market in markets if market.get("captured_at")),
+        "market_probabilities": _rounded_probability_dict(market_probs),
+        "model_delta": _rounded_probability_dict(
+            {key: model_probs[key] - market_probs[key] for key in model_probs}
+        ),
+    }
+
+
+def _fair_odds_dict(probabilities: dict[str, float]) -> dict[str, float | None]:
+    return {
+        key: round(1 / value, 4) if value and value > 0 else None
+        for key, value in probabilities.items()
+    }
+
+
+def _rounded_probability_dict(probabilities: dict[str, float]) -> dict[str, float]:
+    return {key: round(value, 6) for key, value in probabilities.items()}
 
 
 def _best_market(match_id: str, line: float) -> dict | None:

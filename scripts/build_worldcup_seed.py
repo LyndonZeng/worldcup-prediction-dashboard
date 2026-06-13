@@ -443,6 +443,7 @@ def compact_match(match: dict) -> dict:
         "probability_intervals": match["probability_intervals"],
         "matchup": match["matchup"],
         "event_predictions": match["event_predictions"],
+        "market_summary": match["market_summary"],
         "risk_register": match["risk_register"],
         "lambda_home": match["lambda_home"],
         "lambda_away": match["lambda_away"],

@@ -1375,7 +1375,7 @@
       const API = "http://127.0.0.1:8000";
       const ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard";
       const embeddedData = window.__DASHBOARD_DATA__ || null;
-      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4", "data.json.gz.b64.5", "data.json.gz.b64.6"];
+      const compressedDataChunks = ["data.json.gz.b64.0", "data.json.gz.b64.1", "data.json.gz.b64.2", "data.json.gz.b64.3", "data.json.gz.b64.4", "data.json.gz.b64.5", "data.json.gz.b64.6", "data.json.gz.b64.7"];
       const teamAliases = {
         "bosnia herzegovina": "bih",
         "bosnia and herzegovina": "bih",
@@ -1924,12 +1924,16 @@
         return `
           <div class="subpanel" style="margin-bottom:10px">
             <span class="data-chip">模型投注参考 · 非投注建议</span>
-            <p class="source-note">只展示概率、盘口差异和模型倾向；不包含下注指令、仓位、Kelly 或收益承诺。已开赛/已完赛比赛仅用于赛后复盘。</p>
+            <p class="source-note">按市场类型分开展示：不让球胜平负是三结果，亚洲平手盘是平局退回，欧洲让球仍有胜/平/负三项。只展示概率、市场差异和模型倾向；不包含下注指令、仓位、Kelly 或收益承诺。</p>
           </div>
           <div class="grid">
             ${rows.map((row) => `
               <div class="subpanel">
-                <span class="data-chip">${row.category}</span>
+                <div class="factor-meta">
+                  <span>${row.category}</span>
+                  <span>${row.source_type}</span>
+                  <span class="${row.confidence === "低" ? "unused" : ""}">置信 ${row.confidence}</span>
+                </div>
                 <h3 style="margin-top:12px">${row.pick}</h3>
                 <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
                   ${tile(row.metric_a_label, row.metric_a)}
@@ -1944,15 +1948,62 @@
 
       function bettingReferences(match) {
         return [
-          handicapReference(match),
+          oneXTwoReference(match),
+          asianHandicapReference(match),
+          europeanHandicapReference(match),
           polymarketHandicapReference(match),
-          scoreReference(match),
           totalGoalsReference(match),
+          scoreReference(match),
+          cornersReference(match),
           cardsReference(match)
         ];
       }
 
-      function handicapReference(match) {
+      function oneXTwoReference(match) {
+        const status = matchTimingNote(match);
+        const market = match.market_summary?.one_x_two || {};
+        const outcomes = [
+          { key: "home", label: `${match.home_team.name} 胜`, probability: Number(match.p_home || 0) },
+          { key: "draw", label: "平局", probability: Number(match.p_draw || 0) },
+          { key: "away", label: `${match.away_team.name} 胜`, probability: Number(match.p_away || 0) }
+        ];
+        const byModel = [...outcomes].sort((a, b) => b.probability - a.probability);
+        const byDelta = outcomes
+          .map((outcome) => ({
+            ...outcome,
+            marketProbability: Number(market.market_probabilities?.[outcome.key] ?? NaN),
+            delta: Number(market.model_delta?.[outcome.key] ?? NaN)
+          }))
+          .filter((outcome) => Number.isFinite(outcome.delta))
+          .sort((a, b) => b.delta - a.delta);
+        const marketEdge = byDelta[0];
+        const pick = market.status === "available" && marketEdge && marketEdge.delta >= 0.045
+          ? `模型高于市场：${marketEdge.label}`
+          : byModel[0].probability >= 0.45
+            ? `模型倾向：${byModel[0].label}`
+            : "观察";
+        const modelText = `${pct(match.p_home)} / ${pct(match.p_draw)} / ${pct(match.p_away)}`;
+        const fairText = `${odds(fairOdds(match.p_home))} / ${odds(fairOdds(match.p_draw))} / ${odds(fairOdds(match.p_away))}`;
+        const marketText = market.status === "available"
+          ? `${pct(market.market_probabilities.home)} / ${pct(market.market_probabilities.draw)} / ${pct(market.market_probabilities.away)}`
+          : fairText;
+        const note = market.status === "available"
+          ? `${status} 不让球胜平负是三结果市场，平局独立结算；市场为 ${market.source}，${market.books} 家去水均值，最大模型差 ${signedPct(marketEdge?.delta || 0)}。`
+          : `${status} 不让球胜平负是三结果市场，平局不是退回本金；暂无真实 1X2 市场，显示模型公平赔率。`;
+        return {
+          category: "基础胜平负",
+          source_type: market.status === "available" ? "模型 vs 1X2 市场" : "模型独立推导",
+          confidence: "高",
+          pick,
+          metric_a_label: "模型 主/平/客",
+          metric_a: modelText,
+          metric_b_label: market.status === "available" ? "市场去水 主/平/客" : "公平赔率 主/平/客",
+          metric_b: marketText,
+          note
+        };
+      }
+
+      function asianHandicapReference(match) {
         const status = matchTimingNote(match);
         const candidates = [];
         (match.handicap_preview || []).forEach((row) => {
@@ -1982,25 +2033,58 @@
         });
         candidates.sort((a, b) => b.edge - a.edge);
         const best = candidates[0];
-        if (!best || best.edge < 0.035) {
+          if (!best || best.edge < 0.035) {
+          const zero = findHandicapRow(match, 0);
           return {
-            category: "让球",
+            category: "亚洲让球",
+            source_type: candidates.length ? "博彩公司市场对比" : "模型公平盘口",
+            confidence: "高",
             pick: "观察",
-            metric_a_label: "可用盘口",
-            metric_a: candidates.length ? `${candidates.length} 个` : "暂无",
-            metric_b_label: "最低阈值",
-            metric_b: "+3.5%",
-            note: `${status} 当前没有超过模型阈值的真实让球盘口。`
+            metric_a_label: "AH 0 主/客",
+            metric_a: zero ? `${pct(zero.home.positive_probability)} / ${pct(zero.away.positive_probability)}` : "-",
+            metric_b_label: "AH 0 走盘",
+            metric_b: zero ? pct(zero.home.push) : "-",
+            note: `${status} 当前没有超过 +3.5% 阈值的真实亚洲盘口。注意 AH 0 是平手盘，平局退回；它不等于三结果胜平负。`
           };
         }
         return {
-          category: "让球",
-          pick: best.side,
+          category: "亚洲让球",
+          source_type: "博彩公司市场对比",
+          confidence: "高",
+          pick: `模型高于市场：${best.side}`,
           metric_a_label: "模型 edge",
           metric_a: signed(best.edge),
-          metric_b_label: "覆盖概率",
-          metric_b: pct(best.probability),
-          note: `${status} 市场 ${odds(best.market)} vs 模型公平 ${odds(best.fair)} · ${best.source}`
+          metric_b_label: "覆盖 / 公平赔率",
+          metric_b: `${pct(best.probability)} / ${odds(best.fair)}`,
+          note: `${status} 亚洲盘按半赢、走盘、半输精确结算；市场 ${odds(best.market)} vs 模型公平 ${odds(best.fair)} · ${best.source}`
+        };
+      }
+
+      function europeanHandicapReference(match) {
+        const favoriteIsHome = Number(match.p_home || 0) >= Number(match.p_away || 0);
+        const favorite = favoriteIsHome ? match.home_team.name : match.away_team.name;
+        const opponent = favoriteIsHome ? match.away_team.name : match.home_team.name;
+        const side = favoriteIsHome ? "home" : "away";
+        const oneGoalRow = findHandicapRow(match, favoriteIsHome ? -1 : 1);
+        const oneAndHalfRow = findHandicapRow(match, favoriteIsHome ? -1.5 : 1.5);
+        const win = Number(oneAndHalfRow?.[side]?.positive_probability || 0);
+        const draw = Number(oneGoalRow?.[side]?.push || 0);
+        const lose = clamp(1 - win - draw, 0, 1);
+        const pick = win >= 0.45
+          ? `${favorite} -1 让胜`
+          : draw >= 0.25
+            ? `${favorite} -1 让平观察`
+            : `${opponent} 受让方向观察`;
+        return {
+          category: "欧洲让球胜平负",
+          source_type: "模型独立推导",
+          confidence: "高",
+          pick,
+          metric_a_label: `${favorite} -1 后`,
+          metric_a: `${pct(win)} / ${pct(draw)} / ${pct(lose)}`,
+          metric_b_label: "结算结构",
+          metric_b: "让胜 / 让平 / 让负",
+          note: `${matchTimingNote(match)} 欧洲让球是三结果市场：以 ${favorite} -1 为例，赢 2+ 球才是让胜，赢 1 球是让平，其余为让负。`
         };
       }
 
@@ -2015,13 +2099,15 @@
         const mainPick = minus15.probability >= 0.5 ? `${favorite} -1.5` : `${underdog} +1.5`;
         const secondaryPick = minus25.probability >= 0.35 ? `${favorite} -2.5` : `${underdog} +2.5`;
         return {
-          category: "Polymarket 让球线",
+          category: "Polymarket 线型参考",
+          source_type: "模型独立推导",
+          confidence: "中",
           pick: `${mainPick} / ${secondaryPick}`,
           metric_a_label: `${favorite} -1.5 / -2.5`,
           metric_a: `${pct(minus15.probability)} / ${pct(minus25.probability)}`,
           metric_b_label: `${underdog} +1.5 / +2.5`,
           metric_b: `${pct(plus15.probability)} / ${pct(plus25.probability)}`,
-          note: `${matchTimingNote(match)} 这些是模型公平概率，适配 Polymarket 常见 1.5、2.5 线；若市场价格低于/高于公平概率再判断是否有差异。`
+          note: `${matchTimingNote(match)} 这里只是适配 Polymarket 常见 1.5、2.5 线型；当前未读取对应合约价格，因此不是 Polymarket 定价信号。`
         };
       }
 
@@ -2039,6 +2125,8 @@
         const alternatives = scorelines.slice(1, 3).map((row) => `${row.score} ${pct(row.probability)}`).join(" · ");
         return {
           category: "比分",
+          source_type: "模型独立推导",
+          confidence: "中",
           pick: top ? top.score : "观察",
           metric_a_label: "首选概率",
           metric_a: top ? pct(top.probability) : "-",
@@ -2049,18 +2137,50 @@
       }
 
       function totalGoalsReference(match) {
+        const market = match.market_summary?.over_under_2_5 || {};
         const over = Number(match.p_over_2_5 || 0);
         const under = clamp(1 - over, 0, 1);
-        const pick = over >= under ? "大 2.5" : "小 2.5";
+        const marketOver = Number(market.market_probabilities?.over ?? NaN);
+        const marketUnder = Number(market.market_probabilities?.under ?? NaN);
+        const overDelta = Number(market.model_delta?.over ?? NaN);
+        const underDelta = Number(market.model_delta?.under ?? NaN);
+        const pick = market.status === "available" && Math.max(overDelta, underDelta) >= 0.045
+          ? `模型高于市场：${overDelta >= underDelta ? "大 2.5" : "小 2.5"}`
+          : over >= under ? "大 2.5" : "小 2.5";
         const confidence = Math.max(over, under);
         return {
           category: "大小球",
+          source_type: market.status === "available" ? "模型 vs O/U 市场" : "模型独立推导",
+          confidence: "高",
           pick: confidence >= 0.55 ? pick : "观察",
-          metric_a_label: "大 2.5",
-          metric_a: pct(over),
-          metric_b_label: "小 2.5",
-          metric_b: pct(under),
-          note: `${matchTimingNote(match)} 基于比分矩阵总进球分布；未接入真实 O/U 市场 edge 时只显示模型方向。`
+          metric_a_label: "模型 大/小 2.5",
+          metric_a: `${pct(over)} / ${pct(under)}`,
+          metric_b_label: market.status === "available" ? "市场去水 大/小" : "公平赔率 大/小",
+          metric_b: market.status === "available" ? `${pct(marketOver)} / ${pct(marketUnder)}` : `${odds(fairOdds(over))} / ${odds(fairOdds(under))}`,
+          note: market.status === "available"
+            ? `${matchTimingNote(match)} 基于比分矩阵总进球分布，并与 ${market.books} 家 O/U 2.5 市场去水均值对比。`
+            : `${matchTimingNote(match)} 基于比分矩阵总进球分布；未接入真实 O/U 2.5 市场 edge 时只显示模型方向。`
+        };
+      }
+
+      function cornersReference(match) {
+        const corners = match.event_predictions?.corners || {};
+        const over85 = Number(corners.over_8_5_probability || 0);
+        const over95 = Number(corners.over_9_5_probability || 0);
+        let pick = "角球观察";
+        if (over95 >= 0.56) pick = "角球大 9.5";
+        else if (over85 >= 0.56) pick = "角球大 8.5";
+        else if (over85 <= 0.44) pick = "角球小 8.5";
+        return {
+          category: "角球",
+          source_type: "代理数据低置信",
+          confidence: "低",
+          pick,
+          metric_a_label: "角球预测 主/客",
+          metric_a: `${value(corners.home_expected, 1)} / ${value(corners.away_expected, 1)}`,
+          metric_b_label: "大 8.5 / 大 9.5",
+          metric_b: `${pct(over85)} / ${pct(over95)}`,
+          note: `${matchTimingNote(match)} 角球来自技术统计代理和实时公开统计校验；缺少真实角球盘口与球队角球历史回测，因此低置信。`
         };
       }
 
@@ -2076,6 +2196,8 @@
         const redPick = red >= 0.18 ? "红牌风险偏高" : red <= 0.08 ? "红牌偏低" : "红牌观察";
         return {
           category: "红黄牌",
+          source_type: "代理数据低置信",
+          confidence: "低",
           pick: `${yellowPick} / ${redPick}`,
           metric_a_label: "黄牌大 3.5",
           metric_a: pct(yellow35),
@@ -2111,7 +2233,7 @@
             ${tile("总进球修正", multiplier(match.model_inputs?.total_goal_multiplier ?? 1))}
             ${tile("综合边际", signed(match.model_inputs?.weighted_context_edge ?? 0))}
           </div>
-          <div class="rail-body">${factorPanel(match)}</div>
+          <div class="rail-body">${factorPanel(match)}${methodologyPanel(match)}</div>
         `;
       }
 
@@ -2318,6 +2440,38 @@
         }).join("");
       }
 
+      function methodologyPanel(match) {
+        const oneXTwoMarket = match.market_summary?.one_x_two;
+        const marketNote = oneXTwoMarket?.status === "available"
+          ? `本场 1X2 已接 ${oneXTwoMarket.books} 家市场去水均值。`
+          : "本场暂无 1X2 市场快照，投注参考退回模型公平概率。";
+        return `
+          <div class="subpanel" style="margin-top:10px">
+            <span class="data-chip">概率模型方法</span>
+            <h3 style="margin-top:10px">当前是透明 v0.5，不是已闭盘验证的黑箱</h3>
+            <div class="rail-body" style="padding:10px 0 0">
+              <div class="source">
+                <div><strong>当前核心</strong><span>Poisson 比分矩阵 + ELO/近期赛果/主客场/旅程/阵容代理修正；盘口、比分、大小球都从比分矩阵推导。</span></div>
+                <em>已用</em>
+              </div>
+              <div class="source">
+                <div><strong>更科学升级</strong><span>Dixon-Coles 或双变量 Poisson 修正低比分相关性；分层贝叶斯给球队攻防强度和不确定性做后验更新。</span></div>
+                <em>下一步</em>
+              </div>
+              <div class="source">
+                <div><strong>因子准入</strong><span>只有 walk-forward 回测有效的因子进入核心；天气、角球、红黄牌、球员状态在缺数据时保留为展示或低置信代理。</span></div>
+                <em>门控</em>
+              </div>
+              <div class="source">
+                <div><strong>验证指标</strong><span>Brier、log-loss、校准曲线、closing line value 和盘口分市场回测；ROI 只作研究指标，不在公开页包装收益。</span></div>
+                <em>待积累</em>
+              </div>
+            </div>
+            <p class="source-note">${marketNote} 市场锚定主要用于冠军概率；单场投注参考优先做模型概率与合法市场差异对比。</p>
+          </div>
+        `;
+      }
+
       function weather(match) {
         return `
           <div class="subpanel">
@@ -2355,6 +2509,21 @@
 
       function actualValue(item) {
         return item === null || item === undefined ? "暂无" : item;
+      }
+
+      function fairOdds(probability) {
+        const number = Number(probability);
+        return Number.isFinite(number) && number > 0 ? 1 / number : null;
+      }
+
+      function signedPct(value) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return "-";
+        return `${number >= 0 ? "+" : ""}${(number * 100).toFixed(1)}pp`;
+      }
+
+      function findHandicapRow(match, homeLine) {
+        return (match.handicap_preview || []).find((item) => Number(item.line) === Number(homeLine));
       }
 
       function actualScore(match, score) {
