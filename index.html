@@ -1756,12 +1756,14 @@
         const confidence = state.selected ? confidenceScore(state.selected) : 0;
         const current = state.selected ? currentWinProjection(state.selected) : null;
         const currentLeader = current && currentLeaderText(state.selected, current);
+        const performance = predictionPerformance(state.matches);
         const liveSources = state.sources.filter((source) => source.status !== "planned").length;
         document.getElementById("hero-confidence").textContent = pct(confidence);
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
+          metric("总体命中率", performance.completed ? pct(performance.hit_rate) : "-", performance.completed ? `1X2 命中 ${performance.correct}/${performance.completed} 场` : "等待完赛样本"),
+          metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
           metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? `${top.team} · 裸模型 ${pct(top.raw_title_probability)}` : "等待模拟"),
@@ -1859,7 +1861,7 @@
               <i class="away" style="width:${Math.max(4, match.p_away * 100)}%"></i>
             </div>
             <div class="subpanel" style="margin-top:10px">
-              <span class="data-chip">当前胜率 · ${current.label}</span>
+              <span class="data-chip">单场当前胜率 · ${current.label}</span>
               <div class="prob-labels" style="margin-top:10px">
                 <span>${match.home_team.name} ${pct(current.home)}</span>
                 <span>平局 ${pct(current.draw)}</span>
@@ -2214,6 +2216,41 @@
           label: `实时 ${Math.round(elapsed)}'`,
           note: `基于当前比分 ${homeScore}:${awayScore}、比赛时间和剩余预期进球估算；不是投注建议。`
         };
+      }
+
+      function predictionPerformance(matches) {
+        const rows = matches
+          .map((match) => {
+            const actual = actualOutcome(match);
+            if (!actual) return null;
+            return { actual, predicted: predictedOutcome(match) };
+          })
+          .filter(Boolean);
+        const correct = rows.filter((row) => row.actual === row.predicted).length;
+        return {
+          completed: rows.length,
+          correct,
+          hit_rate: rows.length ? correct / rows.length : null
+        };
+      }
+
+      function actualOutcome(match) {
+        const live = match.live_status;
+        if (!live || !(live.completed || live.status_state === "post") || !hasActualScore(match)) return null;
+        const home = Number(live.home_score);
+        const away = Number(live.away_score);
+        if (home > away) return "home";
+        if (home < away) return "away";
+        return "draw";
+      }
+
+      function predictedOutcome(match) {
+        const rows = [
+          { outcome: "home", probability: Number(match.p_home || 0) },
+          { outcome: "draw", probability: Number(match.p_draw || 0) },
+          { outcome: "away", probability: Number(match.p_away || 0) }
+        ].sort((a, b) => b.probability - a.probability);
+        return rows[0].outcome;
       }
 
       function currentLeaderText(match, current) {
