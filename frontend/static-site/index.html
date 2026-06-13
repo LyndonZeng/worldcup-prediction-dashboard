@@ -1618,15 +1618,47 @@
       function applyLiveToMatch(match) {
         const live = match.live_status;
         const hasStats = live && (Object.keys(live.home_stats || {}).length || Object.keys(live.away_stats || {}).length);
-        if (!hasStats || !match.tactical_profile) return match;
-        return {
+        const next = {
           ...match,
+          event_predictions: applyLiveEvents(match.event_predictions, live)
+        };
+        if (!hasStats || !match.tactical_profile) return next;
+        return {
+          ...next,
           tactical_profile: {
             ...match.tactical_profile,
             source: "ESPN public scoreboard basic stats + seed-derived xG/PPDA",
             data_quality: "mixed_live_public_proxy",
             home: applyLiveStats(match.tactical_profile.home, live.home_stats),
             away: applyLiveStats(match.tactical_profile.away, live.away_stats)
+          }
+        };
+      }
+
+      function applyLiveEvents(events, live) {
+        if (!events || !live) return events;
+        const homeStats = live.home_stats || {};
+        const awayStats = live.away_stats || {};
+        return {
+          ...events,
+          data_quality: Object.keys(homeStats).length || Object.keys(awayStats).length ? "mixed_live_public_proxy" : events.data_quality,
+          score: {
+            ...(events.score || {}),
+            actual_home_score: live.home_score,
+            actual_away_score: live.away_score,
+            status: live.status_description || live.status_state || events.score?.status
+          },
+          corners: {
+            ...(events.corners || {}),
+            live_home: homeStats.corners ?? events.corners?.live_home,
+            live_away: awayStats.corners ?? events.corners?.live_away
+          },
+          cards: {
+            ...(events.cards || {}),
+            live_home_yellow: homeStats.yellow_cards ?? events.cards?.live_home_yellow,
+            live_away_yellow: awayStats.yellow_cards ?? events.cards?.live_away_yellow,
+            live_home_red: homeStats.red_cards ?? events.cards?.live_home_red,
+            live_away_red: awayStats.red_cards ?? events.cards?.live_away_red
           }
         };
       }
@@ -1773,7 +1805,7 @@
             </div>
             <div class="score-lens">
               ${flag(match.home_team, true)}
-              <div><strong>${scoreLens(match)}</strong><span class="muted">${match.live_status ? "实时/赛果" : "预期进球"}</span></div>
+              <div><strong>${scoreLens(match)}</strong><span class="muted">${hasActualScore(match) ? "实时/赛果" : "预期进球"}</span></div>
               ${flag(match.away_team, true)}
             </div>
           </header>
@@ -1799,7 +1831,7 @@
       }
 
       function livePanel(match) {
-        if (!match.live_status) return "";
+        if (!match.live_status || match.live_status.status_state === "pre") return "";
         const live = match.live_status;
         return `
           <div class="subpanel" style="margin:14px 0">
@@ -2124,8 +2156,8 @@
       }
 
       function actualScore(match, score) {
-        const home = score.actual_home_score ?? match.live_status?.home_score;
-        const away = score.actual_away_score ?? match.live_status?.away_score;
+        const home = match.live_status?.home_score ?? score.actual_home_score;
+        const away = match.live_status?.away_score ?? score.actual_away_score;
         return home === null || home === undefined || away === null || away === undefined ? "未开赛" : `${home} : ${away}`;
       }
 
@@ -2144,10 +2176,14 @@
       }
 
       function scoreLens(match) {
-        if (match.live_status && match.live_status.home_score !== null && match.live_status.away_score !== null) {
+        if (hasActualScore(match)) {
           return `${match.live_status.home_score} : ${match.live_status.away_score}`;
         }
         return `${match.lambda_home.toFixed(2)} : ${match.lambda_away.toFixed(2)}`;
+      }
+
+      function hasActualScore(match) {
+        return match.live_status && match.live_status.home_score !== null && match.live_status.home_score !== undefined && match.live_status.away_score !== null && match.live_status.away_score !== undefined;
       }
 
       function liveLabel(match) {
@@ -2155,7 +2191,8 @@
         if (!live) return "模型赛前";
         if (live.completed) return "FT";
         if (live.status_state === "in") return `LIVE ${live.display_clock || ""}`.trim();
-        return live.status_detail || live.status_description || live.status_state || "赛程";
+        if (live.status_state === "pre") return "赛前";
+        return live.status_description || live.status_state || "赛程";
       }
 
       function renderTournament() {
