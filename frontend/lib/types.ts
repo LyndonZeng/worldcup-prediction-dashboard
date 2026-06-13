@@ -88,6 +88,13 @@ export type MatchPrediction = {
     total_goal_multiplier: number;
     applied_to: string;
   };
+  confidence_profile?: {
+    score: number;
+    tier: string;
+    method: string;
+    components: Record<string, number>;
+    notes: string[];
+  };
   lambda_home: number;
   lambda_away: number;
   p_home: number;

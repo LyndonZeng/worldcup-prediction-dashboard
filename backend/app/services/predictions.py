@@ -52,6 +52,15 @@ def prediction_for_fixture(fixture: dict) -> dict:
     matchup = _matchup_profile(home, away, fixture, context, prediction, factor_breakdown)
     event_predictions = _event_predictions(home, away, fixture, context, prediction, live_status)
     market_summary = _market_summary(fixture, prediction)
+    confidence_profile = _confidence_profile(
+        fixture,
+        live_status,
+        factor_breakdown,
+        market_summary,
+        prediction,
+        home,
+        away,
+    )
     return {
         "match_id": fixture["id"],
         "model_version": MODEL_VERSION,
@@ -67,7 +76,8 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "weather": _weather_context(fixture),
         "factor_breakdown": factor_breakdown,
         "model_inputs": _model_input_summary(adjustments, factor_breakdown),
-        "probability_intervals": _probability_intervals(prediction, factor_breakdown),
+        "probability_intervals": _probability_intervals(prediction, factor_breakdown, confidence_profile),
+        "confidence_profile": confidence_profile,
         "matchup": matchup,
         "event_predictions": event_predictions,
         "market_summary": market_summary,
@@ -988,6 +998,84 @@ def _rounded_probability_dict(probabilities: dict[str, float]) -> dict[str, floa
     return {key: round(value, 6) for key, value in probabilities.items()}
 
 
+def _confidence_profile(
+    fixture: dict,
+    live_status: dict | None,
+    factor_breakdown: list[dict],
+    market_summary: dict,
+    prediction: dict,
+    home,
+    away,
+) -> dict:
+    ah_markets = [
+        row
+        for row in data_store.odds_for_match(fixture["id"], "asian_handicap")
+        if _is_legal_market(row)
+    ]
+    ah_market_coverage = _clamp(len(ah_markets) / 6, 0.0, 1.0)
+    has_1x2 = market_summary["one_x_two"]["status"] == "available"
+    has_total = market_summary["over_under_2_5"]["status"] == "available"
+    market_coverage = _clamp(ah_market_coverage * 0.5 + (0.3 if has_1x2 else 0) + (0.2 if has_total else 0), 0.0, 1.0)
+
+    alignment_values = []
+    for market in [market_summary["one_x_two"], market_summary["over_under_2_5"]]:
+        deltas = market.get("model_delta") or {}
+        if deltas:
+            alignment_values.append(1 - min(0.2, mean(abs(value) for value in deltas.values())) / 0.2)
+    market_alignment = _clamp(mean(alignment_values), 0.0, 1.0) if alignment_values else 0.52
+
+    used_factors = [row for row in factor_breakdown if row.get("used_in_model")]
+    verified_factors = [
+        row
+        for row in used_factors
+        if row.get("data_quality") not in {"proxy", "missing"} and row.get("category") != "待接入"
+    ]
+    display_proxy_count = sum(
+        1
+        for row in factor_breakdown
+        if not row.get("used_in_model") and row.get("data_quality") in {"proxy", "missing", "proxy_pending_player_feed"}
+    )
+    data_completeness = _clamp(len(verified_factors) / max(1, len(used_factors)), 0.0, 1.0)
+    if live_status:
+        data_completeness = _clamp(data_completeness + 0.08, 0.0, 1.0)
+
+    probabilities = [prediction["p_home"], prediction["p_draw"], prediction["p_away"]]
+    entropy = -sum(prob * math.log(prob) for prob in probabilities if prob > 0)
+    model_separation = _clamp(1 - entropy / math.log(3), 0.0, 1.0)
+    proxy_penalty = _clamp(display_proxy_count / max(1, len(factor_breakdown)) * 0.38, 0.0, 0.16)
+    injury_penalty = _clamp(home.injury_impact + away.injury_impact, 0.0, 0.14)
+
+    score = _clamp(
+        0.42
+        + market_coverage * 0.19
+        + market_alignment * 0.13
+        + data_completeness * 0.17
+        + model_separation * 0.14
+        - proxy_penalty
+        - injury_penalty,
+        0.42,
+        0.93,
+    )
+    tier = "高" if score >= 0.74 else "中" if score >= 0.6 else "低"
+    return {
+        "score": round(score, 6),
+        "tier": tier,
+        "method": "weighted data-quality confidence; not a guarantee of outcome accuracy",
+        "components": {
+            "market_coverage": round(market_coverage, 6),
+            "market_alignment": round(market_alignment, 6),
+            "data_completeness": round(data_completeness, 6),
+            "model_separation": round(model_separation, 6),
+            "proxy_penalty": round(proxy_penalty, 6),
+            "injury_penalty": round(injury_penalty, 6),
+        },
+        "notes": [
+            "Higher confidence requires real 1X2/AH/O-U markets, verified event/player data, and walk-forward calibration.",
+            "Proxy-only cards/corners and pending injury feeds reduce confidence rather than boosting it.",
+        ],
+    }
+
+
 def _best_market(match_id: str, line: float) -> dict | None:
     markets = [
         row
@@ -1469,12 +1557,14 @@ def _upset_type(
     }
 
 
-def _probability_intervals(prediction: dict, factor_breakdown: list[dict]) -> dict:
+def _probability_intervals(prediction: dict, factor_breakdown: list[dict], confidence_profile: dict) -> dict:
     proxy_count = sum(1 for row in factor_breakdown if row.get("category") in {"仅展示", "待接入"})
     pending_count = sum(1 for row in factor_breakdown if row.get("category") == "待接入")
-    half_width = _clamp(0.035 + proxy_count * 0.009 + pending_count * 0.014, 0.04, 0.12)
+    confidence = float(confidence_profile.get("score") or 0.58)
+    half_width = _clamp(0.115 - confidence * 0.07 + proxy_count * 0.004 + pending_count * 0.006, 0.035, 0.12)
     return {
-        "method": "heuristic uncertainty band from missing live feeds and proxy inputs; not a calibrated Bayesian posterior yet",
+        "method": "confidence-weighted uncertainty band from market coverage, data completeness and proxy inputs; not a calibrated Bayesian posterior yet",
+        "confidence_score": round(confidence, 6),
         "home": _probability_band(prediction["p_home"], half_width),
         "draw": _probability_band(prediction["p_draw"], half_width * 0.8),
         "away": _probability_band(prediction["p_away"], half_width),

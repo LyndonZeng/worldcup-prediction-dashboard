@@ -703,6 +703,7 @@ function Flag({code, name, large = false}: {code: string; name: string; large?: 
 }
 
 function confidenceScore(match: MatchPrediction) {
+  if (match.confidence_profile?.score) return match.confidence_profile.score;
   const marketShare = match.handicap_preview.filter((row) => row.market_status === "available").length / Math.max(1, match.handicap_preview.length);
   const injuryPenalty = Math.min(0.14, match.home_team.injury_impact + match.away_team.injury_impact);
   const weatherBoost = match.weather ? 0.05 : 0;

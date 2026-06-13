@@ -43,9 +43,28 @@ class DataCoverageTest(unittest.TestCase):
         self.assertIn("market_summary", matches[0])
         self.assertIn("one_x_two", matches[0]["market_summary"])
         self.assertIn("over_under_2_5", matches[0]["market_summary"])
+        self.assertIn("confidence_profile", matches[0])
         lines = {row["line"] for row in matches[0]["handicap_preview"]}
         self.assertIn(-2.5, lines)
         self.assertIn(2.5, lines)
+
+    def test_confidence_profile_is_explainable_and_bounded(self):
+        match = all_matches()[0]
+        profile = match["confidence_profile"]
+        self.assertGreaterEqual(profile["score"], 0)
+        self.assertLessEqual(profile["score"], 1)
+        for key in [
+            "market_coverage",
+            "market_alignment",
+            "data_completeness",
+            "model_separation",
+            "proxy_penalty",
+            "injury_penalty",
+        ]:
+            self.assertIn(key, profile["components"])
+            self.assertGreaterEqual(profile["components"][key], 0)
+            self.assertLessEqual(profile["components"][key], 1)
+        self.assertEqual(match["probability_intervals"]["confidence_score"], profile["score"])
 
     def test_market_summary_devig_probabilities_are_bounded(self):
         matches = all_matches()

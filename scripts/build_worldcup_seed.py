@@ -441,6 +441,7 @@ def compact_match(match: dict) -> dict:
         "factor_breakdown": match["factor_breakdown"],
         "model_inputs": match["model_inputs"],
         "probability_intervals": match["probability_intervals"],
+        "confidence_profile": match["confidence_profile"],
         "matchup": match["matchup"],
         "event_predictions": match["event_predictions"],
         "market_summary": match["market_summary"],

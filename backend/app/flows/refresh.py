@@ -51,12 +51,14 @@ def refresh_fixtures():
     teams = _read_json("teams.json")
     raw_rows = fetch_world_cup_matches()
     rows = normalize_football_data_matches(fixtures, teams, raw_rows, captured_at)
-    _write_json("football_data_matches.json", rows)
+    if rows:
+        _write_json("football_data_matches.json", rows)
     return {
         "source": "football-data.org",
         "raw_rows": len(raw_rows),
         "rows": len(rows),
         "captured_at": captured_at,
+        "written": bool(rows),
     }
 
 

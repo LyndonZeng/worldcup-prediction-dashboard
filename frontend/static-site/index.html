@@ -2233,7 +2233,7 @@
             ${tile("总进球修正", multiplier(match.model_inputs?.total_goal_multiplier ?? 1))}
             ${tile("综合边际", signed(match.model_inputs?.weighted_context_edge ?? 0))}
           </div>
-          <div class="rail-body">${factorPanel(match)}${methodologyPanel(match)}</div>
+          <div class="rail-body">${confidencePanel(match)}${factorPanel(match)}${methodologyPanel(match)}</div>
         `;
       }
 
@@ -2438,6 +2438,36 @@
             </div>
           `;
         }).join("");
+      }
+
+      function confidencePanel(match) {
+        const profile = match.confidence_profile || {};
+        const components = profile.components || {};
+        const rows = [
+          ["市场覆盖", components.market_coverage, "1X2、亚洲盘、大小球真实市场越完整越高"],
+          ["市场一致性", components.market_alignment, "模型与去水市场差异越可解释越高"],
+          ["数据完整度", components.data_completeness, "真实赛果、近期状态、实时状态覆盖越高越高"],
+          ["模型分离度", components.model_separation, "胜平负分布越不接近五五开越高"],
+          ["代理惩罚", components.proxy_penalty, "角球、牌、伤病代理越多惩罚越高"],
+          ["伤病惩罚", components.injury_penalty, "阵容不确定性越高惩罚越高"]
+        ];
+        return `
+          <div class="subpanel" style="margin-bottom:10px">
+            <div class="team-line"><h3>置信度拆解</h3><strong>${pct(confidenceScore(match))} · ${profile.tier || "中"}</strong></div>
+            <div class="rail-body" style="padding:10px 0 0">
+              ${rows.map(([label, rawValue, note]) => {
+                const value = Number(rawValue || 0);
+                return `
+                  <div class="source">
+                    <div><strong>${label}</strong><span>${note}</span></div>
+                    <em>${label.includes("惩罚") ? signedPct(value * -1) : pct(value)}</em>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+            <p class="source-note">${profile.method || "frontend fallback confidence"}。置信度衡量数据和模型条件，不保证赛果命中。</p>
+          </div>
+        `;
       }
 
       function methodologyPanel(match) {
@@ -2789,6 +2819,8 @@
       }
 
       function confidenceScore(match) {
+        const backendScore = Number(match.confidence_profile?.score);
+        if (Number.isFinite(backendScore) && backendScore > 0) return backendScore;
         const marketShare = match.handicap_preview.filter((row) => row.market_status === "available").length / Math.max(1, match.handicap_preview.length);
         const realFactors = match.factor_breakdown.filter((factor) => factor.used_in_model && factor.data_quality !== "proxy").length / Math.max(1, match.factor_breakdown.length);
         const proxyPenalty = match.factor_breakdown.some((factor) => !factor.used_in_model) ? 0.05 : 0;
