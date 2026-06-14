@@ -570,6 +570,8 @@ def compact_backtest(report: dict) -> dict:
         "snapshot_counts": report["snapshot_counts"],
         "formal": report["formal"],
         "shadow": report["shadow"],
+        "model_comparison": report.get("model_comparison", {}),
+        "factor_gate": report.get("factor_gate", {}),
         "requirements_to_claim_professional": report["requirements_to_claim_professional"],
     }
 

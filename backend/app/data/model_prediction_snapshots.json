@@ -1,8 +1,8 @@
 [
   {
-    "prediction_id": "wc26-001-20260614T135609",
+    "prediction_id": "wc26-001-20260614T141614",
     "match_id": "wc26-001",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-11T19:00:00Z",
@@ -346,7 +346,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -354,13 +354,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-002-20260614T135609",
+    "prediction_id": "wc26-002-20260614T141614",
     "match_id": "wc26-002",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-12T02:00:00Z",
@@ -704,7 +704,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -712,13 +712,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-003-20260614T135609",
+    "prediction_id": "wc26-003-20260614T141614",
     "match_id": "wc26-003",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-12T19:00:00Z",
@@ -1062,7 +1062,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -1070,13 +1070,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-004-20260614T135609",
+    "prediction_id": "wc26-004-20260614T141614",
     "match_id": "wc26-004",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-13T01:00:00Z",
@@ -1420,7 +1420,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -1428,13 +1428,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-005-20260614T135609",
+    "prediction_id": "wc26-005-20260614T141614",
     "match_id": "wc26-005",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-13T19:00:00Z",
@@ -1759,7 +1759,7 @@
         "over_8_5_probability": 0.591175,
         "over_9_5_probability": 0.460357,
         "live_home": 3,
-        "live_away": 9
+        "live_away": 10
       },
       "cards": {
         "home_yellow_expected": 2.05,
@@ -1778,7 +1778,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -1786,13 +1786,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-006-20260614T135609",
+    "prediction_id": "wc26-006-20260614T141614",
     "match_id": "wc26-006",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-13T22:00:00Z",
@@ -2116,8 +2116,8 @@
         "total_expected": 12.79,
         "over_8_5_probability": 0.890224,
         "over_9_5_probability": 0.819836,
-        "live_home": null,
-        "live_away": null
+        "live_home": 6,
+        "live_away": 2
       },
       "cards": {
         "home_yellow_expected": 1.31,
@@ -2136,7 +2136,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -2144,13 +2144,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-007-20260614T135609",
+    "prediction_id": "wc26-007-20260614T141614",
     "match_id": "wc26-007",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-14T01:00:00Z",
@@ -2474,8 +2474,8 @@
         "total_expected": 8.52,
         "over_8_5_probability": 0.480303,
         "over_9_5_probability": 0.350249,
-        "live_home": null,
-        "live_away": null
+        "live_home": 4,
+        "live_away": 3
       },
       "cards": {
         "home_yellow_expected": 2.22,
@@ -2494,7 +2494,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -2502,13 +2502,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-008-20260614T135609",
+    "prediction_id": "wc26-008-20260614T141614",
     "match_id": "wc26-008",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "excluded_post_kickoff",
     "kickoff_utc": "2026-06-14T04:00:00Z",
@@ -2832,8 +2832,8 @@
         "total_expected": 10.55,
         "over_8_5_probability": 0.725522,
         "over_9_5_probability": 0.608639,
-        "live_home": null,
-        "live_away": null
+        "live_home": 5,
+        "live_away": 8
       },
       "cards": {
         "home_yellow_expected": 1.72,
@@ -2852,7 +2852,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -2860,13 +2860,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-009-20260614T135609",
+    "prediction_id": "wc26-009-20260614T141614",
     "match_id": "wc26-009",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-14T17:00:00Z",
@@ -3210,7 +3210,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -3218,13 +3218,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-010-20260614T135609",
+    "prediction_id": "wc26-010-20260614T141614",
     "match_id": "wc26-010",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-14T20:00:00Z",
@@ -3568,7 +3568,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -3576,13 +3576,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-011-20260614T135609",
+    "prediction_id": "wc26-011-20260614T141614",
     "match_id": "wc26-011",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-14T23:00:00Z",
@@ -3926,7 +3926,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -3934,13 +3934,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-012-20260614T135609",
+    "prediction_id": "wc26-012-20260614T141614",
     "match_id": "wc26-012",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-15T02:00:00Z",
@@ -4284,7 +4284,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -4292,13 +4292,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-013-20260614T135609",
+    "prediction_id": "wc26-013-20260614T141614",
     "match_id": "wc26-013",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-15T16:00:00Z",
@@ -4642,7 +4642,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -4650,13 +4650,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-014-20260614T135609",
+    "prediction_id": "wc26-014-20260614T141614",
     "match_id": "wc26-014",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-15T19:00:00Z",
@@ -5000,7 +5000,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -5008,13 +5008,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-015-20260614T135609",
+    "prediction_id": "wc26-015-20260614T141614",
     "match_id": "wc26-015",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-15T22:00:00Z",
@@ -5358,7 +5358,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -5366,13 +5366,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-016-20260614T135609",
+    "prediction_id": "wc26-016-20260614T141614",
     "match_id": "wc26-016",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-16T01:00:00Z",
@@ -5716,7 +5716,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -5724,13 +5724,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-017-20260614T135609",
+    "prediction_id": "wc26-017-20260614T141614",
     "match_id": "wc26-017",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-16T19:00:00Z",
@@ -6074,7 +6074,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -6082,13 +6082,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-018-20260614T135609",
+    "prediction_id": "wc26-018-20260614T141614",
     "match_id": "wc26-018",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-16T22:00:00Z",
@@ -6432,7 +6432,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -6440,13 +6440,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-019-20260614T135609",
+    "prediction_id": "wc26-019-20260614T141614",
     "match_id": "wc26-019",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-17T01:00:00Z",
@@ -6790,7 +6790,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -6798,13 +6798,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-020-20260614T135609",
+    "prediction_id": "wc26-020-20260614T141614",
     "match_id": "wc26-020",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-17T04:00:00Z",
@@ -7148,7 +7148,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -7156,13 +7156,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-021-20260614T135609",
+    "prediction_id": "wc26-021-20260614T141614",
     "match_id": "wc26-021",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-17T17:00:00Z",
@@ -7506,7 +7506,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -7514,13 +7514,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-022-20260614T135609",
+    "prediction_id": "wc26-022-20260614T141614",
     "match_id": "wc26-022",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-17T20:00:00Z",
@@ -7864,7 +7864,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -7872,13 +7872,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-023-20260614T135609",
+    "prediction_id": "wc26-023-20260614T141614",
     "match_id": "wc26-023",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-17T23:00:00Z",
@@ -8222,7 +8222,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -8230,13 +8230,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-024-20260614T135609",
+    "prediction_id": "wc26-024-20260614T141614",
     "match_id": "wc26-024",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-18T02:00:00Z",
@@ -8580,7 +8580,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -8588,13 +8588,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-025-20260614T135609",
+    "prediction_id": "wc26-025-20260614T141614",
     "match_id": "wc26-025",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-18T16:00:00Z",
@@ -8938,7 +8938,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -8946,13 +8946,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-026-20260614T135609",
+    "prediction_id": "wc26-026-20260614T141614",
     "match_id": "wc26-026",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-18T19:00:00Z",
@@ -9296,7 +9296,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -9304,13 +9304,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-027-20260614T135609",
+    "prediction_id": "wc26-027-20260614T141614",
     "match_id": "wc26-027",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-18T22:00:00Z",
@@ -9654,7 +9654,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -9662,13 +9662,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-028-20260614T135609",
+    "prediction_id": "wc26-028-20260614T141614",
     "match_id": "wc26-028",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-19T01:00:00Z",
@@ -10012,7 +10012,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -10020,13 +10020,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-029-20260614T135609",
+    "prediction_id": "wc26-029-20260614T141614",
     "match_id": "wc26-029",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-19T19:00:00Z",
@@ -10370,7 +10370,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -10378,13 +10378,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-030-20260614T135609",
+    "prediction_id": "wc26-030-20260614T141614",
     "match_id": "wc26-030",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-19T22:00:00Z",
@@ -10728,7 +10728,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -10736,13 +10736,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-031-20260614T135609",
+    "prediction_id": "wc26-031-20260614T141614",
     "match_id": "wc26-031",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-20T00:30:00Z",
@@ -11086,7 +11086,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -11094,13 +11094,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-032-20260614T135609",
+    "prediction_id": "wc26-032-20260614T141614",
     "match_id": "wc26-032",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-20T03:00:00Z",
@@ -11444,7 +11444,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -11452,13 +11452,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-033-20260614T135609",
+    "prediction_id": "wc26-033-20260614T141614",
     "match_id": "wc26-033",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-20T17:00:00Z",
@@ -11802,7 +11802,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -11810,13 +11810,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-034-20260614T135609",
+    "prediction_id": "wc26-034-20260614T141614",
     "match_id": "wc26-034",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-20T20:00:00Z",
@@ -12160,7 +12160,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -12168,13 +12168,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-035-20260614T135609",
+    "prediction_id": "wc26-035-20260614T141614",
     "match_id": "wc26-035",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-21T00:00:00Z",
@@ -12518,7 +12518,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -12526,13 +12526,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-036-20260614T135609",
+    "prediction_id": "wc26-036-20260614T141614",
     "match_id": "wc26-036",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-21T04:00:00Z",
@@ -12876,7 +12876,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -12884,13 +12884,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-037-20260614T135609",
+    "prediction_id": "wc26-037-20260614T141614",
     "match_id": "wc26-037",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-21T16:00:00Z",
@@ -13234,7 +13234,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -13242,13 +13242,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-038-20260614T135609",
+    "prediction_id": "wc26-038-20260614T141614",
     "match_id": "wc26-038",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-21T19:00:00Z",
@@ -13592,7 +13592,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -13600,13 +13600,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-039-20260614T135609",
+    "prediction_id": "wc26-039-20260614T141614",
     "match_id": "wc26-039",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-21T22:00:00Z",
@@ -13950,7 +13950,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -13958,13 +13958,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-040-20260614T135609",
+    "prediction_id": "wc26-040-20260614T141614",
     "match_id": "wc26-040",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-22T01:00:00Z",
@@ -14308,7 +14308,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -14316,13 +14316,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-041-20260614T135609",
+    "prediction_id": "wc26-041-20260614T141614",
     "match_id": "wc26-041",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-22T17:00:00Z",
@@ -14666,7 +14666,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -14674,13 +14674,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-042-20260614T135609",
+    "prediction_id": "wc26-042-20260614T141614",
     "match_id": "wc26-042",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-22T21:00:00Z",
@@ -15024,7 +15024,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -15032,13 +15032,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-043-20260614T135609",
+    "prediction_id": "wc26-043-20260614T141614",
     "match_id": "wc26-043",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-23T00:00:00Z",
@@ -15382,7 +15382,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -15390,13 +15390,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-044-20260614T135609",
+    "prediction_id": "wc26-044-20260614T141614",
     "match_id": "wc26-044",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-23T03:00:00Z",
@@ -15740,7 +15740,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -15748,13 +15748,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-045-20260614T135609",
+    "prediction_id": "wc26-045-20260614T141614",
     "match_id": "wc26-045",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-23T17:00:00Z",
@@ -16098,7 +16098,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -16106,13 +16106,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-046-20260614T135609",
+    "prediction_id": "wc26-046-20260614T141614",
     "match_id": "wc26-046",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-23T20:00:00Z",
@@ -16456,7 +16456,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -16464,13 +16464,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-047-20260614T135609",
+    "prediction_id": "wc26-047-20260614T141614",
     "match_id": "wc26-047",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-23T23:00:00Z",
@@ -16814,7 +16814,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -16822,13 +16822,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-048-20260614T135609",
+    "prediction_id": "wc26-048-20260614T141614",
     "match_id": "wc26-048",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-24T02:00:00Z",
@@ -17172,7 +17172,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -17180,13 +17180,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-049-20260614T135609",
+    "prediction_id": "wc26-049-20260614T141614",
     "match_id": "wc26-049",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-24T19:00:00Z",
@@ -17530,7 +17530,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -17538,13 +17538,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-050-20260614T135609",
+    "prediction_id": "wc26-050-20260614T141614",
     "match_id": "wc26-050",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-24T19:00:00Z",
@@ -17888,7 +17888,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -17896,13 +17896,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-051-20260614T135609",
+    "prediction_id": "wc26-051-20260614T141614",
     "match_id": "wc26-051",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-24T22:00:00Z",
@@ -18246,7 +18246,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -18254,13 +18254,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-052-20260614T135609",
+    "prediction_id": "wc26-052-20260614T141614",
     "match_id": "wc26-052",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-24T22:00:00Z",
@@ -18604,7 +18604,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -18612,13 +18612,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-053-20260614T135609",
+    "prediction_id": "wc26-053-20260614T141614",
     "match_id": "wc26-053",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-25T01:00:00Z",
@@ -18962,7 +18962,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -18970,13 +18970,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-054-20260614T135609",
+    "prediction_id": "wc26-054-20260614T141614",
     "match_id": "wc26-054",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-25T01:00:00Z",
@@ -19320,7 +19320,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -19328,13 +19328,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-055-20260614T135609",
+    "prediction_id": "wc26-055-20260614T141614",
     "match_id": "wc26-055",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-25T20:00:00Z",
@@ -19678,7 +19678,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -19686,13 +19686,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-056-20260614T135609",
+    "prediction_id": "wc26-056-20260614T141614",
     "match_id": "wc26-056",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-25T20:00:00Z",
@@ -20036,7 +20036,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -20044,13 +20044,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-057-20260614T135609",
+    "prediction_id": "wc26-057-20260614T141614",
     "match_id": "wc26-057",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-25T23:00:00Z",
@@ -20394,7 +20394,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -20402,13 +20402,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-058-20260614T135609",
+    "prediction_id": "wc26-058-20260614T141614",
     "match_id": "wc26-058",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-25T23:00:00Z",
@@ -20752,7 +20752,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -20760,13 +20760,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-059-20260614T135609",
+    "prediction_id": "wc26-059-20260614T141614",
     "match_id": "wc26-059",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-26T02:00:00Z",
@@ -21110,7 +21110,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -21118,13 +21118,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-060-20260614T135609",
+    "prediction_id": "wc26-060-20260614T141614",
     "match_id": "wc26-060",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-26T02:00:00Z",
@@ -21468,7 +21468,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -21476,13 +21476,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-061-20260614T135609",
+    "prediction_id": "wc26-061-20260614T141614",
     "match_id": "wc26-061",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-26T19:00:00Z",
@@ -21826,7 +21826,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -21834,13 +21834,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-062-20260614T135609",
+    "prediction_id": "wc26-062-20260614T141614",
     "match_id": "wc26-062",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-26T19:00:00Z",
@@ -22184,7 +22184,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -22192,13 +22192,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-063-20260614T135609",
+    "prediction_id": "wc26-063-20260614T141614",
     "match_id": "wc26-063",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T00:00:00Z",
@@ -22542,7 +22542,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -22550,13 +22550,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-064-20260614T135609",
+    "prediction_id": "wc26-064-20260614T141614",
     "match_id": "wc26-064",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T00:00:00Z",
@@ -22900,7 +22900,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -22908,13 +22908,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-065-20260614T135609",
+    "prediction_id": "wc26-065-20260614T141614",
     "match_id": "wc26-065",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T03:00:00Z",
@@ -23258,7 +23258,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -23266,13 +23266,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-066-20260614T135609",
+    "prediction_id": "wc26-066-20260614T141614",
     "match_id": "wc26-066",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T03:00:00Z",
@@ -23616,7 +23616,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -23624,13 +23624,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-067-20260614T135609",
+    "prediction_id": "wc26-067-20260614T141614",
     "match_id": "wc26-067",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T21:00:00Z",
@@ -23974,7 +23974,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -23982,13 +23982,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-068-20260614T135609",
+    "prediction_id": "wc26-068-20260614T141614",
     "match_id": "wc26-068",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T21:00:00Z",
@@ -24332,7 +24332,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -24340,13 +24340,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-069-20260614T135609",
+    "prediction_id": "wc26-069-20260614T141614",
     "match_id": "wc26-069",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T23:30:00Z",
@@ -24690,7 +24690,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -24698,13 +24698,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-070-20260614T135609",
+    "prediction_id": "wc26-070-20260614T141614",
     "match_id": "wc26-070",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-27T23:30:00Z",
@@ -25048,7 +25048,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -25056,13 +25056,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-071-20260614T135609",
+    "prediction_id": "wc26-071-20260614T141614",
     "match_id": "wc26-071",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-28T02:00:00Z",
@@ -25406,7 +25406,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -25414,13 +25414,13 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   },
   {
-    "prediction_id": "wc26-072-20260614T135609",
+    "prediction_id": "wc26-072-20260614T141614",
     "match_id": "wc26-072",
-    "generated_at": "2026-06-14T13:56:09.034419+00:00",
+    "generated_at": "2026-06-14T14:16:14.296525+00:00",
     "model_version": "wc26-v0.5-monte-carlo-factor-tiers",
     "lock_status": "eligible_pre_kickoff",
     "kickoff_utc": "2026-06-28T02:00:00Z",
@@ -25764,7 +25764,7 @@
     },
     "data_source_versions": {
       "FIFA / public match schedule": "2026-06-10 public schedule snapshot",
-      "football-data.org": "72/104 matched World Cup rows at 2026-06-12T20:40:16.399060+00:00",
+      "football-data.org": "72/104 matched World Cup rows at 2026-06-14T14:11:18.067135+00:00",
       "martj42 international_results": "49477 historical rows; 48 teams covered at 2026-06-12T20:42:04.157866+00:00",
       "StatsBomb / Opta event feed": "proxy_until_provider",
       "Open-Meteo": "70/72 forecast rows at 2026-06-12T20:40:40.869179+00:00",
@@ -25772,7 +25772,7 @@
       "Club minutes tracker": "sample_until_provider",
       "Polymarket Gamma": "60 markets at 2026-06-12T20:42:03.229322+00:00",
       "The Odds API / TheStatsAPI": "4682/70 normalized odds rows at 2026-06-12T20:40:18.421519+00:00; written=True",
-      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 2 completed; 1 in-play at 2026-06-12T20:40:29.232030+00:00"
+      "ESPN public scoreboard": "72 matched events; ESPN 72; football-data 72; 8 completed; 0 in-play at 2026-06-14T14:11:22.405514+00:00"
     }
   }
 ]

@@ -126,6 +126,10 @@ class DataCoverageTest(unittest.TestCase):
         self.assertIn("asian_handicap", report["shadow"])
         self.assertIn("over_under", report["shadow"])
         self.assertIn("corners", report["shadow"])
+        self.assertIn("model_comparison", report)
+        self.assertIn("factor_gate", report)
+        self.assertIn("baseline", report["model_comparison"])
+        self.assertIn("dixon_coles", report["model_comparison"])
         self.assertGreaterEqual(report["snapshot_counts"]["settled_matches"], 0)
         self.assertGreaterEqual(report["shadow"]["corners"]["actual_event_samples"], 0)
 

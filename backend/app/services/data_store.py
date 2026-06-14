@@ -92,6 +92,8 @@ def backtest_report() -> dict:
             "snapshot_counts": {},
             "formal": {},
             "shadow": {},
+            "model_comparison": {},
+            "factor_gate": {},
         },
     )
 

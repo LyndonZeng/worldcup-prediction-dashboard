@@ -68,6 +68,35 @@ def scoreline_matrix(lambda_home: float, lambda_away: float, max_goals: int = 8)
     return [[p / total for p in row] for row in matrix]
 
 
+def dixon_coles_scoreline_matrix(
+    lambda_home: float,
+    lambda_away: float,
+    rho: float = -0.06,
+    max_goals: int = 8,
+) -> list[list[float]]:
+    matrix = scoreline_matrix(lambda_home, lambda_away, max_goals)
+    adjusted = []
+    for home_goals, row in enumerate(matrix):
+        adjusted_row = []
+        for away_goals, probability in enumerate(row):
+            adjusted_row.append(probability * _dixon_coles_tau(home_goals, away_goals, lambda_home, lambda_away, rho))
+        adjusted.append(adjusted_row)
+    total = sum(sum(row) for row in adjusted)
+    return [[max(0.0, probability) / total for probability in row] for row in adjusted]
+
+
+def _dixon_coles_tau(home_goals: int, away_goals: int, lambda_home: float, lambda_away: float, rho: float) -> float:
+    if home_goals == 0 and away_goals == 0:
+        return max(0.001, 1 - lambda_home * lambda_away * rho)
+    if home_goals == 0 and away_goals == 1:
+        return max(0.001, 1 + lambda_home * rho)
+    if home_goals == 1 and away_goals == 0:
+        return max(0.001, 1 + lambda_away * rho)
+    if home_goals == 1 and away_goals == 1:
+        return max(0.001, 1 - rho)
+    return 1.0
+
+
 def match_market_probabilities(matrix: Iterable[Iterable[float]]) -> dict:
     rows = [list(row) for row in matrix]
     p_home = p_draw = p_away = p_over_25 = p_btts = 0.0

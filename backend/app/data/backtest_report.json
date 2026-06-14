@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T13:56:09.051974+00:00",
+  "generated_at": "2026-06-14T14:16:14.316724+00:00",
   "status": "mvp_shadow_until_locked_closing_samples",
   "method": "Formal samples require pre-kickoff model snapshots and closing lines; shadow audit is not leak-safe.",
   "snapshot_counts": {
@@ -7,7 +7,7 @@
     "eligible_pre_kickoff_predictions": 64,
     "closing_line_snapshots": 4632,
     "true_closing_lines": 0,
-    "settled_matches": 4
+    "settled_matches": 8
   },
   "formal": {
     "eligible_samples": 0,
@@ -49,46 +49,97 @@
   "shadow": {
     "label": "\u516c\u5f0f\u70df\u6d4b\uff0c\u4e0d\u4f5c\u4e3a\u4e13\u4e1a\u6a21\u578b\u6210\u7ee9",
     "one_x_two": {
-      "samples": 4,
-      "hit_rate": 0.75,
-      "correct": 3,
-      "brier": 0.166852,
-      "log_loss": 0.86328
+      "samples": 8,
+      "hit_rate": 0.5,
+      "correct": 4,
+      "brier": 0.195094,
+      "log_loss": 0.981265
     },
     "asian_handicap": {
-      "selections": 3,
-      "roi": 0.31,
-      "hit_rate": 0.666667,
+      "selections": 14,
+      "roi": 0.547857,
+      "hit_rate": 0.785714,
       "average_clv": null,
-      "unit_profit": 0.93,
-      "correct": 2,
-      "pushes": 0
+      "unit_profit": 7.67,
+      "correct": 11,
+      "pushes": 1
     },
     "over_under": {
-      "samples": 4,
-      "hit_rate": 0.5,
-      "correct": 2,
-      "brier": 0.27149,
-      "log_loss": 0.737646
+      "samples": 8,
+      "hit_rate": 0.75,
+      "correct": 6,
+      "brier": 0.209346,
+      "log_loss": 0.610522
     },
     "corners": {
-      "actual_event_samples": 4,
-      "selections": 4,
-      "hit_rate": 0.25,
-      "correct": 1,
+      "actual_event_samples": 8,
+      "selections": 7,
+      "hit_rate": 0.428571,
+      "correct": 3,
       "line_summary": {
         "over_8.5": {
-          "selections": 2,
-          "correct": 1,
-          "hit_rate": 0.5
+          "selections": 3,
+          "correct": 2,
+          "hit_rate": 0.666667
         },
         "over_9.5": {
-          "selections": 2,
-          "correct": 0,
-          "hit_rate": 0.0
+          "selections": 4,
+          "correct": 1,
+          "hit_rate": 0.25
         }
       }
     }
+  },
+  "model_comparison": {
+    "status": "shadow_parallel_evaluation",
+    "samples": 8,
+    "baseline": {
+      "name": "Poisson baseline",
+      "samples": 8,
+      "hit_rate": 0.5,
+      "correct": 4,
+      "brier": 0.195094,
+      "log_loss": 0.981265
+    },
+    "dixon_coles": {
+      "name": "Dixon-Coles low-score adjustment",
+      "rho": -0.06,
+      "samples": 8,
+      "hit_rate": 0.5,
+      "correct": 4,
+      "brier": 0.193701,
+      "log_loss": 0.972161
+    },
+    "delta_log_loss": -0.009104,
+    "decision": "keep_poisson_baseline",
+    "promotion_rule": "Only promote when walk-forward samples are meaningful and log-loss/Brier improve versus baseline."
+  },
+  "factor_gate": {
+    "status": "active_transparency_gate",
+    "policy": "Only backtested factors can raise core model weight; proxy factors stay display-only or receive a confidence penalty.",
+    "categories": [
+      {
+        "category": "\u4ec5\u5c55\u793a",
+        "factor_count": 2,
+        "used_in_model_rows": 0,
+        "display_only_rows": 144,
+        "proxy_rows": 72
+      },
+      {
+        "category": "\u5f85\u63a5\u5165",
+        "factor_count": 1,
+        "used_in_model_rows": 0,
+        "display_only_rows": 72,
+        "proxy_rows": 0
+      },
+      {
+        "category": "\u900f\u660e\u5148\u9a8c",
+        "factor_count": 5,
+        "used_in_model_rows": 360,
+        "display_only_rows": 0,
+        "proxy_rows": 0
+      }
+    ]
   },
   "requirements_to_claim_professional": [
     "Hundreds of locked pre-match predictions",

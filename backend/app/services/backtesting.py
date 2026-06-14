@@ -7,6 +7,7 @@ from statistics import mean
 from typing import Any
 
 from .handicap import settle_asian_margin
+from .score_model import dixon_coles_scoreline_matrix, match_market_probabilities
 
 EDGE_THRESHOLD = 0.035
 LOCK_BUFFER_MINUTES = 5
@@ -115,6 +116,7 @@ def build_backtest_report(
     shadow_ah_report = _asian_handicap_report(completed, shadow_snapshots, closing_snapshots)
     shadow_ou_report = _over_under_report(completed, shadow_snapshots)
     shadow_corners_report = _corners_report(completed, shadow_snapshots)
+    model_comparison = _model_comparison_report(completed)
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": "mvp_shadow_until_locked_closing_samples",
@@ -144,11 +146,106 @@ def build_backtest_report(
             "over_under": shadow_ou_report,
             "corners": shadow_corners_report,
         },
+        "model_comparison": model_comparison,
+        "factor_gate": _factor_gate_summary(matches),
         "requirements_to_claim_professional": [
             "Hundreds of locked pre-match predictions",
             "Closing snapshots within 5-10 minutes of kickoff",
             "Positive CLV over meaningful samples",
             "Stable Brier/log-loss calibration by market type",
+        ],
+    }
+
+
+def _model_comparison_report(matches: list[dict]) -> dict:
+    if not matches:
+        return {
+            "status": "pending_settled_samples",
+            "samples": 0,
+            "baseline": _empty_probability_metrics(),
+            "dixon_coles": _empty_probability_metrics(),
+            "decision": "keep_poisson_baseline",
+        }
+    baseline_rows = []
+    dixon_rows = []
+    for match in matches:
+        actual_index = _one_x_two_actual_index(match)
+        baseline_rows.append(
+            {
+                "probs": [match["p_home"], match["p_draw"], match["p_away"]],
+                "actual_index": actual_index,
+            }
+        )
+        dc = match_market_probabilities(
+            dixon_coles_scoreline_matrix(
+                float(match["lambda_home"]),
+                float(match["lambda_away"]),
+                rho=-0.06,
+            )
+        )
+        dixon_rows.append(
+            {
+                "probs": [dc["p_home"], dc["p_draw"], dc["p_away"]],
+                "actual_index": actual_index,
+            }
+        )
+    baseline = _probability_rows_metrics(baseline_rows)
+    dixon_coles = _probability_rows_metrics(dixon_rows)
+    delta_log_loss = None
+    if baseline["log_loss"] is not None and dixon_coles["log_loss"] is not None:
+        delta_log_loss = round(dixon_coles["log_loss"] - baseline["log_loss"], 6)
+    decision = "promote_candidate_after_more_samples" if delta_log_loss is not None and delta_log_loss < -0.015 and len(matches) >= 40 else "keep_poisson_baseline"
+    return {
+        "status": "shadow_parallel_evaluation",
+        "samples": len(matches),
+        "baseline": {
+            "name": "Poisson baseline",
+            **baseline,
+        },
+        "dixon_coles": {
+            "name": "Dixon-Coles low-score adjustment",
+            "rho": -0.06,
+            **dixon_coles,
+        },
+        "delta_log_loss": delta_log_loss,
+        "decision": decision,
+        "promotion_rule": "Only promote when walk-forward samples are meaningful and log-loss/Brier improve versus baseline.",
+    }
+
+
+def _factor_gate_summary(matches: list[dict]) -> dict:
+    buckets: dict[str, dict] = {}
+    for match in matches:
+        for factor in match.get("factor_breakdown", []):
+            category = factor.get("category") or "未分级"
+            bucket = buckets.setdefault(
+                category,
+                {
+                    "factors": set(),
+                    "used_in_model": 0,
+                    "display_only": 0,
+                    "proxy": 0,
+                },
+            )
+            bucket["factors"].add(factor.get("factor") or "unknown")
+            if factor.get("used_in_model"):
+                bucket["used_in_model"] += 1
+            else:
+                bucket["display_only"] += 1
+            if factor.get("data_quality") == "proxy":
+                bucket["proxy"] += 1
+    return {
+        "status": "active_transparency_gate",
+        "policy": "Only backtested factors can raise core model weight; proxy factors stay display-only or receive a confidence penalty.",
+        "categories": [
+            {
+                "category": category,
+                "factor_count": len(bucket["factors"]),
+                "used_in_model_rows": bucket["used_in_model"],
+                "display_only_rows": bucket["display_only"],
+                "proxy_rows": bucket["proxy"],
+            }
+            for category, bucket in sorted(buckets.items())
         ],
     }
 
@@ -214,6 +311,30 @@ def _one_x_two_metrics(matches: list[dict], snapshots: dict[str, dict]) -> dict:
     return {
         "samples": len(matches),
         "hit_rate": round(hits / len(matches), 6),
+        "correct": hits,
+        "brier": round(mean(brier_values), 6),
+        "log_loss": round(mean(log_values), 6),
+    }
+
+
+def _probability_rows_metrics(rows: list[dict]) -> dict:
+    if not rows:
+        return _empty_probability_metrics()
+    hits = 0
+    brier_values = []
+    log_values = []
+    for row in rows:
+        probs = row["probs"]
+        actual_index = row["actual_index"]
+        predicted_index = max(range(len(probs)), key=lambda index: probs[index])
+        hits += int(predicted_index == actual_index)
+        actual = [0.0 for _ in probs]
+        actual[actual_index] = 1.0
+        brier_values.append(sum((prob - outcome) ** 2 for prob, outcome in zip(probs, actual)) / len(probs))
+        log_values.append(-math.log(max(1e-12, probs[actual_index])))
+    return {
+        "samples": len(rows),
+        "hit_rate": round(hits / len(rows), 6),
         "correct": hits,
         "brier": round(mean(brier_values), 6),
         "log_loss": round(mean(log_values), 6),
