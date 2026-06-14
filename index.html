@@ -1857,7 +1857,7 @@
         const confidence = state.selected ? confidenceScore(state.selected) : 0;
         const current = state.selected ? currentWinProjection(state.selected) : null;
         const currentLeader = current && currentLeaderText(state.selected, current);
-        const performance = marketPerformanceSummary(state.matches, state.backtest);
+        const performance = marketPerformanceSummary(state.matches);
         const combined = combinedPerformance(performance);
         const liveSources = state.sources.filter((source) => source.status !== "planned").length;
         document.getElementById("hero-confidence").textContent = pct(confidence);
@@ -3056,19 +3056,19 @@
           .filter(Boolean);
         const correct = rows.filter((row) => row.actual === row.predicted).length;
         return {
+          samples: rows.length,
           completed: rows.length,
           correct,
           hit_rate: rows.length ? correct / rows.length : null
         };
       }
 
-      function marketPerformanceSummary(matches, backtest) {
-        const shadow = backtest?.shadow || {};
+      function marketPerformanceSummary(matches) {
         return {
-          one_x_two: normalizePerformance(shadow.one_x_two, predictionPerformance(matches)),
-          asian_handicap: normalizePerformance(shadow.asian_handicap, asianHandicapPerformance(matches)),
-          over_under: normalizePerformance(shadow.over_under, overUnderPerformance(matches)),
-          corners: normalizePerformance(shadow.corners, cornersPerformance(matches))
+          one_x_two: predictionPerformance(matches),
+          asian_handicap: asianHandicapPerformance(matches),
+          over_under: overUnderPerformance(matches),
+          corners: cornersPerformance(matches)
         };
       }
 
