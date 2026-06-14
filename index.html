@@ -2501,8 +2501,8 @@
                 <em>已用</em>
               </div>
               <div class="source">
-                <div><strong>更科学升级</strong><span>Dixon-Coles 或双变量 Poisson 修正低比分相关性；分层贝叶斯给球队攻防强度和不确定性做后验更新。</span></div>
-                <em>下一步</em>
+                <div><strong>更科学升级</strong><span>Dixon-Coles 已并行评测低比分相关性；分层贝叶斯仍待更多赛前快照和赛后样本。</span></div>
+                <em>影子评测</em>
               </div>
               <div class="source">
                 <div><strong>因子准入</strong><span>只有 walk-forward 回测有效的因子进入核心；天气、角球、红黄牌、球员状态在缺数据时保留为展示或低置信代理。</span></div>
@@ -2975,6 +2975,8 @@
         const shadowAsian = shadow.asian_handicap || {};
         const shadowOverUnder = shadow.over_under || {};
         const shadowCorners = shadow.corners || {};
+        const comparison = report.model_comparison || {};
+        const factorGate = report.factor_gate || {};
         document.getElementById("backtest-status").textContent = report.status ? "MVP" : "pending";
         document.getElementById("backtest").innerHTML = `
           <div class="subpanel" style="margin:12px">
@@ -3012,6 +3014,42 @@
               ${performanceRow("角球", performanceText(shadowCorners), `真实角球样本 ${shadowCorners.actual_event_samples || 0} 场`)}
             </div>
           </div>
+          ${modelComparisonPanel(comparison)}
+          ${factorGatePanel(factorGate)}
+        `;
+      }
+
+      function modelComparisonPanel(comparison) {
+        if (!comparison || !comparison.samples) return "";
+        const baseline = comparison.baseline || {};
+        const dixonColes = comparison.dixon_coles || {};
+        return `
+          <div class="subpanel" style="margin:0 12px 12px">
+            <h3>模型候选并行评测</h3>
+            <div class="rail-body" style="padding:10px 0 0">
+              ${performanceRow("Poisson baseline", performanceText(baseline), `Brier ${metricNumber(baseline.brier)} · log-loss ${metricNumber(baseline.log_loss)}`)}
+              ${performanceRow("Dixon-Coles", performanceText(dixonColes), `rho ${value(dixonColes.rho, 2)} · log-loss ${metricNumber(dixonColes.log_loss)}`)}
+              ${performanceRow("升级判定", modelDecisionText(comparison.decision), `log-loss 差 ${signedMetric(comparison.delta_log_loss)} · 样本 ${comparison.samples}`)}
+            </div>
+            <p class="source-note">${comparison.promotion_rule || "候选模型必须 walk-forward 优于 baseline 才能提升权重。"}</p>
+          </div>
+        `;
+      }
+
+      function factorGatePanel(factorGate) {
+        if (!factorGate?.categories?.length) return "";
+        return `
+          <div class="subpanel" style="margin:0 12px 12px">
+            <h3>因子准入门控</h3>
+            <div class="rail-body" style="padding:10px 0 0">
+              ${factorGate.categories.map((row) => performanceRow(
+                row.category,
+                `${row.factor_count} 类`,
+                `入模 ${row.used_in_model_rows} · 展示 ${row.display_only_rows} · 代理 ${row.proxy_rows}`
+              )).join("")}
+            </div>
+            <p class="source-note">${factorGate.policy || "代理因子先展示，回测有效后再入模。"}</p>
+          </div>
         `;
       }
 
@@ -3036,6 +3074,16 @@
 
       function metricNumber(value) {
         return value === null || value === undefined || Number.isNaN(value) ? "-" : Number(value).toFixed(3);
+      }
+
+      function signedMetric(value) {
+        if (value === null || value === undefined || Number.isNaN(value)) return "-";
+        return `${Number(value) >= 0 ? "+" : ""}${Number(value).toFixed(3)}`;
+      }
+
+      function modelDecisionText(decision) {
+        if (decision === "promote_candidate_after_more_samples") return "候选占优";
+        return "保留 baseline";
       }
 
       function bracketBoard(bracket) {
