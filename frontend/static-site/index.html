@@ -612,7 +612,7 @@
 
       .lower {
         display: grid;
-        grid-template-columns: minmax(0, 1.2fr) minmax(330px, 0.8fr);
+        grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
         gap: 14px;
       }
 
@@ -1365,6 +1365,10 @@
           <div id="tournament"></div>
         </div>
         <div class="panel">
+          <div class="head"><h2>模型表现</h2><span id="backtest-status">MVP</span></div>
+          <div id="backtest"></div>
+        </div>
+        <div class="panel">
           <div class="head"><h2>数据源健康</h2><span id="source-count">sources</span></div>
           <div id="sources" class="rail-body"></div>
         </div>
@@ -1405,12 +1409,13 @@
         redCards: "red_cards"
       };
       let livePollTimer = null;
-      let state = { matches: [], tournament: null, sources: [], selected: null, group: "ALL", query: "", tab: "handicap" };
+      let state = { matches: [], tournament: null, sources: [], backtest: null, selected: null, group: "ALL", query: "", tab: "handicap" };
 
       const fallback = {
         matches: [],
         tournament: { n_simulations: 100000, teams: [] },
-        sources: []
+        sources: [],
+        backtest: null
       };
 
       const pct = (value) => value === null || value === undefined || Number.isNaN(value) ? "-" : `${(value * 100).toFixed(1)}%`;
@@ -1456,6 +1461,7 @@
           state.matches = localData.matches;
           state.tournament = localData.tournament;
           state.sources = localData.sources;
+          state.backtest = localData.backtest || null;
           state.selected = state.matches[0] || null;
           bind();
           render();
@@ -1463,14 +1469,16 @@
           startPublicLivePolling();
           return;
         }
-        const [matches, tournament, health] = await Promise.all([
+        const [matches, tournament, health, backtest] = await Promise.all([
           getJson("/api/matches", { matches: fallback.matches }),
           getJson("/api/tournament/probabilities", fallback.tournament),
-          getJson("/api/source-health", { sources: fallback.sources })
+          getJson("/api/source-health", { sources: fallback.sources }),
+          getJson("/api/backtest/report", fallback.backtest)
         ]);
         state.matches = matches.matches || [];
         state.tournament = tournament;
         state.sources = health.sources || [];
+        state.backtest = backtest;
         state.selected = state.matches[0] || null;
         bind();
         render();
@@ -1478,16 +1486,18 @@
       }
 
       async function refreshFromApi() {
-        const [matches, tournament, health] = await Promise.all([
+        const [matches, tournament, health, backtest] = await Promise.all([
           getJson("/api/matches", null),
           getJson("/api/tournament/probabilities", null),
-          getJson("/api/source-health", null)
+          getJson("/api/source-health", null),
+          getJson("/api/backtest/report", null)
         ]);
         if (!matches || !matches.matches || !tournament || !health || !health.sources) return;
         const selectedId = state.selected && state.selected.match_id;
         state.matches = matches.matches;
         state.tournament = tournament;
         state.sources = health.sources;
+        state.backtest = backtest || state.backtest;
         state.selected = state.matches.find((match) => match.match_id === selectedId) || state.matches[0] || null;
         render();
       }
@@ -1732,6 +1742,7 @@
         renderDetail();
         renderRail();
         renderTournament();
+        renderBacktest();
         renderSources();
       }
 
@@ -1756,13 +1767,18 @@
         const confidence = state.selected ? confidenceScore(state.selected) : 0;
         const current = state.selected ? currentWinProjection(state.selected) : null;
         const currentLeader = current && currentLeaderText(state.selected, current);
-        const performance = predictionPerformance(state.matches);
+        const performance = marketPerformanceSummary(state.matches, state.backtest);
+        const combined = combinedPerformance(performance);
         const liveSources = state.sources.filter((source) => source.status !== "planned").length;
         document.getElementById("hero-confidence").textContent = pct(confidence);
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("总体命中率", performance.completed ? pct(performance.hit_rate) : "-", performance.completed ? `1X2 命中 ${performance.correct}/${performance.completed} 场` : "等待完赛样本"),
+          metric("总体命中率", metricHitText(combined), combined.samples ? `四类市场 ${combined.correct}/${combined.samples}` : "等待可结算样本"),
+          metric("不让球命中", metricHitText(performance.one_x_two), metricHitSub(performance.one_x_two, "1X2")),
+          metric("让球命中", metricHitText(performance.asian_handicap), metricHitSub(performance.asian_handicap, "AH")),
+          metric("大小球命中", metricHitText(performance.over_under), metricHitSub(performance.over_under, "O/U 2.5")),
+          metric("角球命中", metricHitText(performance.corners), metricHitSub(performance.corners, "角球线")),
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
@@ -2615,6 +2631,171 @@
         };
       }
 
+      function marketPerformanceSummary(matches, backtest) {
+        const shadow = backtest?.shadow || {};
+        return {
+          one_x_two: normalizePerformance(shadow.one_x_two, predictionPerformance(matches)),
+          asian_handicap: normalizePerformance(shadow.asian_handicap, asianHandicapPerformance(matches)),
+          over_under: normalizePerformance(shadow.over_under, overUnderPerformance(matches)),
+          corners: normalizePerformance(shadow.corners, cornersPerformance(matches))
+        };
+      }
+
+      function normalizePerformance(report, fallbackReport) {
+        if (!report) return fallbackReport;
+        const samples = Number(report.samples ?? report.selections ?? 0);
+        if (!samples) return fallbackReport;
+        return {
+          ...report,
+          samples,
+          correct: Number(report.correct ?? 0),
+          hit_rate: Number(report.hit_rate)
+        };
+      }
+
+      function combinedPerformance(summary) {
+        const rows = [summary.one_x_two, summary.asian_handicap, summary.over_under, summary.corners]
+          .filter((row) => Number(row?.samples || 0) > 0 && Number.isFinite(Number(row?.correct)));
+        const samples = rows.reduce((sum, row) => sum + Number(row.samples || 0), 0);
+        const correct = rows.reduce((sum, row) => sum + Number(row.correct || 0), 0);
+        return {
+          samples,
+          correct,
+          hit_rate: samples ? correct / samples : null
+        };
+      }
+
+      function metricHitText(report) {
+        return report?.samples ? pct(report.hit_rate) : "-";
+      }
+
+      function metricHitSub(report, label) {
+        if (!report?.samples) return "等待可结算样本";
+        return `${label} 命中 ${report.correct}/${report.samples}`;
+      }
+
+      function overUnderPerformance(matches) {
+        const rows = matches
+          .map((match) => {
+            if (!actualOutcome(match) || !hasActualScore(match)) return null;
+            const total = Number(match.live_status.home_score) + Number(match.live_status.away_score);
+            const pickOver = Number(match.p_over_2_5 || 0) >= 0.5;
+            const actualOver = total > 2.5;
+            return { correct: pickOver === actualOver };
+          })
+          .filter(Boolean);
+        const correct = rows.filter((row) => row.correct).length;
+        return {
+          samples: rows.length,
+          correct,
+          hit_rate: rows.length ? correct / rows.length : null
+        };
+      }
+
+      function asianHandicapPerformance(matches) {
+        const rows = matches
+          .map((match) => {
+            if (!actualOutcome(match) || !hasActualScore(match)) return null;
+            const selection = asianHandicapSelection(match);
+            if (!selection) return null;
+            const homeScore = Number(match.live_status.home_score);
+            const awayScore = Number(match.live_status.away_score);
+            const margin = selection.side === "home" ? homeScore - awayScore : awayScore - homeScore;
+            const settlement = settleAsianHandicap(margin, selection.line);
+            return {
+              correct: settlement === "win" || settlement === "half_win",
+              push: settlement === "push",
+              settlement
+            };
+          })
+          .filter(Boolean);
+        const correct = rows.filter((row) => row.correct).length;
+        const pushes = rows.filter((row) => row.push).length;
+        return {
+          samples: rows.length,
+          correct,
+          pushes,
+          hit_rate: rows.length ? correct / rows.length : null
+        };
+      }
+
+      function asianHandicapSelection(match) {
+        const candidates = [];
+        (match.handicap_preview || []).forEach((row) => {
+          if (row.market_status !== "available") return;
+          const homeEdge = expectedReturnFromFair(row.home?.market_decimal_odds, row.home?.fair_decimal_odds);
+          const awayEdge = expectedReturnFromFair(row.away?.market_decimal_odds, row.away?.fair_decimal_odds);
+          if (homeEdge !== null) candidates.push({ side: "home", line: Number(row.line), edge: homeEdge });
+          if (awayEdge !== null) candidates.push({ side: "away", line: -Number(row.line), edge: awayEdge });
+        });
+        candidates.sort((a, b) => b.edge - a.edge);
+        return candidates[0]?.edge >= 0.035 ? candidates[0] : null;
+      }
+
+      function settleAsianHandicap(margin, lineValue) {
+        const lineNumber = Number(lineValue);
+        const scaled = Math.round(lineNumber * 4);
+        if (scaled % 2 === 0) return settleHalfLine(margin, lineNumber);
+        const base = lineNumber >= 0 ? Math.floor(lineNumber * 2) / 2 : Math.ceil(lineNumber * 2) / 2;
+        const other = lineNumber >= 0 ? base + 0.5 : base - 0.5;
+        const score = settlementScore(settleHalfLine(margin, base)) + settlementScore(settleHalfLine(margin, other));
+        if (score === 2) return "win";
+        if (score === 1) return "half_win";
+        if (score === 0) return "push";
+        if (score === -1) return "half_loss";
+        return "loss";
+      }
+
+      function settleHalfLine(margin, lineValue) {
+        const adjusted = Number(margin) + Number(lineValue);
+        if (adjusted > 0) return "win";
+        if (adjusted === 0) return "push";
+        return "loss";
+      }
+
+      function settlementScore(settlement) {
+        if (settlement === "win") return 1;
+        if (settlement === "push") return 0;
+        return -1;
+      }
+
+      function cornersPerformance(matches) {
+        const rows = matches
+          .map((match) => {
+            const actualTotal = actualTotalCorners(match);
+            if (actualTotal === null) return null;
+            const selection = cornerSelection(match);
+            if (!selection) return null;
+            const correct = selection.side === "over" ? actualTotal > selection.line : actualTotal < selection.line;
+            return { correct };
+          })
+          .filter(Boolean);
+        const correct = rows.filter((row) => row.correct).length;
+        return {
+          samples: rows.length,
+          correct,
+          hit_rate: rows.length ? correct / rows.length : null
+        };
+      }
+
+      function actualTotalCorners(match) {
+        const corners = match.event_predictions?.corners || {};
+        const home = corners.live_home ?? match.live_status?.home_stats?.corners;
+        const away = corners.live_away ?? match.live_status?.away_stats?.corners;
+        if (home === null || home === undefined || away === null || away === undefined) return null;
+        return Number(home) + Number(away);
+      }
+
+      function cornerSelection(match) {
+        const corners = match.event_predictions?.corners || {};
+        const over85 = Number(corners.over_8_5_probability);
+        const over95 = Number(corners.over_9_5_probability);
+        if (Number.isFinite(over95) && over95 >= 0.56) return { side: "over", line: 9.5 };
+        if (Number.isFinite(over85) && over85 >= 0.56) return { side: "over", line: 8.5 };
+        if (Number.isFinite(over85) && over85 <= 0.44) return { side: "under", line: 8.5 };
+        return null;
+      }
+
       function actualOutcome(match) {
         const live = match.live_status;
         if (!live || !(live.completed || live.status_state === "post") || !hasActualScore(match)) return null;
@@ -2779,6 +2960,82 @@
             <p class="source-note">legal AH ${validation.legal_asian_handicap_rows || 0} · proxy AH ${validation.proxy_asian_handicap_rows || 0} · closing ${validation.closing_line_status} · CLV ${validation.clv_status}</p>
           </div>
         `;
+      }
+
+      function renderBacktest() {
+        const report = state.backtest || {};
+        const counts = report.snapshot_counts || {};
+        const formal = report.formal || {};
+        const shadow = report.shadow || {};
+        const formalOneXTwo = formal.one_x_two || {};
+        const formalAsian = formal.asian_handicap || {};
+        const formalOverUnder = formal.over_under || {};
+        const formalCorners = formal.corners || {};
+        const shadowOneXTwo = shadow.one_x_two || {};
+        const shadowAsian = shadow.asian_handicap || {};
+        const shadowOverUnder = shadow.over_under || {};
+        const shadowCorners = shadow.corners || {};
+        document.getElementById("backtest-status").textContent = report.status ? "MVP" : "pending";
+        document.getElementById("backtest").innerHTML = `
+          <div class="subpanel" style="margin:12px">
+            <span class="data-chip">闭盘验证 MVP · 非投注建议</span>
+            <p class="source-note">${report.method || "等待快照生成"} </p>
+          </div>
+          <div class="grid" style="padding:0 12px 12px">
+            ${tile("锁定预测", counts.model_prediction_snapshots ?? "-")}
+            ${tile("赛前锁定", counts.eligible_pre_kickoff_predictions ?? "-")}
+            ${tile("闭盘快照", counts.true_closing_lines ?? 0)}
+            ${tile("已结算比赛", counts.settled_matches ?? 0)}
+            ${tile("1X2 命中", performanceText(formalOneXTwo))}
+            ${tile("让球 ROI", pctOrDash(formalAsian.roi))}
+            ${tile("大小球命中", performanceText(formalOverUnder))}
+            ${tile("角球命中", performanceText(formalCorners))}
+          </div>
+          <div class="subpanel" style="margin:0 12px 12px">
+            <h3>正式闭盘回测</h3>
+            <div class="rail-body" style="padding:10px 0 0">
+              ${performanceRow("样本", `${formal.eligible_samples || 0} 场`, "必须赛前锁定，且不能偷看未来")}
+              ${performanceRow("不让球 1X2", performanceText(formalOneXTwo), `Brier ${metricNumber(formalOneXTwo.brier)} · log-loss ${metricNumber(formalOneXTwo.log_loss)}`)}
+              ${performanceRow("亚洲让球", performanceText(formalAsian), `ROI ${pctOrDash(formalAsian.roi)} · CLV ${pctOrDash(formalAsian.average_clv)}`)}
+              ${performanceRow("大小球", performanceText(formalOverUnder), `Brier ${metricNumber(formalOverUnder.brier)} · O/U 2.5`)}
+              ${performanceRow("角球", performanceText(formalCorners), `真实角球样本 ${formalCorners.actual_event_samples || 0} 场`)}
+            </div>
+            <p class="source-note">${(formal.notes || []).join(" ") || "等待第一批真实赛前锁定与闭盘样本。"}</p>
+          </div>
+          <div class="subpanel" style="margin:0 12px 12px">
+            <h3>影子审计</h3>
+            <div class="rail-body" style="padding:10px 0 0">
+              ${performanceRow("用途", shadow.label || "公式烟测", "不作为专业模型成绩")}
+              ${performanceRow("不让球 1X2", performanceText(shadowOneXTwo), `Brier ${metricNumber(shadowOneXTwo.brier)} · log-loss ${metricNumber(shadowOneXTwo.log_loss)}`)}
+              ${performanceRow("亚洲让球", performanceText(shadowAsian), `走盘 ${shadowAsian.pushes || 0} · ROI ${pctOrDash(shadowAsian.roi)}`)}
+              ${performanceRow("大小球", performanceText(shadowOverUnder), `Brier ${metricNumber(shadowOverUnder.brier)} · O/U 2.5`)}
+              ${performanceRow("角球", performanceText(shadowCorners), `真实角球样本 ${shadowCorners.actual_event_samples || 0} 场`)}
+            </div>
+          </div>
+        `;
+      }
+
+      function performanceText(report) {
+        const samples = Number(report?.samples ?? report?.selections ?? 0);
+        if (!samples || report?.hit_rate === null || report?.hit_rate === undefined) return "pending";
+        return `${pct(report.hit_rate)} · ${Number(report.correct || 0)}/${samples}`;
+      }
+
+      function performanceRow(label, value, note) {
+        return `
+          <div class="source">
+            <div><strong>${label}</strong><span>${note}</span></div>
+            <em>${value}</em>
+          </div>
+        `;
+      }
+
+      function pctOrDash(value) {
+        return value === null || value === undefined || Number.isNaN(value) ? "-" : pct(value);
+      }
+
+      function metricNumber(value) {
+        return value === null || value === undefined || Number.isNaN(value) ? "-" : Number(value).toFixed(3);
       }
 
       function bracketBoard(bracket) {

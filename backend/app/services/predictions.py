@@ -870,15 +870,34 @@ def _market_validation_summary() -> dict:
     ah_rows = [row for row in odds_rows if row.get("market_type") == "asian_handicap"]
     legal_ah_rows = [row for row in ah_rows if _is_legal_market(row)]
     proxy_ah_rows = [row for row in ah_rows if not _is_legal_market(row)]
+    closing_rows = data_store.closing_line_snapshots()
+    true_closing_rows = [row for row in closing_rows if row.get("is_closing_line")]
+    backtest = data_store.backtest_report()
+    formal = backtest.get("formal", {})
+    ah_report = formal.get("asian_handicap", {})
+    eligible_samples = int(formal.get("eligible_samples") or 0)
     return {
         "asian_handicap_rows": len(ah_rows),
         "legal_asian_handicap_rows": len(legal_ah_rows),
         "proxy_asian_handicap_rows": len(proxy_ah_rows),
         "true_market_line_status": "available" if legal_ah_rows else "pending_legal_odds_api",
-        "closing_line_status": "pending_closing_snapshots",
-        "clv_status": "not_computable_without_closing_line",
-        "backtest_metrics_ready": False,
-        "planned_metrics": ["Asian handicap hit rate", "CLV", "Brier", "log-loss", "ROI as research-only diagnostic"],
+        "closing_line_status": "available" if true_closing_rows else "mvp_latest_snapshot_only",
+        "clv_status": "available" if ah_report.get("average_clv") is not None else "not_computable_without_closing_line",
+        "backtest_metrics_ready": eligible_samples > 0,
+        "model_prediction_snapshots": len(data_store.model_prediction_snapshots()),
+        "closing_line_snapshots": len(closing_rows),
+        "true_closing_lines": len(true_closing_rows),
+        "eligible_samples": eligible_samples,
+        "planned_metrics": [
+            "1X2 hit rate",
+            "Asian handicap hit rate",
+            "Over/Under hit rate",
+            "Corners hit rate when true event stats exist",
+            "CLV",
+            "Brier",
+            "log-loss",
+            "ROI as research-only diagnostic",
+        ],
         "public_note": "No betting instruction is generated; market gaps stay visible instead of being filled with synthetic odds.",
     }
 

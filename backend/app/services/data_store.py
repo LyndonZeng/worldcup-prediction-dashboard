@@ -74,6 +74,29 @@ def prediction_markets() -> list[dict]:
 
 
 @lru_cache(maxsize=1)
+def model_prediction_snapshots() -> list[dict]:
+    return _read_json_optional("model_prediction_snapshots.json", [])
+
+
+@lru_cache(maxsize=1)
+def closing_line_snapshots() -> list[dict]:
+    return _read_json_optional("closing_line_snapshots.json", [])
+
+
+@lru_cache(maxsize=1)
+def backtest_report() -> dict:
+    return _read_json_optional(
+        "backtest_report.json",
+        {
+            "status": "missing",
+            "snapshot_counts": {},
+            "formal": {},
+            "shadow": {},
+        },
+    )
+
+
+@lru_cache(maxsize=1)
 def historical_results_summary() -> dict:
     return _read_json_optional("historical_results_summary.json", {"teams": {}})
 

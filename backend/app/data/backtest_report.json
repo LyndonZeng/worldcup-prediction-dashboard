@@ -1,0 +1,99 @@
+{
+  "generated_at": "2026-06-14T13:56:09.051974+00:00",
+  "status": "mvp_shadow_until_locked_closing_samples",
+  "method": "Formal samples require pre-kickoff model snapshots and closing lines; shadow audit is not leak-safe.",
+  "snapshot_counts": {
+    "model_prediction_snapshots": 72,
+    "eligible_pre_kickoff_predictions": 64,
+    "closing_line_snapshots": 4632,
+    "true_closing_lines": 0,
+    "settled_matches": 4
+  },
+  "formal": {
+    "eligible_samples": 0,
+    "one_x_two": {
+      "samples": 0,
+      "hit_rate": null,
+      "correct": 0,
+      "brier": null,
+      "log_loss": null
+    },
+    "asian_handicap": {
+      "selections": 0,
+      "roi": null,
+      "hit_rate": null,
+      "average_clv": null,
+      "unit_profit": 0,
+      "correct": 0,
+      "pushes": 0
+    },
+    "over_under": {
+      "samples": 0,
+      "hit_rate": null,
+      "correct": 0,
+      "brier": null,
+      "log_loss": null
+    },
+    "corners": {
+      "actual_event_samples": 0,
+      "selections": 0,
+      "hit_rate": null,
+      "correct": 0,
+      "line_summary": {}
+    },
+    "notes": [
+      "No sample is counted unless the prediction was locked before kickoff.",
+      "CLV is only calculated against a snapshot captured inside the configured closing window."
+    ]
+  },
+  "shadow": {
+    "label": "\u516c\u5f0f\u70df\u6d4b\uff0c\u4e0d\u4f5c\u4e3a\u4e13\u4e1a\u6a21\u578b\u6210\u7ee9",
+    "one_x_two": {
+      "samples": 4,
+      "hit_rate": 0.75,
+      "correct": 3,
+      "brier": 0.166852,
+      "log_loss": 0.86328
+    },
+    "asian_handicap": {
+      "selections": 3,
+      "roi": 0.31,
+      "hit_rate": 0.666667,
+      "average_clv": null,
+      "unit_profit": 0.93,
+      "correct": 2,
+      "pushes": 0
+    },
+    "over_under": {
+      "samples": 4,
+      "hit_rate": 0.5,
+      "correct": 2,
+      "brier": 0.27149,
+      "log_loss": 0.737646
+    },
+    "corners": {
+      "actual_event_samples": 4,
+      "selections": 4,
+      "hit_rate": 0.25,
+      "correct": 1,
+      "line_summary": {
+        "over_8.5": {
+          "selections": 2,
+          "correct": 1,
+          "hit_rate": 0.5
+        },
+        "over_9.5": {
+          "selections": 2,
+          "correct": 0,
+          "hit_rate": 0.0
+        }
+      }
+    }
+  },
+  "requirements_to_claim_professional": [
+    "Hundreds of locked pre-match predictions",
+    "Closing snapshots within 5-10 minutes of kickoff",
+    "Positive CLV over meaningful samples",
+    "Stable Brier/log-loss calibration by market type"
+  ]
+}

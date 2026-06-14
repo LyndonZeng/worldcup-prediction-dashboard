@@ -395,6 +395,11 @@ def write_json(path: Path, value) -> None:
 def write_static_payload() -> None:
     sys.path.insert(0, str(ROOT / "backend"))
     from app.services import data_store
+    from app.services.backtesting import (
+        build_backtest_report,
+        build_closing_line_snapshots,
+        build_model_prediction_snapshots,
+    )
     from app.services.predictions import all_matches, model_run, tournament_probabilities
 
     data_store.teams.cache_clear()
@@ -404,12 +409,26 @@ def write_static_payload() -> None:
     data_store.live_weather.cache_clear()
     data_store.live_matches.cache_clear()
     data_store.prediction_markets.cache_clear()
+    data_store.model_prediction_snapshots.cache_clear()
+    data_store.closing_line_snapshots.cache_clear()
+    data_store.backtest_report.cache_clear()
     data_store.historical_results_summary.cache_clear()
+    matches = all_matches()
+    model_prediction_snapshots = build_model_prediction_snapshots(matches, data_store.source_health())
+    closing_line_snapshots = build_closing_line_snapshots(data_store.fixtures(), data_store.odds_snapshots())
+    backtest_report = build_backtest_report(matches, model_prediction_snapshots, closing_line_snapshots)
+    write_json(DATA_DIR / "model_prediction_snapshots.json", model_prediction_snapshots)
+    write_json(DATA_DIR / "closing_line_snapshots.json", closing_line_snapshots)
+    write_json(DATA_DIR / "backtest_report.json", backtest_report)
+    data_store.model_prediction_snapshots.cache_clear()
+    data_store.closing_line_snapshots.cache_clear()
+    data_store.backtest_report.cache_clear()
     payload = {
-        "matches": [compact_match(match) for match in all_matches()],
+        "matches": [compact_match(match) for match in matches],
         "tournament": compact_tournament(tournament_probabilities()),
         "sources": data_store.source_health(),
         "modelRun": model_run(),
+        "backtest": compact_backtest(backtest_report),
     }
     STATIC_DATA.write_text(json.dumps(payload, separators=(",", ":")) + "\n", encoding="utf-8")
 
@@ -540,6 +559,18 @@ def compact_tournament(tournament: dict) -> dict:
         "goal_scale_sanity": tournament["goal_scale_sanity"],
         "sanity_checks": tournament["sanity_checks"],
         "teams": tournament["teams"],
+    }
+
+
+def compact_backtest(report: dict) -> dict:
+    return {
+        "generated_at": report["generated_at"],
+        "status": report["status"],
+        "method": report["method"],
+        "snapshot_counts": report["snapshot_counts"],
+        "formal": report["formal"],
+        "shadow": report["shadow"],
+        "requirements_to_claim_professional": report["requirements_to_claim_professional"],
     }
 
 

@@ -95,6 +95,21 @@ def source_health():
     return {"sources": data_store.source_health()}
 
 
+@app.get("/api/backtest/report")
+def backtest_report():
+    return data_store.backtest_report()
+
+
+@app.get("/api/snapshots/model-predictions")
+def model_prediction_snapshots():
+    return {"snapshots": data_store.model_prediction_snapshots()}
+
+
+@app.get("/api/snapshots/closing-lines")
+def closing_line_snapshots():
+    return {"snapshots": data_store.closing_line_snapshots()}
+
+
 @app.get("/api/weather")
 def weather_snapshots():
     return {"weather": list(data_store.live_weather().values())}

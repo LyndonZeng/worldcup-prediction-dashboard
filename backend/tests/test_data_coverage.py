@@ -1,6 +1,11 @@
 import unittest
 
 from app.services import data_store
+from app.services.backtesting import (
+    build_backtest_report,
+    build_closing_line_snapshots,
+    build_model_prediction_snapshots,
+)
 from app.services.predictions import all_matches, tournament_probabilities
 
 
@@ -108,6 +113,21 @@ class DataCoverageTest(unittest.TestCase):
         self.assertIsInstance(data_store.live_weather(), dict)
         self.assertIsInstance(data_store.live_matches(), dict)
         self.assertIn("teams", data_store.historical_results_summary())
+
+    def test_backtest_report_contains_market_hit_rates(self):
+        matches = all_matches()
+        snapshots = build_model_prediction_snapshots(matches, data_store.source_health())
+        closing = build_closing_line_snapshots(data_store.fixtures(), data_store.odds_snapshots())
+        report = build_backtest_report(matches, snapshots, closing)
+        self.assertIn("one_x_two", report["formal"])
+        self.assertIn("asian_handicap", report["formal"])
+        self.assertIn("over_under", report["formal"])
+        self.assertIn("corners", report["formal"])
+        self.assertIn("asian_handicap", report["shadow"])
+        self.assertIn("over_under", report["shadow"])
+        self.assertIn("corners", report["shadow"])
+        self.assertGreaterEqual(report["snapshot_counts"]["settled_matches"], 0)
+        self.assertGreaterEqual(report["shadow"]["corners"]["actual_event_samples"], 0)
 
 
 if __name__ == "__main__":
