@@ -1219,6 +1219,46 @@
         line-height: 1.45;
       }
 
+      .story-block {
+        display: grid;
+        gap: 12px;
+      }
+
+      .story-lead {
+        display: grid;
+        gap: 10px;
+      }
+
+      .story-lead h3 {
+        margin: 0;
+        color: var(--ink);
+        font-size: 24px;
+        line-height: 1.16;
+      }
+
+      .story-list {
+        margin: 10px 0 0;
+        padding-left: 20px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .story-list li {
+        color: var(--muted);
+        line-height: 1.48;
+      }
+
+      .story-list strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--ink);
+      }
+
+      .story-scene {
+        border-left: 3px solid rgba(102, 183, 255, 0.45);
+        padding-left: 12px;
+      }
+
       .bracket-board {
         display: grid;
         gap: 10px;
@@ -1407,6 +1447,56 @@
         totalGoals: "goals",
         yellowCards: "yellow_cards",
         redCards: "red_cards"
+      };
+      const zhTeams = {
+        Algeria: "阿尔及利亚",
+        Argentina: "阿根廷",
+        Australia: "澳大利亚",
+        Austria: "奥地利",
+        Belgium: "比利时",
+        "Bosnia and Herzegovina": "波黑",
+        Brazil: "巴西",
+        "Cabo Verde": "佛得角",
+        Canada: "加拿大",
+        Colombia: "哥伦比亚",
+        "Cote d'Ivoire": "科特迪瓦",
+        Croatia: "克罗地亚",
+        Curacao: "库拉索",
+        Czechia: "捷克",
+        "DR Congo": "刚果（金）",
+        Ecuador: "厄瓜多尔",
+        Egypt: "埃及",
+        England: "英格兰",
+        France: "法国",
+        Germany: "德国",
+        Ghana: "加纳",
+        Haiti: "海地",
+        Iran: "伊朗",
+        Iraq: "伊拉克",
+        Japan: "日本",
+        Jordan: "约旦",
+        Mexico: "墨西哥",
+        Morocco: "摩洛哥",
+        Netherlands: "荷兰",
+        "New Zealand": "新西兰",
+        Norway: "挪威",
+        Panama: "巴拿马",
+        Paraguay: "巴拉圭",
+        Portugal: "葡萄牙",
+        Qatar: "卡塔尔",
+        "Saudi Arabia": "沙特",
+        Scotland: "苏格兰",
+        Senegal: "塞内加尔",
+        "South Africa": "南非",
+        "South Korea": "韩国",
+        Spain: "西班牙",
+        Sweden: "瑞典",
+        Switzerland: "瑞士",
+        Tunisia: "突尼斯",
+        Turkey: "土耳其",
+        "United States": "美国",
+        Uruguay: "乌拉圭",
+        Uzbekistan: "乌兹别克斯坦"
       };
       let livePollTimer = null;
       let state = { matches: [], tournament: null, sources: [], backtest: null, selected: null, group: "ALL", query: "", tab: "handicap" };
@@ -1835,6 +1925,7 @@
           <div class="tabs">
             ${tabButton("handicap", "盘口矩阵")}
             ${tabButton("advice", "投注参考")}
+            ${tabButton("script", "预测分析")}
             ${tabButton("events", "比分事件")}
             ${tabButton("stats", "技术统计")}
             ${tabButton("model", "模型因子")}
@@ -1901,6 +1992,7 @@
 
       function tabContent(match) {
         if (state.tab === "advice") return advicePanel(match);
+        if (state.tab === "script") return scriptPanel(match);
         if (state.tab === "events") return eventsPanel(match);
         if (state.tab === "stats") return technicalPanel(match);
         if (state.tab === "model") return modelPanel(match);
@@ -1960,6 +2052,345 @@
             `).join("")}
           </div>
         `;
+      }
+
+      function scriptPanel(match) {
+        const script = buildScriptAnalysis(match);
+        return `
+          <div class="story-block">
+            <div class="subpanel story-lead">
+              <span class="data-chip">嘉豪先疯一句 · 模型剧本 · 非投注建议</span>
+              <h3>${script.opening}</h3>
+              <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:2px">
+                ${tile("我更看好", script.lean)}
+                ${tile("常规时间方向", script.direction)}
+                ${tile("最可能比分", script.score)}
+                ${tile("置信度", script.confidence)}
+              </div>
+              <p class="source-note">${script.picture}</p>
+            </div>
+            <div class="subpanel">
+              <h3>我真正看重的 ${script.keyPoints.length} 个点</h3>
+              <ol class="story-list">
+                ${script.keyPoints.map((point) => `<li><strong>${point.title}</strong>${point.body}</li>`).join("")}
+              </ol>
+            </div>
+            <div class="subpanel">
+              <h3>我不太买账的点</h3>
+              <ol class="story-list">
+                ${script.fadePoints.map((point) => `<li><strong>${point.title}</strong>${point.body}</li>`).join("")}
+              </ol>
+            </div>
+            <div class="subpanel">
+              <h3>我脑子里的比赛镜头</h3>
+              <div class="rail-body" style="padding:10px 0 0">
+                ${script.scenes.map((scene) => `
+                  <div class="source story-scene">
+                    <div><strong>${scene.title}</strong><span>${scene.body}</span></div>
+                    <em>${scene.tag}</em>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+            <div class="subpanel">
+              <h3>主观比赛脚本</h3>
+              <div class="rail-body" style="padding:10px 0 0">
+                ${script.phases.map((phase) => performanceRow(phase.title, phase.value, phase.body)).join("")}
+              </div>
+            </div>
+            <div class="subpanel">
+              <h3>最容易打脸我的地方</h3>
+              <ol class="story-list">
+                ${script.risks.map((risk) => `<li><strong>${risk.title}</strong>${risk.body}</li>`).join("")}
+              </ol>
+              <p class="source-note">${script.finalLine}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function buildScriptAnalysis(match) {
+        const home = teamName(match.home_team);
+        const away = teamName(match.away_team);
+        const outcomes = [
+          { key: "home", label: `${home}胜`, team: home, probability: Number(match.p_home || 0) },
+          { key: "draw", label: "平局", team: "平局", probability: Number(match.p_draw || 0) },
+          { key: "away", label: `${away}胜`, team: away, probability: Number(match.p_away || 0) }
+        ].sort((a, b) => b.probability - a.probability);
+        const top = outcomes[0];
+        const favoriteSide = top.key === "draw" ? (Number(match.p_home || 0) >= Number(match.p_away || 0) ? "home" : "away") : top.key;
+        const favorite = favoriteSide === "home" ? home : away;
+        const underdog = favoriteSide === "home" ? away : home;
+        const confidence = confidenceScore(match);
+        const direction = scriptDirection(match, top, favoriteSide, favorite, underdog);
+        const score = formatLikelyScore(match);
+        return {
+          opening: scriptOpening(match, top, favorite, direction),
+          lean: `${top.label} ${pct(top.probability)}`,
+          direction,
+          score,
+          confidence: `${pct(confidence)} · ${(match.confidence_profile || {}).tier || "中"}`,
+          picture: scriptPicture(match, favoriteSide, favorite, underdog),
+          keyPoints: scriptKeyPoints(match, favoriteSide, favorite, underdog),
+          fadePoints: scriptFadePoints(match, favoriteSide, favorite, underdog),
+          scenes: scriptScenes(match, favoriteSide, favorite, underdog),
+          phases: scriptPhases(match, top, favorite, underdog),
+          risks: scriptRisks(match, favorite, underdog),
+          finalLine: scriptFinalLine(match, top, score, direction)
+        };
+      }
+
+      function scriptOpening(match, top, favorite, direction) {
+        if (hasActualScore(match)) {
+          return `这场已经有赛果，下面按赛前模型复盘：${top.label}是主方向，重点看它有没有兑现“${direction}”。`;
+        }
+        if (top.key === "draw") return "我更看好：平局。不是怂，是模型在说两边都没有一口吃掉比赛的能力。";
+        if (top.probability >= 0.68) return `我更看好：${favorite}，方向很硬，但深盘能不能穿要单独算。`;
+        if (top.probability >= 0.55) return `我更看好：${favorite}，优势明确，但不是闭眼碾压局。`;
+        return `我更看好：${favorite}，但这是细节局，别把倾向当确定性。`;
+      }
+
+      function scriptDirection(match, top, favoriteSide, favorite, underdog) {
+        if (top.key === "draw") return "平局/小比分优先";
+        const minus25 = favoriteCoverage(match, favoriteSide, 2.5);
+        const minus15 = favoriteCoverage(match, favoriteSide, 1.5);
+        const minus05 = favoriteCoverage(match, favoriteSide, 0.5);
+        const plus15 = underdogCoverage(match, favoriteSide, 1.5);
+        if (minus25 >= 0.52) return `${favorite}大胜，-2.5 覆盖 ${pct(minus25)}`;
+        if (minus15 >= 0.56) return `${favorite}赢 2 球以上倾向，-1.5 覆盖 ${pct(minus15)}`;
+        if (minus05 >= 0.58) {
+          if (plus15 >= 0.58) return `${favorite}常规胜，但${underdog}+1.5 仍有 ${pct(plus15)}`;
+          return `${favorite}常规胜，-0.5 覆盖 ${pct(minus05)}`;
+        }
+        return `${favorite}方向略优，但让球别贪`;
+      }
+
+      function scriptPicture(match, favoriteSide, favorite, underdog) {
+        const tech = match.tactical_profile || {};
+        const favoriteTech = favoriteSide === "home" ? tech.home : tech.away;
+        const underdogTech = favoriteSide === "home" ? tech.away : tech.home;
+        const corners = match.event_predictions?.corners || {};
+        const cards = match.event_predictions?.cards || {};
+        const pressGap = Number(underdogTech?.ppda || 0) - Number(favoriteTech?.ppda || 0);
+        if (pressGap > 5) {
+          return `我敢押的一个具体画面：${underdog}后场出球被连续压迫，60分钟后体能和传球质量一起掉线，${favorite}靠二次进攻或肋部渗透再补一刀。`;
+        }
+        if (Number(corners.total_expected || 0) >= 10) {
+          return "我敢押的一个具体画面：两边反复把球打到边路，角球堆到 9 个以上，真正的破局点来自定位球和二点球。";
+        }
+        if (Number(cards.total_yellow_expected || 0) >= 4) {
+          return "我敢押的一个具体画面：中场对抗变碎，黄牌把节奏切断，谁先在犯规后丢定位球，谁就可能先出事。";
+        }
+        return "我敢押的一个具体画面：前30分钟不会完全摊牌，比赛先从中场控制权和第一粒进球的心理压力开始倾斜。";
+      }
+
+      function scriptKeyPoints(match, favoriteSide, favorite, underdog) {
+        const home = teamName(match.home_team);
+        const away = teamName(match.away_team);
+        const form = match.team_form || {};
+        const tech = match.tactical_profile || {};
+        const favoriteForm = favoriteSide === "home" ? form.home : form.away;
+        const underdogForm = favoriteSide === "home" ? form.away : form.home;
+        const favoriteTech = favoriteSide === "home" ? tech.home : tech.away;
+        const underdogTech = favoriteSide === "home" ? tech.away : tech.home;
+        const points = [
+          {
+            title: `${favorite}的底盘优势不是一句“名气大”`,
+            body: `${home} vs ${away} 的 ELO 差是 ${signed((form.elo_gap || 0) / 100)} 档量级；${favorite}近况 ${favoriteForm?.last_10 || "-"}，${underdog}近况 ${underdogForm?.last_10 || "-"}。这类差距会先体现在控球安全和禁区前沿选择质量上。`
+          },
+          {
+            title: `进攻产量更支持${favorite}这边`,
+            body: `${favorite} xG ${value(favoriteTech?.xg_per_game, 2)}、射门 ${value(favoriteTech?.shots_per_game, 1)}、射正 ${value(favoriteTech?.shots_on_target_per_game, 1)}；${underdog}对应是 xG ${value(underdogTech?.xg_per_game, 2)}、射门 ${value(underdogTech?.shots_per_game, 1)}、射正 ${value(underdogTech?.shots_on_target_per_game, 1)}。这不是玄学，是机会数量在说话。`
+          }
+        ];
+        const tacticalEdge = strongestTacticalEdge(match, favoriteSide);
+        if (tacticalEdge) {
+          points.push({
+            title: `${tacticalEdge.label}是这场的放大器`,
+            body: `这项对${favorite}的边际是 ${signed(tacticalEdge.edge)}，数据质量标为 ${tacticalEdge.quality}。它不一定直接决定胜负，但会决定优势是慢慢磨出来，还是突然在某个阶段连续爆发。`
+          });
+        }
+        const corners = match.event_predictions?.corners || {};
+        if (Number(corners.total_expected || 0) >= 8.5) {
+          points.push({
+            title: "角球和定位球可能把比赛推向更极端的比分",
+            body: `模型给总角球 ${value(corners.total_expected, 1)}，大 8.5 概率 ${pct(corners.over_8_5_probability)}。如果${favorite}早早压住半场，角球会变成持续施压的计数器。`
+          });
+        }
+        points.push(marketScriptPoint(match, favoriteSide, favorite));
+        return points.slice(0, 5);
+      }
+
+      function marketScriptPoint(match, favoriteSide, favorite) {
+        const market = match.market_summary?.one_x_two || {};
+        if (market.status === "available") {
+          const deltas = market.model_delta || {};
+          return {
+            title: "市场和模型不是完全同一张脸",
+            body: `本场 1X2 有 ${market.books} 家市场去水均值；${favorite}方向的模型-市场差是 ${signedPct(deltas[favoriteSide] || 0)}。我看重的是差异是否可解释，而不是盲目站模型。`
+          };
+        }
+        return {
+          title: "没有真实 1X2 市场时，更要回到比分矩阵",
+          body: "当前单场市场缺口会降低置信度，所以盘口和比分都从同一张比分分布推导，避免为每个市场单独编故事。"
+        };
+      }
+
+      function scriptFadePoints(match, favoriteSide, favorite, underdog) {
+        const topScore = (match.top_scorelines || [])[0];
+        const minus25 = favoriteCoverage(match, favoriteSide, 2.5);
+        const minus15 = favoriteCoverage(match, favoriteSide, 1.5);
+        const upset = match.matchup?.upset_profile || {};
+        const risks = [
+          {
+            title: `把${favorite}方向直接翻译成“大屠杀”，我不买账`,
+            body: `${favorite}-1.5 覆盖 ${pct(minus15)}，-2.5 覆盖 ${pct(minus25)}。赢球概率高不等于深盘稳穿，这两件事必须分开看。`
+          },
+          {
+            title: "精确比分只是分布峰值，不是预言",
+            body: `最可能比分 ${formatLikelyScore(match)} 的单点概率只有 ${pct(topScore?.probability)}。比分盘天然方差大，看剧本可以，不能把它当确定答案。`
+          },
+          {
+            title: `${underdog}不是完全没有活路`,
+            body: `爆冷胜率 ${pct(upset.upset_win_probability)}，平局压力 ${pct(upset.draw_probability)}。这个数字不高，但足够提醒我们：早段不进球，热门方会越来越急。`
+          }
+        ];
+        if ((match.risk_register || []).length) {
+          risks.push({
+            title: "数据源本身也有风险",
+            body: `${match.risk_register[0].message} 这就是为什么页面把这段标成模型剧本，而不是下注结论。`
+          });
+        }
+        return risks.slice(0, 4);
+      }
+
+      function scriptScenes(match, favoriteSide, favorite, underdog) {
+        const score = match.event_predictions?.score || {};
+        const corners = match.event_predictions?.corners || {};
+        const cards = match.event_predictions?.cards || {};
+        const favGoals = favoriteSide === "home" ? score.expected_home_goals : score.expected_away_goals;
+        const dogGoals = favoriteSide === "home" ? score.expected_away_goals : score.expected_home_goals;
+        return [
+          {
+            title: "镜头1：前15分钟，中场第一波压迫",
+            body: `${favorite}先把球权和阵型推上去，重点不是马上射门，而是让${underdog}的第一脚出球变形。只要前场反抢成一次，比赛的心理秤就会开始倾斜。`,
+            tag: "开局"
+          },
+          {
+            title: "镜头2：25-35分钟，第一粒进球窗口",
+            body: `预期进球是 ${value(favGoals, 2)} : ${value(dogGoals, 2)}。如果${favorite}在这个阶段拿到领先，后面就会从胜负问题变成盘口能不能打穿的问题。`,
+            tag: "破局"
+          },
+          {
+            title: "镜头3：定位球和二点球",
+            body: `总角球预期 ${value(corners.total_expected, 1)}，大 8.5 概率 ${pct(corners.over_8_5_probability)}。这类比赛最容易出现的不是漂亮传控进球，而是连续压迫后的角球、折射和二点球。`,
+            tag: "定位球"
+          },
+          {
+            title: "镜头4：60分钟后，体能和替补腿",
+            body: `${underdog}如果前60分钟一直无球防守，最后半小时会很难保持横向移动质量。这个阶段最容易出现第二球、第三球，或者让球盘突然被打穿。`,
+            tag: "后程"
+          },
+          {
+            title: "镜头5：最后15分钟，节奏管理",
+            body: `黄牌预期 ${value(cards.total_yellow_expected, 1)}，大 3.5 概率 ${pct(cards.over_3_5_yellow_probability)}。如果比分已经拉开，比赛会变成控节奏；如果还只差一球，犯规和定位球会把尾声变得很乱。`,
+            tag: "收官"
+          }
+        ];
+      }
+
+      function scriptPhases(match, top, favorite, underdog) {
+        const likely = formatLikelyScore(match);
+        const total = Number(match.p_over_2_5 || 0);
+        const btts = Number(match.p_btts || 0);
+        return [
+          {
+            title: "前20分钟",
+            value: top.probability >= 0.62 ? "热门压上" : "先试探",
+            body: `${favorite}会优先争夺二点球和中场落位，${underdog}的任务是把第一波压力拖过去。`
+          },
+          {
+            title: "上半场后段",
+            value: likely,
+            body: `如果比分向模型峰值靠拢，半场前最像 ${likely} 的低比分优势；大 2.5 概率 ${pct(total)}，双方进球 ${pct(btts)}。`
+          },
+          {
+            title: "60-75分钟",
+            value: "盘口窗口",
+            body: "这是让球盘最敏感的阶段：领先方会决定继续踩油门还是控节奏，落后方的体能和纪律会被放大。"
+          },
+          {
+            title: "最后15分钟",
+            value: "复盘关键",
+            body: `如果${favorite}只领先一球，最后会很紧；如果已经领先两球以上，角球、牌和替补冲击会比胜负更值得复盘。`
+          },
+          {
+            title: "如果进加时/点球",
+            value: "不存在",
+            body: "这是小组赛，没有加时和点球大战；所有判断都只针对常规时间。"
+          }
+        ];
+      }
+
+      function scriptRisks(match, favorite, underdog) {
+        const topScore = (match.top_scorelines || [])[0];
+        return [
+          {
+            title: `${underdog}低位防守比模型想象得更硬`,
+            body: `如果${underdog}能把禁区前沿堵住，比赛可能从模型的 ${formatLikelyScore(match)} 变成更低节奏的小胜或平局。`
+          },
+          {
+            title: `${favorite}机会转化率掉线`,
+            body: `最可能比分单点概率 ${pct(topScore?.probability)}，说明同一个优势局也可能长成很多比分。射门质量一掉，穿盘就会先出问题。`
+          },
+          {
+            title: "代理数据误导",
+            body: "技术统计、球员状态和部分伤停仍有代理成分；如果真实首发或战术和先验不同，赛前剧本必须下调权重。"
+          }
+        ];
+      }
+
+      function scriptFinalLine(match, top, score, direction) {
+        const status = hasActualScore(match) ? `实际比分 ${actualScore(match, match.event_predictions?.score || {})}。` : "";
+        return `最终一句话：主方向是 ${top.label}，比分峰值是 ${score}，常规时间看 ${direction}。${status}这段是模型剧本，不是投注指令。`;
+      }
+
+      function formatLikelyScore(match) {
+        const top = (match.top_scorelines || [])[0];
+        if (!top) return "-";
+        const parts = String(top.score || "").split("-");
+        if (parts.length !== 2) return top.score;
+        return `${teamName(match.home_team)} ${parts[0]}-${parts[1]} ${teamName(match.away_team)}`;
+      }
+
+      function favoriteCoverage(match, favoriteSide, minusLine) {
+        const homeLine = favoriteSide === "home" ? -minusLine : minusLine;
+        const row = findHandicapRow(match, homeLine);
+        return Number(row?.[favoriteSide]?.positive_probability || 0);
+      }
+
+      function underdogCoverage(match, favoriteSide, plusLine) {
+        const underdogSide = favoriteSide === "home" ? "away" : "home";
+        const homeLine = favoriteSide === "home" ? -plusLine : plusLine;
+        const row = findHandicapRow(match, homeLine);
+        return Number(row?.[underdogSide]?.positive_probability || 0);
+      }
+
+      function strongestTacticalEdge(match, favoriteSide) {
+        const edges = (match.matchup?.tactical_edges || [])
+          .map((row) => ({
+            label: row.label,
+            edge: favoriteSide === "home" ? Number(row.home_edge || 0) : -Number(row.home_edge || 0),
+            quality: row.data_quality || row.category || "unknown"
+          }))
+          .filter((row) => Number.isFinite(row.edge))
+          .sort((a, b) => Math.abs(b.edge) - Math.abs(a.edge));
+        return edges[0] || null;
+      }
+
+      function teamName(team) {
+        const raw = team?.name || team?.team || "";
+        return zhTeams[raw] || raw;
       }
 
       function bettingReferences(match) {
