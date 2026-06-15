@@ -1259,6 +1259,64 @@
         padding-left: 12px;
       }
 
+      .view-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 10px;
+      }
+
+      .view-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .view-card b,
+      .view-card span,
+      .view-card small {
+        display: block;
+      }
+
+      .view-card b {
+        margin: 5px 0;
+        color: var(--ink);
+        font-size: 18px;
+      }
+
+      .view-card small {
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .story-section h3 {
+        margin-bottom: 8px;
+      }
+
+      .material-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 9px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .material-row:first-child {
+        border-top: 0;
+      }
+
+      .material-row strong,
+      .material-row span,
+      .material-row em {
+        display: block;
+      }
+
+      .material-row em {
+        color: var(--muted);
+        font-style: normal;
+        line-height: 1.4;
+      }
+
       .bracket-board {
         display: grid;
         gap: 10px;
@@ -2059,37 +2117,65 @@
       }
 
       function scriptPanel(match) {
-        const script = buildScriptAnalysis(match);
+        const report = buildMatchReport(match);
         return `
           <div class="story-block">
             <div class="subpanel story-lead">
-              <span class="data-chip">嘉豪先疯一句 · 模型剧本 · 非投注建议</span>
-              <h3>${script.opening}</h3>
+              <span class="data-chip">${report.modeLabel} · 多视角模型报告 · 非投注建议</span>
+              <h3>${report.opening}</h3>
               <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:2px">
-                ${tile("比赛类型", script.archetype)}
-                ${tile("我更看好", script.lean)}
-                ${tile("常规时间方向", script.direction)}
-                ${tile("最可能比分", script.score)}
-                ${tile("置信度", script.confidence)}
+                ${report.tiles.map((item) => tile(item.label, item.value)).join("")}
               </div>
-              <p class="source-note">${script.picture}</p>
+              <p class="source-note">${report.picture}</p>
             </div>
-            <div class="subpanel">
-              <h3>我真正看重的 ${script.keyPoints.length} 个点</h3>
-              <ol class="story-list">
-                ${script.keyPoints.map((point) => `<li><strong>${point.title}</strong>${point.body}</li>`).join("")}
-              </ol>
+            <div class="view-grid">
+              ${report.views.map((view) => `
+                <div class="view-card">
+                  <span class="data-chip">${view.name}</span>
+                  <b>${view.pick}</b>
+                  <small>${view.reason}</small>
+                  <p class="source-note">${view.warning}</p>
+                </div>
+              `).join("")}
             </div>
-            <div class="subpanel">
-              <h3>我不太买账的点</h3>
-              <ol class="story-list">
-                ${script.fadePoints.map((point) => `<li><strong>${point.title}</strong>${point.body}</li>`).join("")}
-              </ol>
+            <div class="split">
+              <div class="subpanel">
+                <h3>赛前材料板</h3>
+                <div class="rail-body" style="padding:10px 0 0">
+                  ${report.materials.map((row) => `
+                    <div class="material-row">
+                      <div><strong>${row.title}</strong><em>${row.body}</em></div>
+                      <span class="mono">${row.value}</span>
+                    </div>
+                  `).join("")}
+                </div>
+                <p class="source-note">${report.materialNote}</p>
+              </div>
+              <div class="subpanel">
+                <h3>${report.duelTitle}</h3>
+                <div class="rail-body" style="padding:10px 0 0">
+                  ${report.duels.map((row) => `
+                    <div class="source">
+                      <div><strong>${row.title}</strong><span>${row.body}</span></div>
+                      <em>${row.tag}</em>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
             </div>
+            ${report.sections.map((section) => `
+              <div class="subpanel story-section">
+                <div class="factor-meta"><span>${section.kicker}</span><span>${section.source}</span></div>
+                <h3>${section.title}</h3>
+                <ol class="story-list">
+                  ${section.points.map((point) => `<li><strong>${point.title}</strong>${point.body}</li>`).join("")}
+                </ol>
+              </div>
+            `).join("")}
             <div class="subpanel">
-              <h3>我脑子里的比赛镜头</h3>
+              <h3>${report.sceneTitle}</h3>
               <div class="rail-body" style="padding:10px 0 0">
-                ${script.scenes.map((scene) => `
+                ${report.scenes.map((scene) => `
                   <div class="source story-scene">
                     <div><strong>${scene.title}</strong><span>${scene.body}</span></div>
                     <em>${scene.tag}</em>
@@ -2098,20 +2184,578 @@
               </div>
             </div>
             <div class="subpanel">
-              <h3>主观比赛脚本</h3>
-              <div class="rail-body" style="padding:10px 0 0">
-                ${script.phases.map((phase) => performanceRow(phase.title, phase.value, phase.body)).join("")}
-              </div>
-            </div>
-            <div class="subpanel">
-              <h3>最容易打脸我的地方</h3>
+              <h3>${report.riskTitle}</h3>
               <ol class="story-list">
-                ${script.risks.map((risk) => `<li><strong>${risk.title}</strong>${risk.body}</li>`).join("")}
+                ${report.risks.map((risk) => `<li><strong>${risk.title}</strong>${risk.body}</li>`).join("")}
               </ol>
-              <p class="source-note">${script.finalLine}</p>
+              <p class="source-note">${report.finalLine}</p>
             </div>
           </div>
         `;
+      }
+
+      function buildMatchReport(match) {
+        const home = teamName(match.home_team);
+        const away = teamName(match.away_team);
+        const outcomes = rankedOutcomes(match);
+        const top = outcomes[0];
+        const favoriteSide = top.key === "draw" ? (Number(match.p_home || 0) >= Number(match.p_away || 0) ? "home" : "away") : top.key;
+        const favorite = favoriteSide === "home" ? home : away;
+        const underdog = favoriteSide === "home" ? away : home;
+        const archetype = scriptArchetype(match, top, favoriteSide);
+        const direction = scriptDirection(match, top, favoriteSide, favorite, underdog);
+        const score = formatLikelyScore(match);
+        const reportSeed = seededIndex(match, 997);
+        const modeLabel = hasActualScore(match) ? "赛后复盘" : "赛前预测";
+        const opening = reportOpening(match, top, favoriteSide, favorite, underdog, archetype, reportSeed);
+        const picture = reportPicture(match, favoriteSide, favorite, underdog, archetype, reportSeed);
+        const tiles = [
+          { label: "比赛类型", value: archetype.label },
+          { label: "主方向", value: `${top.label} ${pct(top.probability)}` },
+          { label: "盘口方向", value: direction },
+          { label: "比分峰值", value: score },
+          { label: "置信度", value: `${pct(confidenceScore(match))} · ${(match.confidence_profile || {}).tier || "中"}` }
+        ];
+        return {
+          modeLabel,
+          opening,
+          picture,
+          tiles,
+          views: reportViews(match, top, favoriteSide, favorite, underdog, archetype),
+          materials: reportMaterials(match, favoriteSide, favorite, underdog),
+          materialNote: materialNote(match),
+          duelTitle: duelTitle(match, archetype, favorite, underdog),
+          duels: reportDuels(match, favoriteSide, favorite, underdog, archetype),
+          sections: reportSections(match, top, favoriteSide, favorite, underdog, archetype),
+          sceneTitle: sceneTitle(archetype, reportSeed),
+          scenes: reportScenes(match, favoriteSide, favorite, underdog, archetype, reportSeed),
+          riskTitle: riskTitle(archetype),
+          risks: reportRisks(match, top, favoriteSide, favorite, underdog, archetype),
+          finalLine: reportFinalLine(match, top, score, direction, archetype)
+        };
+      }
+
+      function rankedOutcomes(match) {
+        const home = teamName(match.home_team);
+        const away = teamName(match.away_team);
+        return [
+          { key: "home", label: `${home}胜`, team: home, probability: Number(match.p_home || 0) },
+          { key: "draw", label: "平局", team: "平局", probability: Number(match.p_draw || 0) },
+          { key: "away", label: `${away}胜`, team: away, probability: Number(match.p_away || 0) }
+        ].sort((a, b) => b.probability - a.probability);
+      }
+
+      function reportOpening(match, top, favoriteSide, favorite, underdog, archetype, seed) {
+        const actual = hasActualScore(match) ? actualScore(match, match.event_predictions?.score || {}) : "";
+        const lines = {
+          deep_favorite: [
+            `这场我不会只写“${favorite}更强”。真正的问题是：它能不能把胜负优势打成净胜球优势。`,
+            `${favorite}是主线，但这不是胜负题，是深盘、替补火力和后段强度一起决定的题。`,
+            `如果只看胜率，这场很简单；如果看盘口，它要回答的是${favorite}能不能持续踩到终场。`
+          ],
+          set_piece: [
+            `这场的主线不在控球率表面，而在边路、角球和定位球的连续施压。`,
+            `${favorite}方向更顺，但我真正盯的是角球怎样把比赛一点点推歪。`,
+            `这不是单纯谁名气大的比赛，定位球质量可能比中路传控更早决定局面。`
+          ],
+          card_chaos: [
+            `我更看好${favorite}，但这场不会顺滑，犯规和黄牌会反复打断节奏。`,
+            `这场看起来是胜负题，实际更像纪律题：谁先被牌拖住，谁的战术先变形。`,
+            `${favorite}有优势，可牌和定位球会把比赛切成一段一段，不能按理想节奏推演。`
+          ],
+          weather_drag: [
+            `方向我站${favorite}，但天气会把技术优势打折，比分和大小球都要谨慎。`,
+            `这场先看场地和天气，再看传控。湿滑、风和闷热会让模型的不确定性抬高。`,
+            `${favorite}是更好的那边，不过环境会把漂亮进攻变成更多二点球和门前混战。`
+          ],
+          knife_edge: [
+            `我更看好${favorite}一点点，但这场不能写成碾压，第一球比阵容名气更重要。`,
+            `这是细节局，不是态度局。${favorite}有倾向，${underdog}也有足够空间把比赛拖进泥潭。`,
+            `模型给${favorite}领先半档，但这场最贵的不是站队，而是谁先犯第一个大错。`
+          ],
+          pressure_build: [
+            `${favorite}方向更清楚，但它需要用持续压迫把优势兑现，不是开球就自动赢。`,
+            `我看好${favorite}，理由不是一句实力强，而是它更容易把球权变成禁区压力。`,
+            `${favorite}要赢，路径大概率是慢慢把${underdog}压低，而不是一脚就解决。`
+          ],
+          balanced_edge: [
+            `${favorite}略占主线，但这场要按概率分布看，别把倾向写成定论。`,
+            `这场没有那种“闭眼选”的味道，${favorite}更稳，但比分会比胜负更难猜。`,
+            `我会给${favorite}方向，但重点是风险边界：平局和一球小胜都在分布里。`
+          ]
+        };
+        const base = pickSeeded(lines[archetype.key] || lines.balanced_edge, seed);
+        if (!hasActualScore(match)) return base;
+        const verdict = actualOutcome(match) === top.key ? "主方向兑现了" : "主方向没有兑现";
+        return `${base} 现在已经完赛，实际 ${actual}，所以这段切成复盘：${verdict}，再看比分、盘口、大小球和角球哪里偏离。`;
+      }
+
+      function reportPicture(match, favoriteSide, favorite, underdog, archetype, seed) {
+        const score = match.event_predictions?.score || {};
+        const favGoals = favoriteSide === "home" ? score.expected_home_goals : score.expected_away_goals;
+        const dogGoals = favoriteSide === "home" ? score.expected_away_goals : score.expected_home_goals;
+        const corners = match.event_predictions?.corners || {};
+        const cards = match.event_predictions?.cards || {};
+        const actual = hasActualScore(match) ? `实际比分 ${actualScore(match, score)}，` : "";
+        if (archetype.key === "deep_favorite") {
+          return `${actual}我脑子里的主画面是${favorite}把比赛压成半场攻防：预期进球 ${value(favGoals, 2)}:${value(dogGoals, 2)}，但深盘成败取决于领先后还追不追第二波、第三波。`;
+        }
+        if (archetype.key === "set_piece") {
+          return `${actual}关键画面是边路连续打到底线，角球预期 ${value(corners.total_expected, 1)} 个；如果前点和二点球处理好，比分会比运动战看起来更突然。`;
+        }
+        if (archetype.key === "card_chaos") {
+          return `${actual}这场我先看犯规密度：黄牌预期 ${value(cards.total_yellow_expected, 1)}，红牌概率 ${pct(cards.any_red_probability)}。一张早牌就可能改变边后卫和中卫的防守动作。`;
+        }
+        if (archetype.key === "weather_drag") {
+          return `${actual}天气标记为 ${match.weather?.condition || "normal"}，所以我更相信二点球、解围不远、门将二次处理这些“不漂亮但真实”的机会。`;
+        }
+        if (archetype.key === "knife_edge") {
+          return `${actual}这场的画面不会很豪华：前30分钟互相试探，第一球更可能来自一次转换失误、定位球或门将处理，而不是一边倒碾压。`;
+        }
+        return `${actual}${favorite}要赢，路径是把控球和压迫慢慢兑换成禁区触球；${underdog}要活，核心是前60分钟别让比分先被拉开。`;
+      }
+
+      function reportViews(match, top, favoriteSide, favorite, underdog, archetype) {
+        const market = match.market_summary?.one_x_two || {};
+        const totals = match.market_summary?.over_under_2_5 || {};
+        const corners = match.event_predictions?.corners || {};
+        const cards = match.event_predictions?.cards || {};
+        const minus15 = favoriteCoverage(match, favoriteSide, 1.5);
+        const plus15 = underdogCoverage(match, favoriteSide, 1.5);
+        const edge = market.model_delta ? signedPct(market.model_delta[favoriteSide] || 0) : "无市场";
+        const edgeText = market.status === "available" ? `市场 ${market.books} 家，模型差 ${edge}` : "暂无 1X2 市场，退回模型公平盘";
+        return [
+          {
+            name: "概率派",
+            pick: `${top.label} ${pct(top.probability)}`,
+            reason: `胜平负分布是 ${pct(match.p_home)} / ${pct(match.p_draw)} / ${pct(match.p_away)}，比分峰值 ${formatLikelyScore(match)}。`,
+            warning: "只回答谁更可能赢，不回答盘口深浅。"
+          },
+          {
+            name: "盘口派",
+            pick: minus15 >= 0.52 ? `${favorite} -1.5` : `${underdog} +1.5`,
+            reason: `${favorite}-1.5 覆盖 ${pct(minus15)}，${underdog}+1.5 覆盖 ${pct(plus15)}；深盘必须和胜负拆开算。`,
+            warning: `盘口来自比分矩阵；真实 AH 市场 ${market.status === "available" ? "部分可用" : "不足"}。`
+          },
+          {
+            name: "市场派",
+            pick: market.status === "available" ? (Number(market.model_delta?.[favoriteSide] || 0) >= 0 ? `模型高看${favorite}` : `市场更看${favorite}`) : "市场缺口",
+            reason: edgeText,
+            warning: "市场差异只用于解释价格，不等于下注指令。"
+          },
+          {
+            name: archetype.key === "set_piece" ? "定位球派" : archetype.key === "card_chaos" ? "纪律派" : "风险派",
+            pick: archetype.key === "card_chaos" ? `黄牌大3.5 ${pct(cards.over_3_5_yellow_probability)}` : archetype.key === "set_piece" ? `角球大8.5 ${pct(corners.over_8_5_probability)}` : `大2.5 ${pct(match.p_over_2_5)}`,
+            reason: archetype.key === "card_chaos"
+              ? `总黄牌 ${value(cards.total_yellow_expected, 1)}，任一红牌 ${pct(cards.any_red_probability)}。`
+              : archetype.key === "set_piece"
+                ? `总角球 ${value(corners.total_expected, 1)}，大9.5 ${pct(corners.over_9_5_probability)}。`
+                : `大小球市场 ${totals.status || "missing"}，双方进球 ${pct(match.p_btts)}。`,
+            warning: "事件盘口是代理/公共统计优先，置信度低于胜负和比分矩阵。"
+          }
+        ];
+      }
+
+      function reportMaterials(match, favoriteSide, favorite, underdog) {
+        const tech = match.tactical_profile || {};
+        const favTech = favoriteSide === "home" ? tech.home : tech.away;
+        const dogTech = favoriteSide === "home" ? tech.away : tech.home;
+        const availability = match.availability || {};
+        const favAvail = favoriteSide === "home" ? availability.home : availability.away;
+        const dogAvail = favoriteSide === "home" ? availability.away : availability.home;
+        const form = match.team_form || {};
+        const favForm = favoriteSide === "home" ? form.home : form.away;
+        const dogForm = favoriteSide === "home" ? form.away : form.home;
+        const favPlayers = (favAvail?.key_players || []).slice(0, 3).map((p) => `${p.name} ${pct(p.rating)}`).join(" / ") || "待接首发";
+        const dogPlayers = (dogAvail?.key_players || []).slice(0, 3).map((p) => `${p.name} ${pct(p.rating)}`).join(" / ") || "待接首发";
+        return [
+          {
+            title: `${favorite}进攻材料`,
+            body: `xG ${value(favTech?.xg_per_game, 2)}、射门 ${value(favTech?.shots_per_game, 1)}、射正 ${value(favTech?.shots_on_target_per_game, 1)}、控球 ${value(favTech?.possession_pct, 1)}%。`,
+            value: favForm?.last_10 || "-"
+          },
+          {
+            title: `${underdog}防守压力`,
+            body: `xGA ${value(dogTech?.xga_per_game, 2)}、PPDA ${value(dogTech?.ppda, 1)}、失球 ${value(dogTech?.goals_conceded_18m, 1)}，能否把第一波压迫扛过去是关键。`,
+            value: dogForm?.last_10 || "-"
+          },
+          {
+            title: "球员/阵容代理画像",
+            body: `${favorite}: ${favPlayers}；${underdog}: ${dogPlayers}。这些是观察名单，不是已确认首发评分。`,
+            value: `QDR ${pct(favAvail?.qdr_index || 0)}`
+          },
+          {
+            title: "环境与旅程",
+            body: `${match.fixture?.city || "-"} · ${match.weather?.condition || "normal"} · ${favorite}旅程 ${Number(favTech?.projected_travel_km || 0).toLocaleString()}km / ${underdog} ${Number(dogTech?.projected_travel_km || 0).toLocaleString()}km。`,
+            value: match.weather?.venue_effect || "-"
+          }
+        ];
+      }
+
+      function materialNote(match) {
+        const quality = [
+          match.tactical_profile?.data_quality,
+          match.availability?.home?.data_quality,
+          match.event_predictions?.data_quality
+        ].filter(Boolean).join(" · ");
+        return `${quality || "mixed source"}。球员层目前是代理画像，接入真实首发、伤停和球员评分后才会升权。`;
+      }
+
+      function duelTitle(match, archetype, favorite, underdog) {
+        if (archetype.key === "deep_favorite") return `${favorite}怎么把优势打成净胜球`;
+        if (archetype.key === "knife_edge") return "这场最贵的三个细节";
+        if (archetype.key === "set_piece") return "角球/定位球从哪里来";
+        if (archetype.key === "card_chaos") return "犯规、牌和定位球连锁";
+        if (archetype.key === "weather_drag") return "天气会先影响哪些动作";
+        return `${favorite}与${underdog}的对位板`;
+      }
+
+      function reportDuels(match, favoriteSide, favorite, underdog, archetype) {
+        const edges = (match.matchup?.tactical_edges || [])
+          .map((edge) => ({
+            title: edge.label,
+            body: `${favoriteSide === "home" ? "主队" : "客队"}视角边际 ${signed(favoriteSide === "home" ? edge.home_edge : -edge.home_edge)}，质量 ${edge.data_quality || "unknown"}。`,
+            tag: edge.category || "模型因子"
+          }))
+          .slice(0, 3);
+        const corners = match.event_predictions?.corners || {};
+        const cards = match.event_predictions?.cards || {};
+        const extras = [];
+        if (Number(corners.total_expected || 0) >= 9) {
+          extras.push({ title: "边路压制会转成角球数", body: `总角球预期 ${value(corners.total_expected, 1)}，大8.5 ${pct(corners.over_8_5_probability)}。`, tag: "角球" });
+        }
+        if (Number(cards.total_yellow_expected || 0) >= 4) {
+          extras.push({ title: "中场犯规会切碎节奏", body: `总黄牌预期 ${value(cards.total_yellow_expected, 1)}，红牌 ${pct(cards.any_red_probability)}。`, tag: "纪律" });
+        }
+        if (!extras.length) {
+          extras.push({ title: "第一球会改变盘口形态", body: `${favorite}先领先，盘口切到净胜球；${underdog}先扛住，受让盘会越来越硬。`, tag: "比分路径" });
+        }
+        return [...edges, ...extras].slice(0, 4);
+      }
+
+      function reportSections(match, top, favoriteSide, favorite, underdog, archetype) {
+        const sections = [];
+        const core = coreSection(match, favoriteSide, favorite, underdog, archetype);
+        const market = marketSection(match, favoriteSide, favorite, underdog);
+        const event = eventSection(match, favoriteSide, favorite, underdog, archetype);
+        const post = postMatchSection(match, top, favoriteSide, favorite, underdog);
+        if (post) sections.push(post);
+        sections.push(core);
+        if (archetype.key === "deep_favorite") {
+          sections.push(deepLineSection(match, favoriteSide, favorite, underdog));
+          sections.push(event);
+          sections.push(market);
+        } else if (archetype.key === "set_piece") {
+          sections.push(event);
+          sections.push(setPieceConversionSection(match, favoriteSide, favorite, underdog));
+          sections.push(market);
+        } else if (archetype.key === "card_chaos") {
+          sections.push(event);
+          sections.push(cardChainSection(match, favoriteSide, favorite, underdog));
+          sections.push(market);
+        } else if (archetype.key === "weather_drag") {
+          sections.push(weatherSection(match, favoriteSide, favorite, underdog));
+          sections.push(event);
+          sections.push(market);
+        } else if (archetype.key === "knife_edge") {
+          sections.push(firstGoalSection(match, favoriteSide, favorite, underdog));
+          sections.push(market);
+          sections.push(event);
+        } else {
+          sections.push(market);
+          sections.push(event);
+        }
+        return sections.filter(Boolean).slice(0, hasActualScore(match) ? 5 : 4);
+      }
+
+      function coreSection(match, favoriteSide, favorite, underdog, archetype) {
+        const tech = match.tactical_profile || {};
+        const favTech = favoriteSide === "home" ? tech.home : tech.away;
+        const dogTech = favoriteSide === "home" ? tech.away : tech.home;
+        const edge = strongestTacticalEdge(match, favoriteSide);
+        return {
+          title: archetype.key === "deep_favorite" ? `${favorite}不是只强一点，是进攻材料和压迫都更厚` : `${favorite}的主线优势在哪里`,
+          kicker: "核心判断",
+          source: match.tactical_profile?.source || "process metrics",
+          points: [
+            {
+              title: "机会产量先站在热门方",
+              body: `${favorite} xG ${value(favTech?.xg_per_game, 2)}、射门 ${value(favTech?.shots_per_game, 1)}、射正 ${value(favTech?.shots_on_target_per_game, 1)}；${underdog}对应 xGA ${value(dogTech?.xga_per_game, 2)}、PPDA ${value(dogTech?.ppda, 1)}。这决定了它更容易持续进入危险区域。`
+            },
+            {
+              title: edge ? `${edge.label}是放大器` : "对位优势不是单点，而是链条",
+              body: edge
+                ? `这项边际 ${signed(edge.edge)}，数据质量 ${edge.quality}。它不一定直接变成进球，但会决定压迫、二点球和换人后是否能连续兑现。`
+                : `${favorite}如果能把控球安全、前场反抢和禁区触球连起来，${underdog}就会越来越难把球送出压力区。`
+            }
+          ]
+        };
+      }
+
+      function deepLineSection(match, favoriteSide, favorite, underdog) {
+        const minus15 = favoriteCoverage(match, favoriteSide, 1.5);
+        const minus25 = favoriteCoverage(match, favoriteSide, 2.5);
+        const plus15 = underdogCoverage(match, favoriteSide, 1.5);
+        return {
+          title: "这场不能只问赢不赢，要问赢几个",
+          kicker: "亚洲盘",
+          source: "scoreline matrix",
+          points: [
+            {
+              title: `${favorite}-1.5 和 -2.5 是两道完全不同的门`,
+              body: `${favorite}-1.5 覆盖 ${pct(minus15)}，-2.5 覆盖 ${pct(minus25)}。第一道门靠实力差，第二道门靠早进球、持续进攻和后段替补火力。`
+            },
+            {
+              title: `${underdog}+1.5 仍然有生存空间`,
+              body: `受让 +1.5 覆盖 ${pct(plus15)}。热门方方向对，不代表深盘一定对；如果领先后降速，胜负命中但盘口可能失败。`
+            }
+          ]
+        };
+      }
+
+      function marketSection(match, favoriteSide, favorite, underdog) {
+        const market = match.market_summary?.one_x_two || {};
+        const totals = match.market_summary?.over_under_2_5 || {};
+        if (market.status === "available") {
+          return {
+            title: "市场没有被我当成答案，而是当成校验器",
+            kicker: "市场分歧",
+            source: market.source || "The Odds API",
+            points: [
+              {
+                title: `${favorite}方向模型-市场差 ${signedPct(market.model_delta?.[favoriteSide] || 0)}`,
+                body: `本场 1X2 有 ${market.books} 家市场去水均值。差异为负，说明市场比模型更激进；差异为正，说明模型更愿意给这个方向。`
+              },
+              {
+                title: `大小球不能跟胜负混着看`,
+                body: `大2.5 模型 ${pct(match.p_over_2_5)}，市场状态 ${totals.status || "missing"}。胜率高的比赛也可能小比分，弱队早崩的比赛也可能突然变大。`
+              }
+            ]
+          };
+        }
+        return {
+          title: "没有真实市场时，我只信比分矩阵",
+          kicker: "市场缺口",
+          source: "model fair line",
+          points: [
+            {
+              title: "不拿别的市场偷换盘口",
+              body: `本场 1X2 市场缺口，所以胜负、让球、大小球都从同一张比分分布推导，避免拿冠军市场或别场赔率硬套。`
+            },
+            {
+              title: "置信度会被主动压低",
+              body: `市场覆盖不足会降低置信度；这不是页面弱点，而是避免把没有验证的数据包装得太满。`
+            }
+          ]
+        };
+      }
+
+      function eventSection(match, favoriteSide, favorite, underdog, archetype) {
+        const corners = match.event_predictions?.corners || {};
+        const cards = match.event_predictions?.cards || {};
+        const score = match.event_predictions?.score || {};
+        if (archetype.key === "set_piece") {
+          return {
+            title: "角球不是附属统计，是这场的第二进攻体系",
+            kicker: "角球",
+            source: match.event_predictions?.source || "event priors",
+            points: [
+              { title: "边路压力会以角球形式留痕", body: `总角球 ${value(corners.total_expected, 1)}，大8.5 ${pct(corners.over_8_5_probability)}，大9.5 ${pct(corners.over_9_5_probability)}。如果${favorite}长时间压住，角球会比控球率更能说明真实压力。` },
+              { title: "角球多不等于自动进球", body: `真正要看的是连续角球后的盯人质量、二点球和禁区弧顶远射。单个角球的转化率低，连续角球的心理压力高。` }
+            ]
+          };
+        }
+        if (archetype.key === "card_chaos") {
+          return {
+            title: "牌会改变防守动作，也会改变盘口节奏",
+            kicker: "红黄牌",
+            source: match.event_predictions?.source || "cards priors",
+            points: [
+              { title: "黄牌线值得单独看", body: `总黄牌 ${value(cards.total_yellow_expected, 1)}，大3.5 ${pct(cards.over_3_5_yellow_probability)}，大4.5 ${pct(cards.over_4_5_yellow_probability)}。一旦边路或后腰早早吃牌，对抗强度会被迫下降。` },
+              { title: "红牌是低频高冲击", body: `任一红牌 ${pct(cards.any_red_probability)}。它不该被当成主预测，但一旦发生，胜负、大小球和角球都会进入另一个世界。` }
+            ]
+          };
+        }
+        return {
+          title: "比分、角球和牌必须互相解释",
+          kicker: "事件盘口",
+          source: match.event_predictions?.source || "score/event priors",
+          points: [
+            { title: "比分峰值只是分布最高点", body: `预期进球 ${value(score.expected_home_goals ?? match.lambda_home, 2)}:${value(score.expected_away_goals ?? match.lambda_away, 2)}，最可能比分 ${formatLikelyScore(match)}。单点比分天然方差大，不能当预言。` },
+            { title: "角球和牌告诉我们比赛会不会变形", body: `总角球 ${value(corners.total_expected, 1)}、总黄牌 ${value(cards.total_yellow_expected, 1)}。如果这两个数一起抬高，比赛更可能从流畅控球变成定位球和对抗。` }
+          ]
+        };
+      }
+
+      function setPieceConversionSection(match, favoriteSide, favorite, underdog) {
+        const tech = match.tactical_profile || {};
+        const favTech = favoriteSide === "home" ? tech.home : tech.away;
+        return {
+          title: "定位球怎么真正变成比分",
+          kicker: "转化路径",
+          source: "set-piece proxy",
+          points: [
+            { title: "第一点不是全部，二点球才是连续压力", body: `${favorite}定位球 xG 占比 ${pct(favTech?.set_piece_xg_share)}。如果${underdog}第一点能顶出去，但解围落在禁区弧附近，下一脚远射或二次传中才是危险。` },
+            { title: "前场压迫会制造更多死球", body: `角球多通常来自边路被迫解围，不是单纯“想传中”。这也是为什么强队压迫和角球线经常一起出现。` }
+          ]
+        };
+      }
+
+      function cardChainSection(match, favoriteSide, favorite, underdog) {
+        return {
+          title: "我不怕犯规多，我怕犯规发生在坏位置",
+          kicker: "纪律链条",
+          source: "cards + set pieces",
+          points: [
+            { title: "后腰和边后卫的早牌最危险", body: `如果${underdog}防守外侧过早吃牌，后面就不敢贴身，${favorite}的内切、传中和二点球都会变得更舒服。` },
+            { title: "领先方也可能被牌拖慢", body: `${favorite}如果为了反抢吃牌，领先后就会减少压迫强度，深盘和角球大都可能被影响。` }
+          ]
+        };
+      }
+
+      function weatherSection(match, favoriteSide, favorite, underdog) {
+        return {
+          title: "天气不直接决定胜负，但会改变进球形状",
+          kicker: "天气",
+          source: match.weather?.source || "Open-Meteo",
+          points: [
+            { title: "传控失误会比平时更贵", body: `${match.weather?.condition || "normal"}、风速 ${value(match.weather?.wind_kph, 1)} km/h、湿度 ${value(match.weather?.humidity_pct, 0)}%。这种条件下，停球、长传落点和门将二次处理都会比平时更不稳定。` },
+            { title: "大小球要看脏机会，不只看技术优势", body: `天气会压低流畅进攻，但也可能增加折射、滑倒、解围不远。它对总进球是双向影响，所以我只给低权重。` }
+          ]
+        };
+      }
+
+      function firstGoalSection(match, favoriteSide, favorite, underdog) {
+        const draw = Number(match.p_draw || 0);
+        return {
+          title: "第一球会把整场比赛重新定价",
+          kicker: "比分路径",
+          source: "scoreline matrix",
+          points: [
+            { title: "如果前30分钟还是0-0", body: `平局概率 ${pct(draw)} 不低，时间越往后，${underdog}受让盘越硬，${favorite}会更急，反击空间也会变大。` },
+            { title: "如果${favorite}先进", body: `比赛会从胜负题切成盘口题；${underdog}被迫前压后，第二球的空间才真正出来。` }
+          ]
+        };
+      }
+
+      function postMatchSection(match, top, favoriteSide, favorite, underdog) {
+        if (!hasActualScore(match)) return null;
+        const homeScore = Number(match.live_status.home_score);
+        const awayScore = Number(match.live_status.away_score);
+        const actual = actualOutcome(match);
+        const total = homeScore + awayScore;
+        const predictedTotal = Number(match.lambda_home || 0) + Number(match.lambda_away || 0);
+        const outcomeText = actual === top.key ? "胜负方向命中" : "胜负方向偏离";
+        const score = match.event_predictions?.score || {};
+        return {
+          title: "赛后先验复盘：哪里对了，哪里明显低估了",
+          kicker: "复盘",
+          source: match.live_status?.source || "public scoreboard",
+          points: [
+            { title: outcomeText, body: `赛前主方向是 ${top.label} ${pct(top.probability)}，实际 ${actualScore(match, score)}。方向只是第一层，真正要复盘的是比分、盘口和事件线。` },
+            { title: total > predictedTotal + 1.5 ? "总进球被明显低估" : "总进球基本在可解释区间", body: `模型预期总进球 ${value(predictedTotal, 2)}，实际总进球 ${total}。如果偏离很大，通常说明早球、红牌、换人火力或弱队崩盘没有被赛前充分捕捉。` }
+          ]
+        };
+      }
+
+      function sceneTitle(archetype, seed) {
+        const map = {
+          deep_favorite: ["我脑子里的净胜球剧本", "这场怎么从优势变成大比分", "深盘成败的几个镜头"],
+          set_piece: ["角球和定位球的几个画面", "边路压迫怎样堆出机会", "我看的不是控球率，是死球窗口"],
+          card_chaos: ["犯规把比赛切碎的几个瞬间", "牌局会怎样改变比赛", "纪律风险的几个镜头"],
+          weather_drag: ["天气把比赛拖慢的几个画面", "场地和天气制造的脏机会", "环境变量怎么改写节奏"],
+          knife_edge: ["细节局的几个分岔点", "第一球之前和之后", "这场最容易变形的几个瞬间"]
+        };
+        return pickSeeded(map[archetype.key] || ["我脑子里的比赛镜头", "比赛可能这样展开", "几个关键画面"], seed);
+      }
+
+      function reportScenes(match, favoriteSide, favorite, underdog, archetype, seed) {
+        const score = match.event_predictions?.score || {};
+        const corners = match.event_predictions?.corners || {};
+        const cards = match.event_predictions?.cards || {};
+        const favGoals = favoriteSide === "home" ? score.expected_home_goals : score.expected_away_goals;
+        const dogGoals = favoriteSide === "home" ? score.expected_away_goals : score.expected_home_goals;
+        if (archetype.key === "deep_favorite") {
+          return [
+            { title: "开场：先看压迫是否把球锁在前场", body: `${favorite}如果能连续抢二点，${underdog}的反击起点会被压到很低；如果抢不住，深盘马上变难。`, tag: "压迫" },
+            { title: "第一个进球后：油门选择决定盘口", body: `预期进球 ${value(favGoals, 2)}:${value(dogGoals, 2)}。1-0 后继续压，是 -1.5 的生命线；1-0 后控节奏，就是受让方的机会。`, tag: "盘口" },
+            { title: "60分钟后：替补和体能差开始放大", body: `${underdog}长时间无球防守后，横移和解围距离会下降，这时角球、折射和二点球最容易连续出现。`, tag: "后程" }
+          ];
+        }
+        if (archetype.key === "set_piece") {
+          return [
+            { title: "前20分钟：边路反复试底线", body: `${favorite}不一定每次都能传出高质量球，但只要逼出解围，角球数就会开始堆。`, tag: "边路" },
+            { title: "角球第6到第9个：盯人注意力下降", body: `大8.5 ${pct(corners.over_8_5_probability)}，大9.5 ${pct(corners.over_9_5_probability)}。连续角球的威胁不是单次概率，是防线会越来越乱。`, tag: "角球" },
+            { title: "二点球：真正的第二进攻", body: "第一点被顶出不代表安全，禁区弧顶的二点远射和二次传中才是比分突然打开的入口。", tag: "二点" }
+          ];
+        }
+        if (archetype.key === "card_chaos") {
+          return [
+            { title: "前25分钟：第一张牌定调", body: `黄牌大3.5 ${pct(cards.over_3_5_yellow_probability)}。如果边后卫或后腰先吃牌，后面每次一对一都会变得保守。`, tag: "黄牌" },
+            { title: "中段：犯规后的定位球最危险", body: "犯规不一定直接伤害比分，坏位置犯规才会；它会把普通防守回合变成任意球、二点球和禁区混战。", tag: "死球" },
+            { title: "尾声：红牌尾部风险", body: `任一红牌 ${pct(cards.any_red_probability)}。这个数字不高，但一旦发生，赛前分布就要重算。`, tag: "尾部" }
+          ];
+        }
+        if (archetype.key === "weather_drag") {
+          return [
+            { title: "开局：先适应球速和落点", body: `${match.weather?.condition || "normal"} 条件下，停球和长传落点会更容易出错，前10分钟的处理质量很关键。`, tag: "天气" },
+            { title: "中段：脏机会比漂亮配合更真实", body: "折射、滑倒、解围不远、门将脱手，这些低观赏性画面反而可能比连续传控更接近进球。", tag: "混战" },
+            { title: "后段：体能和湿度开始收费", body: `湿度 ${value(match.weather?.humidity_pct, 0)}%，风速 ${value(match.weather?.wind_kph, 1)} km/h。最后半小时跑动质量会下滑。`, tag: "体能" }
+          ];
+        }
+        return [
+          { title: "前20分钟：谁先暴露出球问题", body: `${favorite}会试着把阵型推上去，${underdog}只要能把第一脚纵向传球送出来，比赛就不会那么单边。`, tag: "试探" },
+          { title: "35分钟前后：第一球窗口", body: `比分峰值 ${formatLikelyScore(match)}。如果这阶段仍是0-0，平局和小比分权重会明显上升。`, tag: "第一球" },
+          { title: "60分钟后：换人改变对位", body: "五五开和常规优势局最怕替补改变速度、高点或持球点，一个对位变化可能直接改变盘口方向。", tag: "换人" },
+          { title: "最后15分钟：犯规和定位球收尾", body: `黄牌预期 ${value(cards.total_yellow_expected, 1)}，角球预期 ${value(corners.total_expected, 1)}。尾声更像事件管理，不像纯控球比赛。`, tag: "收官" }
+        ];
+      }
+
+      function riskTitle(archetype) {
+        if (archetype.key === "deep_favorite") return "最容易打脸深盘的地方";
+        if (archetype.key === "set_piece") return "最容易打脸角球剧本的地方";
+        if (archetype.key === "card_chaos") return "最容易打脸牌局判断的地方";
+        if (archetype.key === "weather_drag") return "最容易打脸天气剧本的地方";
+        if (archetype.key === "knife_edge") return "最容易打脸细节局的地方";
+        return "最容易打脸我的地方";
+      }
+
+      function reportRisks(match, top, favoriteSide, favorite, underdog, archetype) {
+        const topScore = (match.top_scorelines || [])[0];
+        const risks = [];
+        if (archetype.key === "deep_favorite") {
+          risks.push({ title: `${favorite}领先后提前收油`, body: `这是深盘最常见的错法：胜负方向对了，但2-0后降速，-1.5或-2.5就会危险。` });
+        } else if (archetype.key === "knife_edge") {
+          risks.push({ title: "一个早球把五五开打碎", body: "细节局的赛前分布最怕早段进球，早球会让落后方提前压上，后面的大小球和角球全变形。" });
+        } else if (archetype.key === "set_piece") {
+          risks.push({ title: "角球堆了，但质量太差", body: "角球数能说明压力，不保证进球。如果传中质量、第一点和二点球都差，最后可能只是好看不好用。" });
+        } else if (archetype.key === "card_chaos") {
+          risks.push({ title: "裁判尺度比模型更松", body: "如果裁判允许身体对抗，黄牌线和定位球连锁都会被压低，原本的犯规剧本就会失效。" });
+        } else if (archetype.key === "weather_drag") {
+          risks.push({ title: "天气没有真正影响到比赛", body: "预报存在误差，场地排水和风向也会改变影响强度；如果环境没那么糟，技术优势会更正常释放。" });
+        }
+        risks.push(
+          { title: `${underdog}低位防守执行超预期`, body: `如果${underdog}前60分钟不丢或只丢一个，${favorite}的胜率仍在，但盘口、大小球和比分都会被压低。` },
+          { title: "机会转化率随机波动", body: `最可能比分单点概率 ${pct(topScore?.probability)}。这说明比分盘天然分散，射门转化率一偏，剧本就会看起来完全不同。` },
+          { title: "球员层仍是代理画像", body: "我们没有真实首发、逐球员评分和临场伤停 feed，所以这部分不会被包装成硬结论；接入后再提高模型权重。" }
+        );
+        return risks.slice(0, 4);
+      }
+
+      function reportFinalLine(match, top, score, direction, archetype) {
+        const actual = hasActualScore(match) ? `实际 ${actualScore(match, match.event_predictions?.score || {})}；` : "";
+        return `最终一句话：${actual}主方向 ${top.label}，比分峰值 ${score}，盘口看 ${direction}。这份报告按「${archetype.label}」生成，材料来自当前公开数据和模型分布，不是投注指令。`;
+      }
+
+      function seededIndex(match, salt = 0) {
+        const raw = `${match.match_id || match.fixture?.id || ""}:${salt}`;
+        let hash = 0;
+        for (let i = 0; i < raw.length; i += 1) hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0;
+        return Math.abs(hash);
+      }
+
+      function pickSeeded(items, seed) {
+        return items.length ? items[seed % items.length] : "";
       }
 
       function buildScriptAnalysis(match) {
@@ -3162,7 +3806,7 @@
         return `
           <div class="subpanel" style="margin-top:10px">
             <span class="data-chip">概率模型方法</span>
-            <h3 style="margin-top:10px">当前是透明 v0.5，不是已闭盘验证的黑箱</h3>
+            <h3 style="margin-top:10px">当前是透明 v0.6，不是已闭盘验证的黑箱</h3>
             <div class="rail-body" style="padding:10px 0 0">
               <div class="source">
                 <div><strong>当前核心</strong><span>Poisson 比分矩阵 + ELO/近期赛果/主客场/旅程/阵容代理修正；盘口、比分、大小球都从比分矩阵推导。</span></div>
