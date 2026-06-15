@@ -13,7 +13,7 @@ from .odds import devig_three_way, devig_two_way, model_lean
 from .score_model import MatchAdjustments, MatchContext, poisson_pmf, predict_match
 
 DEFAULT_HANDICAP_LINES = [-2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5]
-MODEL_VERSION = "wc26-v0.5-monte-carlo-factor-tiers"
+MODEL_VERSION = "wc26-v0.6-process-squad-style"
 TITLE_MARKET_ANCHOR_WEIGHT = 0.55
 MONTE_CARLO_RUNS = 4000
 MONTE_CARLO_SEED = 20260612
@@ -819,9 +819,9 @@ def model_run() -> dict:
     return {
         "model_version": MODEL_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "score_model": "Poisson scoreline prior using public historical results, rating priors, fixture context, venue and travel; weather is display-only for 1X2",
+        "score_model": "Poisson scoreline prior with rating, form, fixture/travel, squad-depth, technical-process and style-matchup adjustments; weather affects total-goal tempo rather than team direction",
         "handicap_engine": "Asian handicap probabilities derived from scoreline matrix",
-        "calibration_status": "v0.5 seeded Monte Carlo public snapshot model; live event, injury and closing-line calibration remain pending provider access",
+        "calibration_status": "v0.6 public snapshot model; process/squad/style inputs are low-weight transparent priors until event, lineup and closing-line backtests mature",
         "public_boundary": "Information display only; no staking or betting instruction.",
         "market_validation": _market_validation_summary(),
         "factor_policy": [
@@ -833,9 +833,9 @@ def model_run() -> dict:
             },
             {
                 "name": "Open-Meteo",
-                "category": "仅展示",
-                "status": "display_only_for_1x2",
-                "role": "weather, wind and heat context; not promoted to win/loss model until backtested",
+                "category": "透明先验",
+                "status": "used_for_total_goal_tempo",
+                "role": "weather, wind and heat context adjust total-goal tempo, not home/away direction",
             },
             {
                 "name": "Polymarket Gamma",
@@ -845,15 +845,21 @@ def model_run() -> dict:
             },
             {
                 "name": "technical process metrics",
-                "category": "仅展示",
-                "status": "display_proxy_only",
-                "role": "possession, shots, xG, PPDA and card rates are seed-derived until event data is connected",
+                "category": "透明先验",
+                "status": "used_low_weight_pending_event_backfill",
+                "role": "seed-derived possession, shots, xG and PPDA now nudge expected goals with proxy penalty",
             },
             {
                 "name": "player availability",
-                "category": "仅展示",
-                "status": "qdr_proxy_pending_feed",
-                "role": "QDR, dependency and rotation risk are shown as squad-depth proxies until lineup/injury provider is connected",
+                "category": "透明先验",
+                "status": "used_low_weight_pending_lineup_feed",
+                "role": "QDR, key dependency and rotation capacity nudge expected goals with proxy penalty",
+            },
+            {
+                "name": "style matchup",
+                "category": "透明先验",
+                "status": "used_low_weight_pending_event_backfill",
+                "role": "press-vs-buildup, set pieces and transition matchup nudge expected goals",
             },
             {
                 "name": "Asian handicap closing line",
@@ -1049,10 +1055,15 @@ def _confidence_profile(
         for row in used_factors
         if row.get("data_quality") not in {"proxy", "missing"} and row.get("category") != "待接入"
     ]
-    display_proxy_count = sum(
+    proxy_factor_count = sum(
         1
         for row in factor_breakdown
-        if not row.get("used_in_model") and row.get("data_quality") in {"proxy", "missing", "proxy_pending_player_feed"}
+        if row.get("data_quality") in {"proxy", "missing", "proxy_pending_player_feed"}
+    )
+    used_proxy_count = sum(
+        1
+        for row in used_factors
+        if row.get("data_quality") in {"proxy", "proxy_pending_player_feed"}
     )
     data_completeness = _clamp(len(verified_factors) / max(1, len(used_factors)), 0.0, 1.0)
     if live_status:
@@ -1061,7 +1072,12 @@ def _confidence_profile(
     probabilities = [prediction["p_home"], prediction["p_draw"], prediction["p_away"]]
     entropy = -sum(prob * math.log(prob) for prob in probabilities if prob > 0)
     model_separation = _clamp(1 - entropy / math.log(3), 0.0, 1.0)
-    proxy_penalty = _clamp(display_proxy_count / max(1, len(factor_breakdown)) * 0.38, 0.0, 0.16)
+    proxy_penalty = _clamp(
+        proxy_factor_count / max(1, len(factor_breakdown)) * 0.28
+        + used_proxy_count / max(1, len(used_factors)) * 0.12,
+        0.0,
+        0.22,
+    )
     injury_penalty = _clamp(home.injury_impact + away.injury_impact, 0.0, 0.14)
 
     score = _clamp(
@@ -1086,11 +1102,12 @@ def _confidence_profile(
             "data_completeness": round(data_completeness, 6),
             "model_separation": round(model_separation, 6),
             "proxy_penalty": round(proxy_penalty, 6),
+            "used_proxy_factor_share": round(used_proxy_count / max(1, len(used_factors)), 6),
             "injury_penalty": round(injury_penalty, 6),
         },
         "notes": [
             "Higher confidence requires real 1X2/AH/O-U markets, verified event/player data, and walk-forward calibration.",
-            "Proxy-only cards/corners and pending injury feeds reduce confidence rather than boosting it.",
+            "Low-weight process, style and QDR proxies can move the model but reduce confidence until verified.",
         ],
     }
 
@@ -1615,7 +1632,7 @@ def _risk_register(home, away, fixture: dict, prediction: dict, factor_breakdown
                 "key": "event_stats_proxy",
                 "severity": "medium",
                 "category": "仅展示",
-                "message": "控球率、射门、PPDA、定位球和牌数目前是代理画像，不进入核心预测。",
+                "message": "控球率、射门、PPDA、战术相克目前是代理画像，只以小权重进入模型并降低置信度。",
             }
         )
     weather = _weather_context(fixture)
@@ -1624,8 +1641,8 @@ def _risk_register(home, away, fixture: dict, prediction: dict, factor_breakdown
             {
                 "key": "weather_display_only",
                 "severity": "low",
-                "category": "仅展示",
-                "message": "天气采用 Open-Meteo 快照展示；未作为 1X2 胜负因子。",
+                "category": "透明先验",
+                "message": "天气采用 Open-Meteo 快照；只修正总进球节奏，不直接偏向某一队。",
             }
         )
     if max(_projected_travel_km(home, fixture), _projected_travel_km(away, fixture)) >= 7000:
@@ -1657,6 +1674,9 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
     availability_edge = max(-1, min(1, (away.injury_impact - home.injury_impact) * 12))
     weather_edge = max(-1, min(1, (context.home_mult - context.away_mult) * 3))
     process_edge = max(-1, min(1, (_process_score(home) - _process_score(away)) / 24))
+    squad_depth_edge = _squad_depth_edge(home, away)
+    style_matchup_edge = _style_matchup_edge(home, away, fixture, context)
+    weather_total_goal_drag = round(1 - _weather_total_goal_multiplier(fixture), 3)
     history = data_store.historical_results_summary()
     weather = _weather_context(fixture)
     return [
@@ -1696,7 +1716,7 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
         {
             "factor": "Fixture / venue / travel",
             "home_edge": round(weather_edge, 3),
-            "weight": 0.14,
+            "weight": 0.12,
             "used_in_model": True,
             "status": "used_in_context",
             "category": "透明先验",
@@ -1707,18 +1727,19 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
         {
             "factor": "Weather forecast",
             "home_edge": 0.0,
-            "weight": 0.0,
-            "used_in_model": False,
-            "status": weather["status"],
-            "category": "仅展示",
-            "backtest_status": "not_promoted_to_1x2",
+            "effect": {"total_goal_drag": weather_total_goal_drag},
+            "weight": 0.04,
+            "used_in_model": True,
+            "status": "used_for_total_goal_tempo" if weather["status"] == "forecast" else weather["status"],
+            "category": "透明先验",
+            "backtest_status": "pending_weather_walk_forward",
             "source": weather["source"],
             "data_quality": "live_forecast" if weather["status"] == "forecast" else "fallback_climate",
         },
         {
             "factor": "Squad availability prior",
             "home_edge": round(availability_edge, 3),
-            "weight": 0.10,
+            "weight": 0.08,
             "used_in_model": True,
             "status": "seed_prior_pending_injury_feed",
             "category": "透明先验",
@@ -1727,14 +1748,47 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
             "data_quality": "transparent_prior",
         },
         {
+            "factor": "Squad depth / role prior",
+            "home_edge": round(squad_depth_edge, 3),
+            "weight": 0.06,
+            "used_in_model": True,
+            "status": "used_low_weight_pending_lineup_feed",
+            "category": "透明先验",
+            "backtest_status": "pending_live_lineup_feed",
+            "source": "QDR, key-player dependency and rotation-capacity proxy",
+            "data_quality": "proxy_pending_player_feed",
+        },
+        {
             "factor": "Technical process metrics",
             "home_edge": round(process_edge, 3),
-            "weight": 0.0,
-            "used_in_model": False,
-            "status": "display_proxy_only",
-            "category": "仅展示",
+            "weight": 0.07,
+            "used_in_model": True,
+            "status": "used_low_weight_pending_event_backfill",
+            "category": "透明先验",
             "backtest_status": "pending_event_data",
             "source": "seed-derived possession, shots, xG, PPDA and card estimates",
+            "data_quality": "proxy",
+        },
+        {
+            "factor": "Style matchup prior",
+            "home_edge": round(style_matchup_edge, 3),
+            "weight": 0.06,
+            "used_in_model": True,
+            "status": "used_low_weight_pending_event_backfill",
+            "category": "透明先验",
+            "backtest_status": "pending_event_data",
+            "source": "press-vs-buildup, transition and set-piece matchup proxy",
+            "data_quality": "proxy",
+        },
+        {
+            "factor": "Cards / corners event priors",
+            "home_edge": 0.0,
+            "weight": 0.0,
+            "used_in_model": False,
+            "status": "display_event_props_only",
+            "category": "仅展示",
+            "backtest_status": "pending_event_data",
+            "source": "cards and corners priors are shown separately from 1X2",
             "data_quality": "proxy",
         },
         {
@@ -1754,20 +1808,110 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
 def _model_adjustments(home, away, fixture: dict, context, factor_breakdown: list[dict]) -> MatchAdjustments:
     edges = {row["factor"]: row["home_edge"] for row in factor_breakdown}
     contextual_edge = (
-        edges["Fixture / venue / travel"] * 0.55
-        + edges["Squad availability prior"] * 0.25
-        + edges["Recent results"] * 0.20
+        edges["Fixture / venue / travel"] * 0.34
+        + edges["Squad availability prior"] * 0.16
+        + edges["Squad depth / role prior"] * 0.12
+        + edges["Recent results"] * 0.16
+        + edges["Technical process metrics"] * 0.12
+        + edges["Style matchup prior"] * 0.10
     )
     home_fatigue = _fatigue_goal_multiplier(home, fixture)
     away_fatigue = _fatigue_goal_multiplier(away, fixture)
-    home_goal_mult = _clamp(math.exp(0.30 * contextual_edge) * home_fatigue, 0.78, 1.24)
-    away_goal_mult = _clamp(math.exp(-0.30 * contextual_edge) * away_fatigue, 0.78, 1.24)
-    total_goal_mult = 1.0
+    home_goal_mult = _clamp(math.exp(0.34 * contextual_edge) * home_fatigue, 0.76, 1.28)
+    away_goal_mult = _clamp(math.exp(-0.34 * contextual_edge) * away_fatigue, 0.76, 1.28)
+    total_goal_mult = _clamp(
+        _weather_total_goal_multiplier(fixture)
+        * _process_total_goal_multiplier(home, away, fixture, context)
+        * _mismatch_total_goal_multiplier(home, away),
+        0.84,
+        1.18,
+    )
     return MatchAdjustments(
         home_goal_mult=home_goal_mult,
         away_goal_mult=away_goal_mult,
         total_goal_mult=total_goal_mult,
     )
+
+
+def _squad_depth_edge(home, away) -> float:
+    home_availability = _availability_profile(home)
+    away_availability = _availability_profile(away)
+    home_score = (
+        home_availability["qdr_index"] * 0.42
+        + home_availability["rotation_capacity"] * 0.34
+        + (1 - home_availability["key_dependency"]) * 0.24
+    )
+    away_score = (
+        away_availability["qdr_index"] * 0.42
+        + away_availability["rotation_capacity"] * 0.34
+        + (1 - away_availability["key_dependency"]) * 0.24
+    )
+    return _clamp((home_score - away_score) * 2.8, -1.0, 1.0)
+
+
+def _style_matchup_edge(home, away, fixture: dict, context) -> float:
+    home_profile = _tactical_profile(home, fixture, context.home_mult)
+    away_profile = _tactical_profile(away, fixture, context.away_mult)
+    press_edge = (home_profile["press_intensity_idx"] - away_profile["press_intensity_idx"]) / 70
+    transition_edge = ((home.attack - away.defence) - (away.attack - home.defence)) * 2.8
+    set_piece_edge = (home_profile["set_piece_xg_share"] - away_profile["set_piece_xg_share"]) * 5.5
+    possession_edge = (home_profile["possession_pct"] - away_profile["possession_pct"]) / 80
+    return _clamp(
+        press_edge * 0.28
+        + transition_edge * 0.34
+        + set_piece_edge * 0.18
+        + possession_edge * 0.20,
+        -1.0,
+        1.0,
+    )
+
+
+def _weather_total_goal_multiplier(fixture: dict) -> float:
+    weather = _weather_context(fixture)
+    condition = str(weather.get("condition") or "").lower()
+    precipitation = float(weather.get("precipitation_mm") or 0.0)
+    wind = float(weather.get("wind_kph") or 0.0)
+    temperature = float(weather.get("temperature_c") or 21.0)
+    humidity = float(weather.get("humidity_pct") or 55.0)
+    drag = 0.0
+    if any(token in condition for token in ["storm", "thunder", "雷"]):
+        drag += 0.08
+    elif any(token in condition for token in ["rain", "showers", "雨"]):
+        drag += 0.04
+    if any(token in condition for token in ["fog", "mist", "雾"]):
+        drag += 0.035
+    drag += _clamp(precipitation / 18, 0.0, 0.05)
+    drag += _clamp(max(0.0, wind - 24) / 160, 0.0, 0.045)
+    if temperature >= 30 and humidity >= 65:
+        drag += 0.035
+    if temperature <= 4:
+        drag += 0.025
+    return _clamp(1 - drag, 0.86, 1.03)
+
+
+def _process_total_goal_multiplier(home, away, fixture: dict, context) -> float:
+    home_profile = _tactical_profile(home, fixture, context.home_mult)
+    away_profile = _tactical_profile(away, fixture, context.away_mult)
+    total_xg = home_profile["xg_per_game"] + away_profile["xg_per_game"]
+    total_shots = home_profile["shots_per_game"] + away_profile["shots_per_game"]
+    total_press = home_profile["press_intensity_idx"] + away_profile["press_intensity_idx"]
+    tempo = (
+        (total_xg - 2.65) * 0.045
+        + (total_shots - 22.0) * 0.008
+        + (total_press - 120.0) * 0.0012
+    )
+    return _clamp(1 + tempo, 0.91, 1.12)
+
+
+def _mismatch_total_goal_multiplier(home, away) -> float:
+    elo_gap = abs(home.elo - away.elo)
+    favorite = home if home.elo >= away.elo else away
+    favorite_attack = max(home.attack, away.attack)
+    favorite_depth = _availability_profile(favorite)["rotation_capacity"]
+    blowout_tail = max(0.0, (elo_gap - 320) / 900)
+    attack_tail = max(0.0, favorite_attack) * 0.18
+    depth_tail = max(0.0, favorite_depth - 0.62) * 0.12
+    return _clamp(1 + blowout_tail * 0.12 + attack_tail + depth_tail, 1.0, 1.14)
 
 
 def _model_input_summary(adjustments: MatchAdjustments, factor_breakdown: list[dict]) -> dict:
@@ -1776,13 +1920,25 @@ def _model_input_summary(adjustments: MatchAdjustments, factor_breakdown: list[d
         for row in factor_breakdown
         if row.get("used_in_model")
     )
+    used_factor_names = [
+        row["factor"]
+        for row in factor_breakdown
+        if row.get("used_in_model") and row.get("weight", 0) > 0
+    ]
+    proxy_used = [
+        row["factor"]
+        for row in factor_breakdown
+        if row.get("used_in_model") and row.get("data_quality") in {"proxy", "proxy_pending_player_feed"}
+    ]
     return {
         "weighted_context_edge": round(weighted_context_edge, 3),
         "home_goal_multiplier": round(adjustments.home_goal_mult, 3),
         "away_goal_multiplier": round(adjustments.away_goal_mult, 3),
         "total_goal_multiplier": round(adjustments.total_goal_mult, 3),
         "applied_to": "expected goals before scoreline and handicap probability generation",
-        "proxy_metrics_policy": "technical process metrics are displayed but not used until event-data backfill is connected",
+        "used_factor_names": used_factor_names,
+        "proxy_used_in_model": proxy_used,
+        "proxy_metrics_policy": "technical process, squad-depth and style-matchup proxies enter with low weights and reduce confidence until verified feeds/backtests exist",
     }
 
 

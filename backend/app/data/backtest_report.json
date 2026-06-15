@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T19:16:13.008965+00:00",
+  "generated_at": "2026-06-14T19:46:35.039108+00:00",
   "status": "mvp_shadow_until_locked_closing_samples",
   "method": "Formal samples require pre-kickoff model snapshots and closing lines; shadow audit is not leak-safe.",
   "snapshot_counts": {
@@ -52,8 +52,8 @@
       "samples": 9,
       "hit_rate": 0.555556,
       "correct": 5,
-      "brier": 0.178126,
-      "log_loss": 0.909826
+      "brier": 0.18007,
+      "log_loss": 0.915034
     },
     "asian_handicap": {
       "selections": 14,
@@ -66,10 +66,10 @@
     },
     "over_under": {
       "samples": 9,
-      "hit_rate": 0.777778,
-      "correct": 7,
-      "brier": 0.212171,
-      "log_loss": 0.616317
+      "hit_rate": 0.666667,
+      "correct": 6,
+      "brier": 0.210982,
+      "log_loss": 0.612266
     },
     "corners": {
       "actual_event_samples": 9,
@@ -98,8 +98,8 @@
       "samples": 9,
       "hit_rate": 0.555556,
       "correct": 5,
-      "brier": 0.178126,
-      "log_loss": 0.909826
+      "brier": 0.18007,
+      "log_loss": 0.915034
     },
     "dixon_coles": {
       "name": "Dixon-Coles low-score adjustment",
@@ -107,10 +107,10 @@
       "samples": 9,
       "hit_rate": 0.555556,
       "correct": 5,
-      "brier": 0.177109,
-      "log_loss": 0.90255
+      "brier": 0.179215,
+      "log_loss": 0.9081
     },
-    "delta_log_loss": -0.007276,
+    "delta_log_loss": -0.006934,
     "decision": "keep_poisson_baseline",
     "promotion_rule": "Only promote when walk-forward samples are meaningful and log-loss/Brier improve versus baseline."
   },
@@ -120,9 +120,9 @@
     "categories": [
       {
         "category": "\u4ec5\u5c55\u793a",
-        "factor_count": 2,
+        "factor_count": 1,
         "used_in_model_rows": 0,
-        "display_only_rows": 144,
+        "display_only_rows": 72,
         "proxy_rows": 72
       },
       {
@@ -134,10 +134,10 @@
       },
       {
         "category": "\u900f\u660e\u5148\u9a8c",
-        "factor_count": 5,
-        "used_in_model_rows": 360,
+        "factor_count": 9,
+        "used_in_model_rows": 648,
         "display_only_rows": 0,
-        "proxy_rows": 0
+        "proxy_rows": 144
       }
     ]
   },
