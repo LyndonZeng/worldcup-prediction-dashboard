@@ -1918,6 +1918,7 @@
         const performance = marketPerformanceSummary(state.matches);
         const combined = combinedPerformance(performance);
         const liveSources = state.sources.filter((source) => source.status !== "planned").length;
+        const realLineups = state.matches.filter((match) => materialAvailable(match)).length;
         const ahMarket = performance.asian_handicap_market;
         const cornerReco = performance.corners_recommended;
         const ahMarketSub = ahMarket?.samples ? ` · 市场edge ${ahMarket.correct}/${ahMarket.samples}` : " · 市场edge无样本";
@@ -1934,6 +1935,7 @@
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
+          metric("真实首发", `${realLineups} 场`, "ESPN summary 阵型/首发/球员事件"),
           metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? `${top.team} · 裸模型 ${pct(top.raw_title_probability)}` : "等待模拟"),
           metric("公开市场", `${state.tournament?.title_anchor?.coverage || 0} 队`, `锚定权重 ${pct(state.tournament?.title_anchor?.weight || 0)}`)
         ].join("");
@@ -1993,7 +1995,7 @@
             ${tabButton("model", "模型因子")}
             ${tabButton("history", "球队历史")}
             ${tabButton("matchup", "战术爆冷")}
-            ${tabButton("players", "球员天气")}
+            ${tabButton("players", "首发球员")}
           </div>
           <div id="tab-content">${tabContent(match)}</div>
         `;
@@ -2360,6 +2362,32 @@
         const tech = match.tactical_profile || {};
         const favTech = favoriteSide === "home" ? tech.home : tech.away;
         const dogTech = favoriteSide === "home" ? tech.away : tech.home;
+        const favMaterial = materialTeam(match, favoriteSide);
+        const dogMaterial = materialTeam(match, favoriteSide === "home" ? "away" : "home");
+        if (materialAvailable(match)) {
+          return [
+            {
+              title: "真实阵型/首发",
+              body: `${match.home_team.name} ${materialTeam(match, "home").formation || "-"}，${match.away_team.name} ${materialTeam(match, "away").formation || "-"}；首发覆盖 ${materialTeam(match, "home").starter_count || 0}/11 vs ${materialTeam(match, "away").starter_count || 0}/11。`,
+              value: "ESPN"
+            },
+            {
+              title: `${favorite}真实技术面`,
+              body: teamStatsBrief(favMaterial.team_stats || favTech || {}),
+              value: `${value((favMaterial.team_stats || {}).shots ?? favTech?.shots_per_game, 0)}射`
+            },
+            {
+              title: "逐球员表现分",
+              body: `${favorite}: ${materialPlayerLine(favMaterial.impact_players)}；${underdog}: ${materialPlayerLine(dogMaterial.impact_players)}。表现分是事件数据派生，不是官方评分。`,
+              value: "事件派生"
+            },
+            {
+              title: "伤停边界",
+              body: `${match.match_materials?.injury_status?.note || "公开 summary 未给确认伤停列表"} 已确认首发会替代赛前观察名单，但伤停仍需 licensed provider。`,
+              value: match.match_materials?.injury_status?.status || "未提供"
+            }
+          ];
+        }
         const availability = match.availability || {};
         const favAvail = favoriteSide === "home" ? availability.home : availability.away;
         const dogAvail = favoriteSide === "home" ? availability.away : availability.home;
@@ -2380,7 +2408,7 @@
             value: dogForm?.last_10 || "-"
           },
           {
-            title: "球员/阵容代理画像",
+            title: "赛前观察名单",
             body: `${favorite}: ${favPlayers}；${underdog}: ${dogPlayers}。这些是观察名单，不是已确认首发评分。`,
             value: `QDR ${pct(favAvail?.qdr_index || 0)}`
           },
@@ -2393,12 +2421,53 @@
       }
 
       function materialNote(match) {
+        const materials = match.match_materials || {};
+        if (materialAvailable(match)) {
+          return `${materials.source || "ESPN public match summary"} · ${materials.source_quality || "live_public_summary"} · ${materials.captured_at ? shortTime(materials.captured_at) : "recent"}。首发/阵型/技术统计为真实公开材料；表现分为事件数据派生，不是官方球员评分。`;
+        }
         const quality = [
           match.tactical_profile?.data_quality,
           match.availability?.home?.data_quality,
           match.event_predictions?.data_quality
         ].filter(Boolean).join(" · ");
-        return `${quality || "mixed source"}。球员层目前是代理画像，接入真实首发、伤停和球员评分后才会升权。`;
+        return `${quality || "mixed source"}。真实首发尚未公开；赛前球员层只保留观察名单，不作为官方评分或确认伤停。`;
+      }
+
+      function materialAvailable(match) {
+        const materials = match.match_materials || {};
+        return materials.material_status === "available" || materials.status === "available";
+      }
+
+      function materialTeam(match, side) {
+        return ((match.match_materials || {}).teams || {})[side] || {};
+      }
+
+      function materialPlayerLine(players) {
+        const rows = (players || []).slice(0, 3);
+        if (!rows.length) return "暂无球员事件统计";
+        return rows.map((player) => {
+          const rating = player.performance_rating ? `${value(player.performance_rating, 1)}分` : "-";
+          const stats = playerStatSummary(player.stats || {});
+          return `${player.short_name || player.name} ${rating}${stats ? ` (${stats})` : ""}`;
+        }).join(" / ");
+      }
+
+      function playerStatSummary(stats) {
+        const parts = [];
+        if (stats.goals) parts.push(`${stats.goals}球`);
+        if (stats.assists) parts.push(`${stats.assists}助`);
+        if (stats.shots_on_target) parts.push(`${stats.shots_on_target}射正`);
+        if (stats.saves) parts.push(`${stats.saves}扑救`);
+        if (stats.yellow_cards) parts.push(`${stats.yellow_cards}黄`);
+        if (stats.red_cards) parts.push(`${stats.red_cards}红`);
+        return parts.join(" ");
+      }
+
+      function teamStatsBrief(stats) {
+        if (!stats) return "暂无技术统计。";
+        const pass = stats.total_passes ? `传球 ${stats.accurate_passes || "-"} / ${stats.total_passes}` : "传球未给";
+        const cross = stats.total_crosses ? `传中 ${stats.accurate_crosses || "-"} / ${stats.total_crosses}` : "传中未给";
+        return `控球 ${value(stats.possession_pct, 1)}%，射门 ${value(stats.shots, 0)}，射正 ${value(stats.shots_on_target, 0)}，角球 ${actualValue(stats.corners)}，${pass}，${cross}，拦截 ${actualValue(stats.interceptions)}，解围 ${actualValue(stats.clearances)}。`;
       }
 
       function duelTitle(match, archetype, favorite, underdog) {
@@ -2421,6 +2490,15 @@
         const corners = match.event_predictions?.corners || {};
         const cards = match.event_predictions?.cards || {};
         const extras = [];
+        const homeFormation = materialTeam(match, "home").formation;
+        const awayFormation = materialTeam(match, "away").formation;
+        if (homeFormation && awayFormation) {
+          extras.push({
+            title: "真实阵型对位",
+            body: `${match.home_team.name} ${homeFormation} 对 ${match.away_team.name} ${awayFormation}；后续判断以这组真实首发结构为准。`,
+            tag: "首发阵型"
+          });
+        }
         if (Number(corners.total_expected || 0) >= 9) {
           extras.push({ title: "边路压制会转成角球数", body: `总角球预期 ${value(corners.total_expected, 1)}，大8.5 ${pct(corners.over_8_5_probability)}。`, tag: "角球" });
         }
@@ -3721,6 +3799,12 @@
               ${tile("旅程疲劳", fatigueText(profile.travel_fatigue_level))}
               ${profile.live_public_stats ? tile("角球/犯规", `${profile.live_corners ?? "-"} / ${profile.live_fouls_committed ?? "-"}`) : ""}
               ${profile.live_public_stats ? tile("黄/红实时", `${profile.live_yellow_cards ?? "-"} / ${profile.live_red_cards ?? "-"}`) : ""}
+              ${profile.live_public_stats ? tile("传球", `${actualValue(profile.live_accurate_passes)} / ${actualValue(profile.live_total_passes)}`) : ""}
+              ${profile.live_public_stats ? tile("传球成功率", profile.live_pass_pct == null ? "-" : `${value(profile.live_pass_pct, 1)}%`) : ""}
+              ${profile.live_public_stats ? tile("传中", `${actualValue(profile.live_accurate_crosses)} / ${actualValue(profile.live_total_crosses)}`) : ""}
+              ${profile.live_public_stats ? tile("长传", `${actualValue(profile.live_accurate_long_balls)} / ${actualValue(profile.live_total_long_balls)}`) : ""}
+              ${profile.live_public_stats ? tile("抢断/拦截", `${actualValue(profile.live_effective_tackles)} / ${actualValue(profile.live_interceptions)}`) : ""}
+              ${profile.live_public_stats ? tile("解围/扑救", `${actualValue(profile.live_clearances)} / ${actualValue(profile.live_saves)}`) : ""}
             </div>
             <div class="factor" style="margin-top:10px">
               <div><strong>高压强度</strong><em>预测旅程 ${Number(profile.projected_travel_km).toLocaleString()} km</em></div>
@@ -3737,7 +3821,72 @@
       }
 
       function playersPanel(match) {
-        return `<div class="split">${availability(match.home_team, match.availability.home)}${weather(match)}</div>`;
+        return `
+          ${matchMaterialsPanel(match)}
+          <div class="split" style="margin-top:10px">
+            ${availability(match.home_team, match.availability.home)}
+            ${availability(match.away_team, match.availability.away)}
+          </div>
+          <div style="margin-top:10px">${weather(match)}</div>
+        `;
+      }
+
+      function matchMaterialsPanel(match) {
+        if (!materialAvailable(match)) {
+          return `
+            <div class="subpanel">
+              <span class="data-chip">真实首发/球员材料</span>
+              <h3 style="margin-top:10px">当前比赛还没有公开 summary 首发</h3>
+              <p class="source-note">${match.match_materials?.note || "未开赛或 ESPN summary 尚未开放。"} 这时页面只展示赛前先验，不把观察名单当确认首发。</p>
+            </div>
+          `;
+        }
+        return `
+          <div class="split">
+            ${materialTeamCard(match.home_team, materialTeam(match, "home"))}
+            ${materialTeamCard(match.away_team, materialTeam(match, "away"))}
+          </div>
+          <div class="subpanel" style="margin-top:10px">
+            <p class="source-note">${materialNote(match)}</p>
+          </div>
+        `;
+      }
+
+      function materialTeamCard(teamInfo, material) {
+        const starters = (material.starters || []).slice(0, 11);
+        const impact = (material.impact_players || []).slice(0, 5);
+        return `
+          <div class="subpanel">
+            <div class="team-line">${team(teamInfo)}<strong>${material.formation || "-"}</strong></div>
+            <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px">
+              ${tile("首发/名单", `${material.starter_count || 0}/${material.roster_count || 0}`)}
+              ${tile("换上", material.subbed_in_count ?? "-")}
+              ${tile("控球", material.team_stats?.possession_pct == null ? "-" : `${value(material.team_stats.possession_pct, 1)}%`)}
+              ${tile("射门/射正", `${actualValue(material.team_stats?.shots)} / ${actualValue(material.team_stats?.shots_on_target)}`)}
+              ${tile("角球/黄牌", `${actualValue(material.team_stats?.corners)} / ${actualValue(material.team_stats?.yellow_cards)}`)}
+              ${tile("传球", `${actualValue(material.team_stats?.accurate_passes)} / ${actualValue(material.team_stats?.total_passes)}`)}
+            </div>
+            <h3 style="margin-top:12px">首发</h3>
+            <div class="rail-body" style="padding:8px 0 0">
+              ${starters.map((player) => `
+                <div class="player">
+                  <span>${player.jersey ? `${player.jersey}. ` : ""}${player.short_name || player.name}</span>
+                  <em>${player.position || "-"}</em>
+                  <strong>${player.performance_rating ? value(player.performance_rating, 1) : "-"}</strong>
+                </div>
+              `).join("") || `<p class="muted">暂无首发名单。</p>`}
+            </div>
+            <h3 style="margin-top:12px">表现点</h3>
+            <div class="rail-body" style="padding:8px 0 0">
+              ${impact.map((player) => `
+                <div class="source">
+                  <div><strong>${player.short_name || player.name}</strong><span>${playerStatSummary(player.stats || {}) || "事件统计较少"}</span></div>
+                  <em>${player.performance_rating ? `${value(player.performance_rating, 1)}分` : "-"}</em>
+                </div>
+              `).join("") || `<p class="muted">暂无表现球员。</p>`}
+            </div>
+          </div>
+        `;
       }
 
       function renderRail() {
@@ -3775,6 +3924,8 @@
           ["市场覆盖", components.market_coverage, "1X2、亚洲盘、大小球真实市场越完整越高"],
           ["市场一致性", components.market_alignment, "模型与去水市场差异越可解释越高"],
           ["数据完整度", components.data_completeness, "真实赛果、近期状态、实时状态覆盖越高越高"],
+          ["真实首发覆盖", components.lineup_coverage, "ESPN summary 给出双方首发和阵型时提高"],
+          ["技术统计覆盖", components.summary_stats_coverage, "真实控球、射门、传球、抢断等 summary 数据覆盖"],
           ["模型分离度", components.model_separation, "胜平负分布越不接近五五开越高"],
           ["代理惩罚", components.proxy_penalty, "角球、牌、伤病代理越多惩罚越高"],
           ["伤病惩罚", components.injury_penalty, "阵容不确定性越高惩罚越高"]
@@ -3846,11 +3997,12 @@
       }
 
       function availability(teamInfo, profile) {
+        const riskLabel = profile.risk === "confirmed_lineup" ? "已确认首发" : profile.risk === "elevated" ? "偏高" : profile.risk === "medium" ? "中等" : "低风险";
         return `
           <div class="subpanel availability">
-            <div class="availability-head">${team(teamInfo)}<span class="risk ${profile.risk}">${profile.risk === "elevated" ? "偏高" : profile.risk === "medium" ? "中等" : "低风险"}</span></div>
+            <div class="availability-head">${team(teamInfo)}<span class="risk ${profile.risk}">${riskLabel}</span></div>
             <p class="muted">${profile.available_starters}/11 首发可用 · 负荷 ${pct(profile.minutes_load)} · QDR ${pct(profile.qdr_index || 0)} · 核心依赖 ${pct(profile.key_dependency || 0)} · 轮换 ${pct(profile.rotation_capacity || 0)}</p>
-            ${profile.key_players.slice(0, 3).map((player) => `<div class="player"><span>${player.name}</span><em>${player.role}</em><strong>${pct(player.rating)}</strong></div>`).join("")}
+            ${profile.key_players.slice(0, 5).map((player) => `<div class="player"><span>${player.name}</span><em>${player.role}</em><strong>${player.performance_rating ? value(player.performance_rating, 1) : pct(player.rating)}</strong></div>`).join("")}
             <p class="source-note">${profile.source || "player feed pending"} · ${profile.data_quality || "proxy"}</p>
           </div>
         `;
