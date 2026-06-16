@@ -408,6 +408,7 @@ def write_static_payload() -> None:
     data_store.source_health.cache_clear()
     data_store.live_weather.cache_clear()
     data_store.live_matches.cache_clear()
+    data_store.espn_match_summaries.cache_clear()
     data_store.prediction_markets.cache_clear()
     data_store.model_prediction_snapshots.cache_clear()
     data_store.closing_line_snapshots.cache_clear()
@@ -443,6 +444,7 @@ def compact_match(match: dict) -> dict:
             for key in ["id", "match_number", "stage", "group", "kickoff_utc", "venue", "city", "home_team_id", "away_team_id"]
         },
         "live_status": match["live_status"],
+        "match_materials": compact_match_materials(match["match_materials"]),
         "team_form": {
             "home": compact_form(match["team_form"]["home"]),
             "away": compact_form(match["team_form"]["away"]),
@@ -496,6 +498,10 @@ def compact_availability(profile: dict) -> dict:
     return {
         "risk": profile["risk"],
         "available_starters": profile["available_starters"],
+        "formation": profile.get("formation"),
+        "roster_count": profile.get("roster_count"),
+        "subbed_in_count": profile.get("subbed_in_count"),
+        "inactive_count": profile.get("inactive_count"),
         "minutes_load": profile["minutes_load"],
         "qdr_index": profile["qdr_index"],
         "key_dependency": profile["key_dependency"],
@@ -507,10 +513,68 @@ def compact_availability(profile: dict) -> dict:
             {
                 "name": player["name"],
                 "role": player["role"],
+                "status": player.get("status"),
                 "rating": player["rating"],
+                "performance_rating": player.get("performance_rating"),
+                "stats": player.get("stats"),
             }
             for player in profile["key_players"]
         ],
+    }
+
+
+def compact_match_materials(materials: dict) -> dict:
+    teams = materials.get("teams") or {}
+    return {
+        "match_id": materials.get("match_id"),
+        "match_number": materials.get("match_number"),
+        "source": materials.get("source"),
+        "source_quality": materials.get("source_quality"),
+        "material_status": materials.get("material_status"),
+        "status": materials.get("status"),
+        "captured_at": materials.get("captured_at"),
+        "note": materials.get("note"),
+        "rating_policy": materials.get("rating_policy"),
+        "injury_status": materials.get("injury_status"),
+        "attendance": materials.get("attendance"),
+        "venue_name": materials.get("venue_name"),
+        "officials": (materials.get("officials") or [])[:4],
+        "teams": {
+            side: compact_material_team(team)
+            for side, team in teams.items()
+        },
+    }
+
+
+def compact_material_team(team: dict) -> dict:
+    return {
+        "team_name": team.get("team_name"),
+        "team_abbreviation": team.get("team_abbreviation"),
+        "formation": team.get("formation"),
+        "roster_count": team.get("roster_count"),
+        "starter_count": team.get("starter_count"),
+        "subbed_in_count": team.get("subbed_in_count"),
+        "inactive_count": team.get("inactive_count"),
+        "team_stats": team.get("team_stats") or {},
+        "starters": [compact_material_player(player) for player in (team.get("starters") or [])[:11]],
+        "impact_players": [compact_material_player(player) for player in (team.get("impact_players") or [])[:5]],
+        "leaders": (team.get("leaders") or [])[:5],
+    }
+
+
+def compact_material_player(player: dict) -> dict:
+    return {
+        "name": player.get("name"),
+        "short_name": player.get("short_name"),
+        "jersey": player.get("jersey"),
+        "position": player.get("position"),
+        "starter": player.get("starter"),
+        "subbed_in": player.get("subbed_in"),
+        "subbed_out": player.get("subbed_out"),
+        "formation_place": player.get("formation_place"),
+        "stats": player.get("stats") or {},
+        "performance_rating": player.get("performance_rating"),
+        "rating_source": player.get("rating_source"),
     }
 
 

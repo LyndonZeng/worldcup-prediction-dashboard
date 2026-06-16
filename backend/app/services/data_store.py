@@ -69,6 +69,12 @@ def live_matches() -> dict[str, dict]:
 
 
 @lru_cache(maxsize=1)
+def espn_match_summaries() -> dict[str, dict]:
+    rows = _read_json_optional("espn_match_summaries.json", [])
+    return {row["match_id"]: row for row in rows}
+
+
+@lru_cache(maxsize=1)
 def prediction_markets() -> list[dict]:
     return _read_json_optional("prediction_markets.json", [])
 
@@ -136,6 +142,13 @@ def weather_for_fixture(match_id: str) -> dict | None:
 
 def live_match_for_fixture(match_id: str) -> dict | None:
     return live_matches().get(match_id)
+
+
+def espn_summary_for_fixture(match_id: str) -> dict | None:
+    summary = espn_match_summaries().get(match_id)
+    if not summary or summary.get("status") != "available":
+        return None
+    return summary
 
 
 def team_history(team_id: str) -> dict | None:

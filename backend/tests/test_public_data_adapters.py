@@ -2,10 +2,12 @@ import unittest
 
 from app.adapters.football_data import normalize_matches as normalize_football_data_matches
 from app.adapters.espn_live import normalize_events
+from app.adapters.espn_summary import normalize_summary
 from app.adapters.international_results import parse_results, summarize_team_results
 from app.adapters.odds_api import normalize_odds
 from app.adapters.open_meteo import normalize_daily_weather
 from app.adapters.polymarket import is_world_cup_event, normalize_markets
+from app.flows.refresh import merge_live_rows
 
 
 class PublicDataAdaptersTest(unittest.TestCase):
@@ -114,6 +116,67 @@ class PublicDataAdaptersTest(unittest.TestCase):
         self.assertEqual(rows[0]["home_stats"]["shots"], 14)
         self.assertEqual(rows[0]["away_stats"]["possession_pct"], 47.2)
 
+    def test_espn_summary_normalization_extracts_lineups_and_player_events(self):
+        live_row = {
+            "match_id": "wc26-001",
+            "match_number": 1,
+            "espn_event_id": "760415",
+            "attendance": 80000,
+        }
+        payload = {
+            "gameInfo": {
+                "venue": {"fullName": "Estadio Test"},
+                "officials": [{"displayName": "Ref One"}],
+            },
+            "boxscore": {
+                "teams": [
+                    {
+                        "homeAway": "home",
+                        "team": {"displayName": "Mexico", "abbreviation": "MEX"},
+                        "statistics": [
+                            {"name": "possessionPct", "displayValue": "60.5"},
+                            {"name": "totalShots", "displayValue": "16"},
+                            {"name": "accuratePasses", "displayValue": "467"},
+                            {"name": "totalPasses", "displayValue": "520"},
+                        ],
+                    }
+                ]
+            },
+            "rosters": [
+                {
+                    "homeAway": "home",
+                    "team": {"displayName": "Mexico", "abbreviation": "MEX"},
+                    "formation": "4-1-4-1",
+                    "roster": [
+                        {
+                            "active": True,
+                            "starter": True,
+                            "jersey": "9",
+                            "athlete": {"displayName": "Forward One", "shortName": "F. One"},
+                            "position": {"abbreviation": "F"},
+                            "formationPlace": "9",
+                            "stats": [
+                                {"name": "totalGoals", "value": 1.0},
+                                {"name": "shotsOnTarget", "value": 2.0},
+                            ],
+                        }
+                    ],
+                },
+                {
+                    "homeAway": "away",
+                    "team": {"displayName": "South Africa", "abbreviation": "RSA"},
+                    "formation": "5-3-2",
+                    "roster": [],
+                },
+            ],
+        }
+        row = normalize_summary(live_row, payload, "2026-06-13T00:00:00+00:00")
+        self.assertEqual(row["status"], "available")
+        self.assertEqual(row["teams"]["home"]["formation"], "4-1-4-1")
+        self.assertEqual(row["teams"]["home"]["starter_count"], 1)
+        self.assertEqual(row["teams"]["home"]["team_stats"]["accurate_passes"], 467)
+        self.assertGreater(row["teams"]["home"]["impact_players"][0]["performance_rating"], 6.0)
+
     def test_football_data_normalization_matches_seed_fixtures(self):
         fixtures = [
             {
@@ -204,6 +267,40 @@ class PublicDataAdaptersTest(unittest.TestCase):
         self.assertEqual(handicap["line"], -1.0)
         self.assertEqual(handicap["bookmaker"], "Pinnacle")
         self.assertEqual(total["line"], 2.5)
+
+    def test_live_merge_keeps_completed_result_when_espn_is_stale_pre(self):
+        football_data_rows = [
+            {
+                "match_id": "wc26-010",
+                "match_number": 10,
+                "status_state": "post",
+                "status_description": "Full Time",
+                "completed": True,
+                "home_score": 2,
+                "away_score": 2,
+                "winner_team_id": None,
+                "source": "football-data.org",
+            }
+        ]
+        espn_rows = [
+            {
+                "match_id": "wc26-010",
+                "match_number": 10,
+                "espn_event_id": "760424",
+                "status_state": "pre",
+                "status_description": "Scheduled",
+                "completed": False,
+                "home_score": None,
+                "away_score": None,
+                "source": "ESPN public scoreboard",
+            }
+        ]
+        merged = merge_live_rows(football_data_rows, espn_rows)
+        self.assertTrue(merged[0]["completed"])
+        self.assertEqual(merged[0]["status_state"], "post")
+        self.assertEqual(merged[0]["home_score"], 2)
+        self.assertEqual(merged[0]["away_score"], 2)
+        self.assertEqual(merged[0]["espn_event_id"], "760424")
 
 
 if __name__ == "__main__":

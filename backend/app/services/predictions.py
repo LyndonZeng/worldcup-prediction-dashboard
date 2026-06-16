@@ -46,15 +46,17 @@ def prediction_for_fixture(fixture: dict) -> dict:
     away = data_store.team_by_id(fixture["away_team_id"])
     context = data_store.context_for_fixture(fixture)
     live_status = _live_status(fixture)
+    match_materials = _match_materials(fixture)
     factor_breakdown = _factor_breakdown(home, away, fixture, context)
     adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
     prediction = predict_match(home, away, context, adjustments)
     matchup = _matchup_profile(home, away, fixture, context, prediction, factor_breakdown)
-    event_predictions = _event_predictions(home, away, fixture, context, prediction, live_status)
+    event_predictions = _event_predictions(home, away, fixture, context, prediction, live_status, match_materials)
     market_summary = _market_summary(fixture, prediction)
     confidence_profile = _confidence_profile(
         fixture,
         live_status,
+        match_materials,
         factor_breakdown,
         market_summary,
         prediction,
@@ -70,9 +72,10 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "fixture": fixture,
         "context": {"notes": list(context.notes), "home_mult": context.home_mult, "away_mult": context.away_mult},
         "live_status": live_status,
+        "match_materials": match_materials,
         "team_form": _team_form(home, away),
-        "tactical_profile": _tactical_match_profile(home, away, fixture, context, live_status),
-        "availability": _availability(home, away),
+        "tactical_profile": _tactical_match_profile(home, away, fixture, context, live_status, match_materials),
+        "availability": _availability(home, away, match_materials),
         "weather": _weather_context(fixture),
         "factor_breakdown": factor_breakdown,
         "model_inputs": _model_input_summary(adjustments, factor_breakdown),
@@ -106,6 +109,31 @@ def _live_status(fixture: dict) -> dict | None:
         "attendance": live.get("attendance"),
         "home_stats": live.get("home_stats") or {},
         "away_stats": live.get("away_stats") or {},
+    }
+
+
+def _match_materials(fixture: dict) -> dict:
+    summary = data_store.espn_summary_for_fixture(fixture["id"])
+    if summary:
+        return {
+            **summary,
+            "material_status": "available",
+            "rating_policy": "performance_rating is derived from public event stats, not an official player rating",
+        }
+    return {
+        "match_id": fixture["id"],
+        "match_number": fixture["match_number"],
+        "source": "ESPN public match summary",
+        "source_quality": "pending_until_lineups_or_full_time",
+        "material_status": "missing",
+        "note": "No public lineup/roster summary yet; seed watchlists are not confirmed starters or official ratings.",
+        "rating_policy": "no public player rating feed connected",
+        "injury_status": {
+            "status": "not_available_from_public_summary",
+            "source": "ESPN public match summary",
+            "note": "Use a licensed injury provider before treating injuries as verified.",
+        },
+        "teams": {"home": {}, "away": {}},
     }
 
 
@@ -1026,6 +1054,7 @@ def _rounded_probability_dict(probabilities: dict[str, float]) -> dict[str, floa
 def _confidence_profile(
     fixture: dict,
     live_status: dict | None,
+    match_materials: dict,
     factor_breakdown: list[dict],
     market_summary: dict,
     prediction: dict,
@@ -1068,6 +1097,21 @@ def _confidence_profile(
     data_completeness = _clamp(len(verified_factors) / max(1, len(used_factors)), 0.0, 1.0)
     if live_status:
         data_completeness = _clamp(data_completeness + 0.08, 0.0, 1.0)
+    teams_material = (match_materials or {}).get("teams") or {}
+    lineup_coverage = _clamp(
+        sum(1 for team in teams_material.values() if int(team.get("starter_count") or 0) >= 11) / 2,
+        0.0,
+        1.0,
+    )
+    summary_stats_coverage = _clamp(
+        sum(1 for team in teams_material.values() if team.get("team_stats")) / 2,
+        0.0,
+        1.0,
+    )
+    if lineup_coverage:
+        data_completeness = _clamp(data_completeness + 0.08 * lineup_coverage, 0.0, 1.0)
+    if summary_stats_coverage:
+        data_completeness = _clamp(data_completeness + 0.06 * summary_stats_coverage, 0.0, 1.0)
 
     probabilities = [prediction["p_home"], prediction["p_draw"], prediction["p_away"]]
     entropy = -sum(prob * math.log(prob) for prob in probabilities if prob > 0)
@@ -1078,6 +1122,7 @@ def _confidence_profile(
         0.0,
         0.22,
     )
+    proxy_penalty = _clamp(proxy_penalty - 0.04 * lineup_coverage - 0.03 * summary_stats_coverage, 0.0, 0.22)
     injury_penalty = _clamp(home.injury_impact + away.injury_impact, 0.0, 0.14)
 
     score = _clamp(
@@ -1100,6 +1145,8 @@ def _confidence_profile(
             "market_coverage": round(market_coverage, 6),
             "market_alignment": round(market_alignment, 6),
             "data_completeness": round(data_completeness, 6),
+            "lineup_coverage": round(lineup_coverage, 6),
+            "summary_stats_coverage": round(summary_stats_coverage, 6),
             "model_separation": round(model_separation, 6),
             "proxy_penalty": round(proxy_penalty, 6),
             "used_proxy_factor_share": round(used_proxy_count / max(1, len(used_factors)), 6),
@@ -1107,7 +1154,7 @@ def _confidence_profile(
         },
         "notes": [
             "Higher confidence requires real 1X2/AH/O-U markets, verified event/player data, and walk-forward calibration.",
-            "Low-weight process, style and QDR proxies can move the model but reduce confidence until verified.",
+            "Real ESPN rosters/formations reduce proxy penalty when available; public injury lists and licensed player ratings remain separate feeds.",
         ],
     }
 
@@ -1185,16 +1232,21 @@ def _last_10_record(team) -> str:
     return f"{wins}W-{draws}D-{losses}L"
 
 
-def _availability(home, away) -> dict:
+def _availability(home, away, match_materials: dict | None = None) -> dict:
     return {
-        "home": _availability_profile(home),
-        "away": _availability_profile(away),
-        "source": "lineup/injury adapter placeholder; player names are projected watchlist entries",
+        "home": _availability_profile(home, ((match_materials or {}).get("teams") or {}).get("home")),
+        "away": _availability_profile(away, ((match_materials or {}).get("teams") or {}).get("away")),
+        "source": (
+            "ESPN public match summary for real starters and event-derived performance ratings"
+            if (match_materials or {}).get("material_status") == "available"
+            else "lineup/injury adapter placeholder; player names are projected watchlist entries"
+        ),
         "updated_at": datetime.now(timezone.utc).isoformat(),
+        "injury_status": (match_materials or {}).get("injury_status"),
     }
 
 
-def _availability_profile(team) -> dict:
+def _availability_profile(team, material: dict | None = None) -> dict:
     risk = "low"
     if team.injury_impact >= 0.025:
         risk = "elevated"
@@ -1203,7 +1255,7 @@ def _availability_profile(team) -> dict:
     qdr_index = _clamp(0.62 + team.attack * 0.7 + team.defence * 0.45 + team.form_index * 0.5 - team.injury_impact * 4.5, 0.22, 0.92)
     key_dependency = _clamp(0.58 + team.attack * 0.45 - team.defence * 0.25 + team.injury_impact * 6, 0.28, 0.88)
     rotation_capacity = _clamp(0.58 + (team.elo - 1600) / 760 + team.defence * 0.35 - team.injury_impact * 3.2, 0.24, 0.9)
-    return {
+    profile = {
         "risk": risk,
         "available_starters": int(max(8, min(11, round(11 - team.injury_impact * 70)))),
         "minutes_load": round(max(0.18, min(0.82, 0.44 + team.form_index * 0.9 + team.injury_impact * 4)), 2),
@@ -1215,6 +1267,47 @@ def _availability_profile(team) -> dict:
         "used_in_core_prediction": False,
         "key_players": _key_players(team),
     }
+    if material and int(material.get("starter_count") or 0) >= 11:
+        profile.update(
+            {
+                "risk": "confirmed_lineup",
+                "available_starters": int(material.get("starter_count") or 0),
+                "formation": material.get("formation"),
+                "roster_count": int(material.get("roster_count") or 0),
+                "subbed_in_count": int(material.get("subbed_in_count") or 0),
+                "inactive_count": int(material.get("inactive_count") or 0),
+                "source": "ESPN public match summary",
+                "data_quality": "verified_public_lineup",
+                "key_players": _material_key_players(material),
+            }
+        )
+    return profile
+
+
+def _material_key_players(material: dict) -> list[dict]:
+    players = material.get("impact_players") or material.get("starters") or []
+    out = []
+    for player in players[:5]:
+        stats = player.get("stats") or {}
+        role = player.get("position") or "player"
+        rating = player.get("performance_rating")
+        if rating is None:
+            rating = 6.0
+        out.append(
+            {
+                "name": player.get("short_name") or player.get("name"),
+                "role": role,
+                "status": "confirmed",
+                "rating": round(float(rating) / 10, 3),
+                "performance_rating": rating,
+                "stats": {
+                    key: stats.get(key)
+                    for key in ["goals", "assists", "shots", "shots_on_target", "saves", "yellow_cards", "red_cards"]
+                    if stats.get(key) is not None
+                },
+            }
+        )
+    return out
 
 
 def _key_players(team) -> list[dict]:
@@ -1325,34 +1418,70 @@ def _weather_context(fixture: dict) -> dict:
     }
 
 
-def _tactical_match_profile(home, away, fixture: dict, context, live_status: dict | None = None) -> dict:
+def _material_team_stats(match_materials: dict | None, side: str) -> dict:
+    return (((match_materials or {}).get("teams") or {}).get(side) or {}).get("team_stats") or {}
+
+
+def _tactical_match_profile(
+    home,
+    away,
+    fixture: dict,
+    context,
+    live_status: dict | None = None,
+    match_materials: dict | None = None,
+) -> dict:
     home_profile = _tactical_profile(home, fixture, context.home_mult)
     away_profile = _tactical_profile(away, fixture, context.away_mult)
     if live_status:
         home_profile = _apply_live_stats(home_profile, live_status.get("home_stats") or {})
         away_profile = _apply_live_stats(away_profile, live_status.get("away_stats") or {})
+    summary_home_stats = _material_team_stats(match_materials, "home")
+    summary_away_stats = _material_team_stats(match_materials, "away")
+    if summary_home_stats or summary_away_stats:
+        home_profile = _apply_live_stats(home_profile, summary_home_stats)
+        away_profile = _apply_live_stats(away_profile, summary_away_stats)
+    has_summary = bool(summary_home_stats or summary_away_stats)
+    has_scoreboard = bool(live_status and (live_status.get("home_stats") or live_status.get("away_stats")))
     return {
         "home": home_profile,
         "away": away_profile,
         "source": (
-            "ESPN public scoreboard basic stats + seed-derived xG/PPDA"
-            if live_status and (live_status.get("home_stats") or live_status.get("away_stats"))
+            "ESPN public match summary + scoreboard stats + seed-derived xG/PPDA"
+            if has_summary
+            else "ESPN public scoreboard basic stats + seed-derived xG/PPDA"
+            if has_scoreboard
             else "48-team seed-derived process metrics; replace with event data backfill"
         ),
         "data_quality": (
-            "mixed_live_public_proxy"
-            if live_status and (live_status.get("home_stats") or live_status.get("away_stats"))
+            "mixed_live_summary_proxy"
+            if has_summary
+            else "mixed_live_public_proxy"
+            if has_scoreboard
             else "proxy"
         ),
     }
 
 
-def _event_predictions(home, away, fixture: dict, context, prediction: dict, live_status: dict | None) -> dict:
+def _event_predictions(
+    home,
+    away,
+    fixture: dict,
+    context,
+    prediction: dict,
+    live_status: dict | None,
+    match_materials: dict | None = None,
+) -> dict:
     home_profile = _tactical_profile(home, fixture, context.home_mult)
     away_profile = _tactical_profile(away, fixture, context.away_mult)
-    has_live_stats = bool(live_status and (live_status.get("home_stats") or live_status.get("away_stats")))
-    home_live_stats = (live_status or {}).get("home_stats") or {}
-    away_live_stats = (live_status or {}).get("away_stats") or {}
+    home_live_stats = {
+        **((live_status or {}).get("home_stats") or {}),
+        **_material_team_stats(match_materials, "home"),
+    }
+    away_live_stats = {
+        **((live_status or {}).get("away_stats") or {}),
+        **_material_team_stats(match_materials, "away"),
+    }
+    has_live_stats = bool(home_live_stats or away_live_stats)
     home_corners = _team_corner_expectation(home, away, home_profile, away_profile, context.home_mult)
     away_corners = _team_corner_expectation(away, home, away_profile, home_profile, context.away_mult)
     home_yellows = _team_yellow_expectation(home, away, home_profile, prediction["p_home"], prediction["p_away"])
@@ -1363,9 +1492,15 @@ def _event_predictions(home, away, fixture: dict, context, prediction: dict, liv
     total_yellows = home_yellows + away_yellows
     return {
         "source": (
-            "scoreline matrix + transparent cards/corners priors; ESPN public values when available"
+            "scoreline matrix + transparent cards/corners priors; ESPN public summary values when available"
         ),
-        "data_quality": "mixed_live_public_proxy" if has_live_stats else "transparent_prior",
+        "data_quality": (
+            "mixed_live_summary_proxy"
+            if _material_team_stats(match_materials, "home") or _material_team_stats(match_materials, "away")
+            else "mixed_live_public_proxy"
+            if has_live_stats
+            else "transparent_prior"
+        ),
         "score": {
             "expected_home_goals": round(prediction["lambda_home"], 2),
             "expected_away_goals": round(prediction["lambda_away"], 2),
@@ -1472,6 +1607,20 @@ def _apply_live_stats(profile: dict, stats: dict) -> dict:
     out["live_goals"] = stats.get("goals")
     out["live_yellow_cards"] = stats.get("yellow_cards")
     out["live_red_cards"] = stats.get("red_cards")
+    out["live_saves"] = stats.get("saves")
+    out["live_offsides"] = stats.get("offsides")
+    out["live_accurate_passes"] = stats.get("accurate_passes")
+    out["live_total_passes"] = stats.get("total_passes")
+    out["live_pass_pct"] = stats.get("pass_pct")
+    out["live_accurate_crosses"] = stats.get("accurate_crosses")
+    out["live_total_crosses"] = stats.get("total_crosses")
+    out["live_total_long_balls"] = stats.get("total_long_balls")
+    out["live_accurate_long_balls"] = stats.get("accurate_long_balls")
+    out["live_blocked_shots"] = stats.get("blocked_shots")
+    out["live_effective_tackles"] = stats.get("effective_tackles")
+    out["live_total_tackles"] = stats.get("total_tackles")
+    out["live_interceptions"] = stats.get("interceptions")
+    out["live_clearances"] = stats.get("clearances")
     out["live_public_stats"] = True
     return out
 

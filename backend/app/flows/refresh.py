@@ -16,6 +16,7 @@ except ImportError:  # keeps local tests usable before optional deps are install
 
 from app.adapters.football_data import fetch_world_cup_matches, normalize_matches as normalize_football_data_matches
 from app.adapters.espn_live import fetch_live_match_statuses
+from app.adapters.espn_summary import fetch_match_summaries
 from app.adapters.international_results import fetch_results_csv, parse_results, summarize_team_results
 from app.adapters.odds_api import fetch_world_cup_odds, normalize_odds
 from app.adapters.open_meteo import (
@@ -69,12 +70,15 @@ def refresh_odds():
     teams = _read_json("teams.json")
     raw_rows = fetch_world_cup_odds(markets="h2h,spreads,totals")
     rows = normalize_odds(raw_rows, fixtures, teams, captured_at)
+    existing_rows = _read_json_optional("odds_snapshots.json", [])
+    merged_rows = merge_odds_snapshots(existing_rows, rows)
     if rows:
-        _write_json("odds_snapshots.json", rows)
+        _write_json("odds_snapshots.json", merged_rows)
     return {
         "source": "odds_api",
         "raw_rows": len(raw_rows),
         "rows": len(rows),
+        "stored_rows": len(merged_rows),
         "captured_at": captured_at,
         "written": bool(rows),
     }
@@ -99,6 +103,34 @@ def refresh_live_matches():
         "completed_rows": completed,
         "in_play_rows": in_play,
         "captured_at": rows[0]["captured_at"] if rows else captured_at,
+    }
+
+
+@task
+def refresh_espn_summaries():
+    live_rows = _read_json_optional("live_matches.json", [])
+    rows = fetch_match_summaries(live_rows)
+    _write_json("espn_match_summaries.json", rows)
+    available = [row for row in rows if row.get("status") == "available"]
+    formations = sum(
+        1
+        for row in available
+        for team in (row.get("teams") or {}).values()
+        if team.get("formation")
+    )
+    starters = sum(
+        int(team.get("starter_count") or 0)
+        for row in available
+        for team in (row.get("teams") or {}).values()
+    )
+    captured_at = rows[0]["captured_at"] if rows else datetime.now(timezone.utc).isoformat()
+    return {
+        "source": "espn_public_summary",
+        "rows": len(rows),
+        "available_rows": len(available),
+        "formations": formations,
+        "starters": starters,
+        "captured_at": captured_at,
     }
 
 
@@ -179,6 +211,7 @@ def refresh_all():
         "fixtures": refresh_fixtures(),
         "odds": refresh_odds(),
         "live_matches": refresh_live_matches(),
+        "espn_summaries": refresh_espn_summaries(),
         "weather": refresh_weather(),
         "prediction_markets": refresh_prediction_markets(),
         "historical_results": refresh_historical_results(),
@@ -210,7 +243,7 @@ def update_source_health(report: dict) -> None:
     set_row(
         "The Odds API / TheStatsAPI",
         "live" if odds["rows"] else ("configured_empty" if odds["raw_rows"] == 0 else "unmatched"),
-        f'{odds["rows"]}/{odds["raw_rows"]} normalized odds rows at {odds["captured_at"]}; written={odds["written"]}',
+        f'{odds["rows"]}/{odds["raw_rows"]} normalized odds rows at {odds["captured_at"]}; stored snapshots {odds["stored_rows"]}; written={odds["written"]}',
         "legal sportsbook odds and Asian handicap lines",
     )
     weather = report["weather"]
@@ -241,6 +274,13 @@ def update_source_health(report: dict) -> None:
         f'{live_matches["rows"]} matched events; ESPN {live_matches["espn_rows"]}; football-data {live_matches["football_data_rows"]}; {live_matches["completed_rows"]} completed; {live_matches["in_play_rows"]} in-play at {live_matches["captured_at"]}',
         "no-key live score, official score fallback and basic public match stats",
     )
+    summaries = report["espn_summaries"]
+    set_row(
+        "ESPN public match summary",
+        "live_public" if summaries["available_rows"] else "empty",
+        f'{summaries["available_rows"]}/{summaries["rows"]} match summaries; {summaries["formations"]} formations; {summaries["starters"]} starters at {summaries["captured_at"]}',
+        "public formations, starters, substitutions, player event stats and expanded team stats",
+    )
     _write_json("source_health.json", list(by_name.values()))
 
 
@@ -252,13 +292,59 @@ def merge_live_rows(football_data_rows: list[dict], espn_rows: list[dict]) -> li
             merged[row["match_id"]] = dict(row)
             continue
         combined = dict(existing)
+        keep_completed_result = bool(existing.get("completed")) and not bool(row.get("completed"))
         for key, value in row.items():
+            if keep_completed_result and key in COMPLETED_RESULT_KEYS:
+                continue
             if value not in (None, {}, []):
                 combined[key] = value
         combined["source"] = "ESPN public scoreboard + football-data.org"
         combined["source_quality"] = "mixed_public_official"
         merged[row["match_id"]] = combined
     return sorted(merged.values(), key=lambda row: row["match_number"])
+
+
+COMPLETED_RESULT_KEYS = {
+    "status_state",
+    "status_name",
+    "status_description",
+    "status_detail",
+    "completed",
+    "clock",
+    "display_clock",
+    "period",
+    "home_score",
+    "away_score",
+    "winner_team_id",
+}
+
+
+def merge_odds_snapshots(existing_rows: list[dict], new_rows: list[dict]) -> list[dict]:
+    rows_by_key = {}
+    for row in [*existing_rows, *new_rows]:
+        key = (
+            row.get("match_id"),
+            row.get("bookmaker"),
+            row.get("market_type"),
+            row.get("line"),
+            row.get("captured_at"),
+            row.get("price_home"),
+            row.get("price_draw"),
+            row.get("price_away"),
+            row.get("price_over"),
+            row.get("price_under"),
+        )
+        rows_by_key[key] = row
+    return sorted(
+        rows_by_key.values(),
+        key=lambda row: (
+            row.get("match_id") or "",
+            row.get("market_type") or "",
+            row.get("line") if row.get("line") is not None else -999,
+            row.get("bookmaker") or "",
+            row.get("captured_at") or "",
+        ),
+    )
 
 
 if __name__ == "__main__":
