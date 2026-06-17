@@ -1917,6 +1917,8 @@
         const currentLeader = current && currentLeaderText(state.selected, current);
         const performance = marketPerformanceSummary(state.matches);
         const combined = combinedPerformance(performance);
+        const recommended = recommendedPerformanceSummary(state.matches);
+        const recommendedCombined = combinedPerformance(recommended);
         const liveSources = state.sources.filter((source) => source.status !== "planned").length;
         const realLineups = state.matches.filter((match) => materialAvailable(match)).length;
         const ahMarket = performance.asian_handicap_market;
@@ -1927,11 +1929,12 @@
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("总体命中率", metricHitText(combined), combined.samples ? `四类市场 ${combined.correct}/${combined.samples}` : "等待可结算样本"),
-          metric("不让球命中", metricHitText(performance.one_x_two), metricHitSub(performance.one_x_two, "1X2")),
-          metric("让球1.5命中", metricHitText(performance.asian_handicap), `${metricHitSub(performance.asian_handicap, "1.5线")}${ahMarketSub}`),
-          metric("大小球命中", metricHitText(performance.over_under), metricHitSub(performance.over_under, "O/U 2.5")),
-          metric("角球8.5命中", metricHitText(performance.corners), `${metricHitSub(performance.corners, "8.5线")}${cornerRecoSub}`),
+          metric("高置信推荐", metricHitText(recommendedCombined), recommendedCombined.samples ? `推荐 ${recommendedCombined.correct}/${recommendedCombined.samples} · 低置信过滤` : "等待高置信样本"),
+          metric("全部硬选回测", metricHitText(combined), combined.samples ? `四类市场 ${combined.correct}/${combined.samples}` : "等待可结算样本"),
+          metric("不让球推荐", metricHitText(recommended.one_x_two), `${metricHitSub(recommended.one_x_two, "高置信")} · 硬选 ${performance.one_x_two.correct}/${performance.one_x_two.samples}`),
+          metric("让球1.5推荐", metricHitText(recommended.asian_handicap), `${metricHitSub(recommended.asian_handicap, "高置信")}${ahMarketSub}`),
+          metric("大小球推荐", metricHitText(recommended.over_under), `${metricHitSub(recommended.over_under, "高置信")} · 硬选 ${performance.over_under.correct}/${performance.over_under.samples}`),
+          metric("角球推荐", metricHitText(recommended.corners), `${metricHitSub(recommended.corners, "高置信")}${cornerRecoSub}`),
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
@@ -3365,15 +3368,93 @@
         ];
       }
 
-      function oneXTwoReference(match) {
-        const status = matchTimingNote(match);
-        const market = match.market_summary?.one_x_two || {};
-        const outcomes = [
+      function outcomeRows(match) {
+        return [
           { key: "home", label: `${match.home_team.name} 胜`, probability: Number(match.p_home || 0) },
           { key: "draw", label: "平局", probability: Number(match.p_draw || 0) },
           { key: "away", label: `${match.away_team.name} 胜`, probability: Number(match.p_away || 0) }
         ];
-        const byModel = [...outcomes].sort((a, b) => b.probability - a.probability);
+      }
+
+      function rankedOutcomeRows(match) {
+        return outcomeRows(match).sort((a, b) => b.probability - a.probability);
+      }
+
+      function oneXTwoSignal(match) {
+        const rows = rankedOutcomeRows(match);
+        const top = rows[0];
+        const second = rows[1];
+        const draw = rows.find((row) => row.key === "draw") || { probability: 0 };
+        if (!top || !second) return null;
+        const margin = top.probability - second.probability;
+        const drawRisk = top.key !== "draw" && (draw.probability >= 0.30 || top.probability - draw.probability <= 0.18);
+        const cutoff = top.key === "draw" ? 0.34 : 0.55;
+        const recommend = top.probability >= cutoff && margin >= 0.10 && !drawRisk;
+        let reason = `最高项 ${pct(top.probability)}，领先 ${signedPct(margin)}`;
+        if (drawRisk) reason = `平局风险 ${pct(draw.probability)}，不硬站胜负`;
+        else if (top.probability < cutoff) reason = `最高项未过 ${pct(cutoff)} 门槛`;
+        else if (margin < 0.10) reason = `前两项差距只有 ${signedPct(margin)}`;
+        return { ...top, margin, drawRisk, recommend, reason };
+      }
+
+      function totalGoalsSignal(match) {
+        const over = Number(match.p_over_2_5);
+        if (!Number.isFinite(over)) return null;
+        const under = clamp(1 - over, 0, 1);
+        const side = over >= under ? "over" : "under";
+        const probability = Math.max(over, under);
+        return {
+          side,
+          line: 2.5,
+          probability,
+          recommend: probability >= 0.60,
+          label: side === "over" ? "大 2.5" : "小 2.5"
+        };
+      }
+
+      function primaryHandicapSignal(match) {
+        const favoriteSide = Number(match.p_home || 0) >= Number(match.p_away || 0) ? "home" : "away";
+        const underdogSide = favoriteSide === "home" ? "away" : "home";
+        const favoriteIsHome = favoriteSide === "home";
+        const favorite = favoriteIsHome ? match.home_team.name : match.away_team.name;
+        const underdog = favoriteIsHome ? match.away_team.name : match.home_team.name;
+        const homeLine = favoriteIsHome ? -1.5 : 1.5;
+        const favoriteProb = handicapProbability(match, homeLine, favoriteSide).probability;
+        const underdogProb = handicapProbability(match, homeLine, underdogSide).probability;
+        const favoritePick = { side: favoriteSide, line: -1.5, label: `${favorite} -1.5`, probability: favoriteProb };
+        const underdogPick = { side: underdogSide, line: 1.5, label: `${underdog} +1.5`, probability: underdogProb };
+        const pick = favoriteProb >= underdogProb ? favoritePick : underdogPick;
+        return {
+          ...pick,
+          favorite,
+          underdog,
+          favoriteProb,
+          underdogProb,
+          recommend: Number.isFinite(pick.probability) && pick.probability >= 0.70
+        };
+      }
+
+      function cornersSignal(match) {
+        const corners = match.event_predictions?.corners || {};
+        const over85 = Number(corners.over_8_5_probability);
+        if (!Number.isFinite(over85)) return null;
+        const under85 = clamp(1 - over85, 0, 1);
+        const side = over85 >= under85 ? "over" : "under";
+        const probability = Math.max(over85, under85);
+        return {
+          side,
+          line: 8.5,
+          probability,
+          recommend: probability >= 0.60,
+          label: side === "over" ? "角球大 8.5" : "角球小 8.5"
+        };
+      }
+
+      function oneXTwoReference(match) {
+        const status = matchTimingNote(match);
+        const market = match.market_summary?.one_x_two || {};
+        const outcomes = outcomeRows(match);
+        const signal = oneXTwoSignal(match);
         const byDelta = outcomes
           .map((outcome) => ({
             ...outcome,
@@ -3383,23 +3464,23 @@
           .filter((outcome) => Number.isFinite(outcome.delta))
           .sort((a, b) => b.delta - a.delta);
         const marketEdge = byDelta[0];
-        const pick = market.status === "available" && marketEdge && marketEdge.delta >= 0.045
+        const pick = market.status === "available" && marketEdge && marketEdge.delta >= 0.08 && signal?.recommend
           ? `模型高于市场：${marketEdge.label}`
-          : byModel[0].probability >= 0.45
-            ? `模型倾向：${byModel[0].label}`
-            : "观察";
+          : signal?.recommend
+            ? `高置信：${signal.label}`
+            : `观察：${signal?.reason || "低置信"}`;
         const modelText = `${pct(match.p_home)} / ${pct(match.p_draw)} / ${pct(match.p_away)}`;
         const fairText = `${odds(fairOdds(match.p_home))} / ${odds(fairOdds(match.p_draw))} / ${odds(fairOdds(match.p_away))}`;
         const marketText = market.status === "available"
           ? `${pct(market.market_probabilities.home)} / ${pct(market.market_probabilities.draw)} / ${pct(market.market_probabilities.away)}`
           : fairText;
         const note = market.status === "available"
-          ? `${status} 不让球胜平负是三结果市场，平局独立结算；市场为 ${market.source}，${market.books} 家去水均值，最大模型差 ${signedPct(marketEdge?.delta || 0)}。`
-          : `${status} 不让球胜平负是三结果市场，平局不是退回本金；暂无真实 1X2 市场，显示模型公平赔率。`;
+          ? `${status} 不让球胜平负是三结果市场，平局独立结算；市场为 ${market.source}，${market.books} 家去水均值。现在只有最高项过门槛且无明显平局风险才给推荐。`
+          : `${status} 不让球胜平负是三结果市场，平局不是退回本金；暂无真实 1X2 市场，显示模型公平赔率。现在会过滤低置信方向。`;
         return {
           category: "基础胜平负",
           source_type: market.status === "available" ? "模型 vs 1X2 市场" : "模型独立推导",
-          confidence: "高",
+          confidence: signal?.recommend ? "中" : "低",
           pick,
           metric_a_label: "模型 主/平/客",
           metric_a: modelText,
@@ -3439,24 +3520,24 @@
         });
         candidates.sort((a, b) => b.edge - a.edge);
         const best = candidates[0];
-          if (!best || best.edge < 0.035) {
+        if (!best || best.edge < 0.08) {
           const zero = findHandicapRow(match, 0);
           return {
             category: "亚洲让球",
             source_type: candidates.length ? "博彩公司市场对比" : "模型公平盘口",
-            confidence: "高",
+            confidence: "低",
             pick: "观察",
             metric_a_label: "AH 0 主/客",
             metric_a: zero ? `${pct(zero.home.positive_probability)} / ${pct(zero.away.positive_probability)}` : "-",
             metric_b_label: "AH 0 走盘",
             metric_b: zero ? pct(zero.home.push) : "-",
-            note: `${status} 当前没有超过 +3.5% 阈值的真实亚洲盘口。注意 AH 0 是平手盘，平局退回；它不等于三结果胜平负。`
+            note: `${status} 当前没有超过 +8% 阈值的真实亚洲盘口。注意 AH 0 是平手盘，平局退回；它不等于三结果胜平负。`
           };
         }
         return {
           category: "亚洲让球",
           source_type: "博彩公司市场对比",
-          confidence: "高",
+          confidence: "中",
           pick: `模型高于市场：${best.side}`,
           metric_a_label: "模型 edge",
           metric_a: signed(best.edge),
@@ -3502,18 +3583,18 @@
         const minus25 = handicapProbability(match, favoriteIsHome ? -2.5 : 2.5, favoriteIsHome ? "home" : "away");
         const plus15 = handicapProbability(match, favoriteIsHome ? -1.5 : 1.5, favoriteIsHome ? "away" : "home");
         const plus25 = handicapProbability(match, favoriteIsHome ? -2.5 : 2.5, favoriteIsHome ? "away" : "home");
-        const mainPick = minus15.probability >= 0.5 ? `${favorite} -1.5` : `${underdog} +1.5`;
-        const secondaryPick = minus25.probability >= 0.35 ? `${favorite} -2.5` : `${underdog} +2.5`;
+        const signal = primaryHandicapSignal(match);
+        const secondaryPick = minus25.probability >= plus25.probability ? `${favorite} -2.5` : `${underdog} +2.5`;
         return {
           category: "Polymarket 线型参考",
           source_type: "模型独立推导",
-          confidence: "中",
-          pick: `${mainPick} / ${secondaryPick}`,
+          confidence: signal?.recommend ? "中" : "低",
+          pick: signal?.recommend ? `${signal.label} / ${secondaryPick}` : "观察：1.5 线未过 70% 门槛",
           metric_a_label: `${favorite} -1.5 / -2.5`,
           metric_a: `${pct(minus15.probability)} / ${pct(minus25.probability)}`,
           metric_b_label: `${underdog} +1.5 / +2.5`,
           metric_b: `${pct(plus15.probability)} / ${pct(plus25.probability)}`,
-          note: `${matchTimingNote(match)} 这里只是适配 Polymarket 常见 1.5、2.5 线型；当前未读取对应合约价格，因此不是 Polymarket 定价信号。`
+          note: `${matchTimingNote(match)} 这里只是适配 Polymarket 常见 1.5、2.5 线型；当前未读取对应合约价格，因此不是 Polymarket 定价信号。1.5 线低于 70% 时不硬推。`
         };
       }
 
@@ -3546,26 +3627,26 @@
         const market = match.market_summary?.over_under_2_5 || {};
         const over = Number(match.p_over_2_5 || 0);
         const under = clamp(1 - over, 0, 1);
+        const signal = totalGoalsSignal(match);
         const marketOver = Number(market.market_probabilities?.over ?? NaN);
         const marketUnder = Number(market.market_probabilities?.under ?? NaN);
         const overDelta = Number(market.model_delta?.over ?? NaN);
         const underDelta = Number(market.model_delta?.under ?? NaN);
-        const pick = market.status === "available" && Math.max(overDelta, underDelta) >= 0.045
+        const pick = market.status === "available" && Math.max(overDelta, underDelta) >= 0.08 && signal?.recommend
           ? `模型高于市场：${overDelta >= underDelta ? "大 2.5" : "小 2.5"}`
-          : over >= under ? "大 2.5" : "小 2.5";
-        const confidence = Math.max(over, under);
+          : signal?.recommend ? signal.label : "观察：大/小 2.5 未过 60% 门槛";
         return {
           category: "大小球",
           source_type: market.status === "available" ? "模型 vs O/U 市场" : "模型独立推导",
-          confidence: "高",
-          pick: confidence >= 0.55 ? pick : "观察",
+          confidence: signal?.recommend ? "中" : "低",
+          pick,
           metric_a_label: "模型 大/小 2.5",
           metric_a: `${pct(over)} / ${pct(under)}`,
           metric_b_label: market.status === "available" ? "市场去水 大/小" : "公平赔率 大/小",
           metric_b: market.status === "available" ? `${pct(marketOver)} / ${pct(marketUnder)}` : `${odds(fairOdds(over))} / ${odds(fairOdds(under))}`,
           note: market.status === "available"
-            ? `${matchTimingNote(match)} 基于比分矩阵总进球分布，并与 ${market.books} 家 O/U 2.5 市场去水均值对比。`
-            : `${matchTimingNote(match)} 基于比分矩阵总进球分布；未接入真实 O/U 2.5 市场 edge 时只显示模型方向。`
+            ? `${matchTimingNote(match)} 基于比分矩阵总进球分布，并与 ${market.books} 家 O/U 2.5 市场去水均值对比；低于 60% 或 edge 低于 8% 时只展示不推荐。`
+            : `${matchTimingNote(match)} 基于比分矩阵总进球分布；未接入真实 O/U 2.5 市场 edge 时只显示模型方向，低于 60% 不硬推。`
         };
       }
 
@@ -3573,20 +3654,20 @@
         const corners = match.event_predictions?.corners || {};
         const over85 = Number(corners.over_8_5_probability || 0);
         const over95 = Number(corners.over_9_5_probability || 0);
+        const signal = cornersSignal(match);
         let pick = "角球观察";
-        if (over95 >= 0.56) pick = "角球大 9.5";
-        else if (over85 >= 0.56) pick = "角球大 8.5";
-        else if (over85 <= 0.44) pick = "角球小 8.5";
+        if (over95 >= 0.60) pick = "角球大 9.5";
+        else if (signal?.recommend) pick = signal.label;
         return {
           category: "角球",
           source_type: "代理数据低置信",
-          confidence: "低",
+          confidence: signal?.recommend || over95 >= 0.60 ? "中" : "低",
           pick,
           metric_a_label: "角球预测 主/客",
           metric_a: `${value(corners.home_expected, 1)} / ${value(corners.away_expected, 1)}`,
           metric_b_label: "大 8.5 / 大 9.5",
           metric_b: `${pct(over85)} / ${pct(over95)}`,
-          note: `${matchTimingNote(match)} 角球来自技术统计代理和实时公开统计校验；缺少真实角球盘口与球队角球历史回测，因此低置信。`
+          note: `${matchTimingNote(match)} 角球来自技术统计代理和实时公开统计校验；缺少真实角球盘口与球队角球历史回测，只有大/小 8.5 过 60% 才给参考。`
         };
       }
 
@@ -4107,6 +4188,15 @@
         };
       }
 
+      function recommendedPerformanceSummary(matches) {
+        return {
+          one_x_two: recommendedOneXTwoPerformance(matches),
+          asian_handicap: recommendedAsianHandicapPerformance(matches),
+          over_under: recommendedOverUnderPerformance(matches),
+          corners: cornerRecommendedPerformance(matches)
+        };
+      }
+
       function normalizePerformance(report, fallbackReport) {
         if (!report) return fallbackReport;
         const samples = Number(report.samples ?? report.selections ?? 0);
@@ -4158,12 +4248,65 @@
         };
       }
 
+      function recommendedOneXTwoPerformance(matches) {
+        const rows = matches
+          .map((match) => {
+            const actual = actualOutcome(match);
+            const signal = oneXTwoSignal(match);
+            if (!actual || !signal?.recommend) return null;
+            return { correct: actual === signal.key };
+          })
+          .filter(Boolean);
+        return booleanPerformance(rows);
+      }
+
+      function recommendedOverUnderPerformance(matches) {
+        const rows = matches
+          .map((match) => {
+            if (!actualOutcome(match) || !hasActualScore(match)) return null;
+            const signal = totalGoalsSignal(match);
+            if (!signal?.recommend) return null;
+            const total = Number(match.live_status.home_score) + Number(match.live_status.away_score);
+            const actualOver = total > signal.line;
+            return { correct: signal.side === "over" ? actualOver : !actualOver };
+          })
+          .filter(Boolean);
+        return booleanPerformance(rows);
+      }
+
       function asianHandicapPerformance(matches) {
         const rows = matches
           .map((match) => {
             if (!actualOutcome(match) || !hasActualScore(match)) return null;
             const selection = primaryHandicapSelection(match);
             if (!selection) return null;
+            const homeScore = Number(match.live_status.home_score);
+            const awayScore = Number(match.live_status.away_score);
+            const margin = selection.side === "home" ? homeScore - awayScore : awayScore - homeScore;
+            const settlement = settleAsianHandicap(margin, selection.line);
+            return {
+              correct: settlement === "win" || settlement === "half_win",
+              push: settlement === "push",
+              settlement
+            };
+          })
+          .filter(Boolean);
+        const correct = rows.filter((row) => row.correct).length;
+        const pushes = rows.filter((row) => row.push).length;
+        return {
+          samples: rows.length,
+          correct,
+          pushes,
+          hit_rate: rows.length ? correct / rows.length : null
+        };
+      }
+
+      function recommendedAsianHandicapPerformance(matches) {
+        const rows = matches
+          .map((match) => {
+            if (!actualOutcome(match) || !hasActualScore(match)) return null;
+            const selection = primaryHandicapSignal(match);
+            if (!selection?.recommend) return null;
             const homeScore = Number(match.live_status.home_score);
             const awayScore = Number(match.live_status.away_score);
             const margin = selection.side === "home" ? homeScore - awayScore : awayScore - homeScore;
@@ -4234,7 +4377,16 @@
           if (awayEdge !== null) candidates.push({ side: "away", line: -Number(row.line), edge: awayEdge });
         });
         candidates.sort((a, b) => b.edge - a.edge);
-        return candidates[0]?.edge >= 0.035 ? candidates[0] : null;
+        return candidates[0]?.edge >= 0.08 ? candidates[0] : null;
+      }
+
+      function booleanPerformance(rows) {
+        const correct = rows.filter((row) => row.correct).length;
+        return {
+          samples: rows.length,
+          correct,
+          hit_rate: rows.length ? correct / rows.length : null
+        };
       }
 
       function settleAsianHandicap(margin, lineValue) {
@@ -4321,9 +4473,9 @@
         const corners = match.event_predictions?.corners || {};
         const over85 = Number(corners.over_8_5_probability);
         const over95 = Number(corners.over_9_5_probability);
-        if (Number.isFinite(over95) && over95 >= 0.56) return { side: "over", line: 9.5 };
-        if (Number.isFinite(over85) && over85 >= 0.56) return { side: "over", line: 8.5 };
-        if (Number.isFinite(over85) && over85 <= 0.44) return { side: "under", line: 8.5 };
+        if (Number.isFinite(over95) && over95 >= 0.60) return { side: "over", line: 9.5 };
+        if (Number.isFinite(over85) && over85 >= 0.60) return { side: "over", line: 8.5 };
+        if (Number.isFinite(over85) && over85 <= 0.40) return { side: "under", line: 8.5 };
         return null;
       }
 
