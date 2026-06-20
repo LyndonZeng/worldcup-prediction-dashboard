@@ -1924,17 +1924,20 @@
         const ahMarket = performance.asian_handicap_market;
         const cornerReco = performance.corners_recommended;
         const ahMarketSub = ahMarket?.samples ? ` · 市场edge ${ahMarket.correct}/${ahMarket.samples}` : " · 市场edge无样本";
-        const cornerRecoSub = cornerReco?.samples ? ` · 推荐 ${cornerReco.correct}/${cornerReco.samples}` : " · 推荐无样本";
+        const cornerRecoSub = cornerReco?.samples ? ` · 参考 ${cornerReco.correct}/${cornerReco.samples}` : " · 参考无样本";
+        const ahReferenceSub = recommended.asian_handicap?.samples
+          ? metricHitSub(recommended.asian_handicap, "强队 -1.5")
+          : "暂停受让 +1.5，等待强队 -1.5 样本";
         document.getElementById("hero-confidence").textContent = pct(confidence);
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("高置信推荐", metricHitText(recommendedCombined), recommendedCombined.samples ? `推荐 ${recommendedCombined.correct}/${recommendedCombined.samples} · 低置信过滤` : "等待高置信样本"),
+          metric("高置信参考", metricHitText(recommendedCombined), recommendedCombined.samples ? `参考 ${recommendedCombined.correct}/${recommendedCombined.samples} · 低置信过滤` : "等待高置信样本"),
           metric("全部硬选回测", metricHitText(combined), combined.samples ? `四类市场 ${combined.correct}/${combined.samples}` : "等待可结算样本"),
-          metric("不让球推荐", metricHitText(recommended.one_x_two), `${metricHitSub(recommended.one_x_two, "高置信")} · 硬选 ${performance.one_x_two.correct}/${performance.one_x_two.samples}`),
-          metric("让球1.5推荐", metricHitText(recommended.asian_handicap), `${metricHitSub(recommended.asian_handicap, "高置信")}${ahMarketSub}`),
-          metric("大小球推荐", metricHitText(recommended.over_under), `${metricHitSub(recommended.over_under, "高置信")} · 硬选 ${performance.over_under.correct}/${performance.over_under.samples}`),
-          metric("角球推荐", metricHitText(recommended.corners), `${metricHitSub(recommended.corners, "高置信")}${cornerRecoSub}`),
+          metric("不让球参考", metricHitText(recommended.one_x_two), `${metricHitSub(recommended.one_x_two, "高置信")} · 硬选 ${performance.one_x_two.correct}/${performance.one_x_two.samples}`),
+          metric("让球1.5参考", metricHitText(recommended.asian_handicap), `${ahReferenceSub}${ahMarketSub}`),
+          metric("大小球参考", metricHitText(recommended.over_under), `${metricHitSub(recommended.over_under, "高置信")} · 硬选 ${performance.over_under.correct}/${performance.over_under.samples}`),
+          metric("角球参考", metricHitText(recommended.corners), `${metricHitSub(recommended.corners, "高置信")}${cornerRecoSub}`),
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
@@ -1991,7 +1994,7 @@
           ${probability(match)}
           <div class="tabs">
             ${tabButton("handicap", "盘口矩阵")}
-            ${tabButton("advice", "投注参考")}
+            ${tabButton("advice", "盘口研究")}
             ${tabButton("script", "预测分析")}
             ${tabButton("events", "比分事件")}
             ${tabButton("stats", "技术统计")}
@@ -2098,7 +2101,7 @@
         const rows = bettingReferences(match);
         return `
           <div class="subpanel" style="margin-bottom:10px">
-            <span class="data-chip">模型投注参考 · 非投注建议</span>
+            <span class="data-chip">盘口研究参考 · 非投注建议</span>
             <p class="source-note">按市场类型分开展示：不让球胜平负是三结果，亚洲平手盘是平局退回，欧洲让球仍有胜/平/负三项。只展示概率、市场差异和模型倾向；不包含下注指令、仓位、Kelly 或收益承诺。</p>
           </div>
           <div class="grid">
@@ -3421,16 +3424,14 @@
         const homeLine = favoriteIsHome ? -1.5 : 1.5;
         const favoriteProb = handicapProbability(match, homeLine, favoriteSide).probability;
         const underdogProb = handicapProbability(match, homeLine, underdogSide).probability;
-        const favoritePick = { side: favoriteSide, line: -1.5, label: `${favorite} -1.5`, probability: favoriteProb };
-        const underdogPick = { side: underdogSide, line: 1.5, label: `${underdog} +1.5`, probability: underdogProb };
-        const pick = favoriteProb >= underdogProb ? favoritePick : underdogPick;
+        const pick = { side: favoriteSide, line: -1.5, label: `${favorite} -1.5`, probability: favoriteProb };
         return {
           ...pick,
           favorite,
           underdog,
           favoriteProb,
           underdogProb,
-          recommend: Number.isFinite(pick.probability) && pick.probability >= 0.70
+          recommend: Number.isFinite(favoriteProb) && favoriteProb >= 0.55
         };
       }
 
@@ -3475,7 +3476,7 @@
           ? `${pct(market.market_probabilities.home)} / ${pct(market.market_probabilities.draw)} / ${pct(market.market_probabilities.away)}`
           : fairText;
         const note = market.status === "available"
-          ? `${status} 不让球胜平负是三结果市场，平局独立结算；市场为 ${market.source}，${market.books} 家去水均值。现在只有最高项过门槛且无明显平局风险才给推荐。`
+          ? `${status} 不让球胜平负是三结果市场，平局独立结算；市场为 ${market.source}，${market.books} 家去水均值。现在只有最高项过门槛且无明显平局风险才列入高置信参考。`
           : `${status} 不让球胜平负是三结果市场，平局不是退回本金；暂无真实 1X2 市场，显示模型公平赔率。现在会过滤低置信方向。`;
         return {
           category: "基础胜平负",
@@ -3538,7 +3539,7 @@
           category: "亚洲让球",
           source_type: "博彩公司市场对比",
           confidence: "中",
-          pick: `模型高于市场：${best.side}`,
+          pick: `价格差异：${best.side}`,
           metric_a_label: "模型 edge",
           metric_a: signed(best.edge),
           metric_b_label: "覆盖 / 公平赔率",
@@ -3589,12 +3590,12 @@
           category: "Polymarket 线型参考",
           source_type: "模型独立推导",
           confidence: signal?.recommend ? "中" : "低",
-          pick: signal?.recommend ? `${signal.label} / ${secondaryPick}` : "观察：1.5 线未过 70% 门槛",
+          pick: signal?.recommend ? `${signal.label} / ${secondaryPick}` : "仅展示概率：受让 +1.5 不给方向",
           metric_a_label: `${favorite} -1.5 / -2.5`,
           metric_a: `${pct(minus15.probability)} / ${pct(minus25.probability)}`,
           metric_b_label: `${underdog} +1.5 / +2.5`,
           metric_b: `${pct(plus15.probability)} / ${pct(plus25.probability)}`,
-          note: `${matchTimingNote(match)} 这里只是适配 Polymarket 常见 1.5、2.5 线型；当前未读取对应合约价格，因此不是 Polymarket 定价信号。1.5 线低于 70% 时不硬推。`
+          note: `${matchTimingNote(match)} 这里只是适配 Polymarket 常见 1.5、2.5 线型；当前未读取对应合约价格，因此不是 Polymarket 定价信号。近期复盘显示弱队 +1.5 尾部风险被低估，暂不输出受让方向。`
         };
       }
 
@@ -3645,7 +3646,7 @@
           metric_b_label: market.status === "available" ? "市场去水 大/小" : "公平赔率 大/小",
           metric_b: market.status === "available" ? `${pct(marketOver)} / ${pct(marketUnder)}` : `${odds(fairOdds(over))} / ${odds(fairOdds(under))}`,
           note: market.status === "available"
-            ? `${matchTimingNote(match)} 基于比分矩阵总进球分布，并与 ${market.books} 家 O/U 2.5 市场去水均值对比；低于 60% 或 edge 低于 8% 时只展示不推荐。`
+            ? `${matchTimingNote(match)} 基于比分矩阵总进球分布，并与 ${market.books} 家 O/U 2.5 市场去水均值对比；低于 60% 或 edge 低于 8% 时只展示，不列入参考。`
             : `${matchTimingNote(match)} 基于比分矩阵总进球分布；未接入真实 O/U 2.5 市场 edge 时只显示模型方向，低于 60% 不硬推。`
         };
       }
@@ -4034,7 +4035,7 @@
         const oneXTwoMarket = match.market_summary?.one_x_two;
         const marketNote = oneXTwoMarket?.status === "available"
           ? `本场 1X2 已接 ${oneXTwoMarket.books} 家市场去水均值。`
-          : "本场暂无 1X2 市场快照，投注参考退回模型公平概率。";
+          : "本场暂无 1X2 市场快照，盘口研究退回模型公平概率。";
         return `
           <div class="subpanel" style="margin-top:10px">
             <span class="data-chip">概率模型方法</span>
@@ -4057,7 +4058,7 @@
                 <em>待积累</em>
               </div>
             </div>
-            <p class="source-note">${marketNote} 市场锚定主要用于冠军概率；单场投注参考优先做模型概率与合法市场差异对比。</p>
+            <p class="source-note">${marketNote} 市场锚定主要用于冠军概率；单场盘口研究优先做模型概率与合法市场差异对比。</p>
           </div>
         `;
       }
