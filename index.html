@@ -1925,19 +1925,20 @@
         const cornerReco = performance.corners_recommended;
         const ahMarketSub = ahMarket?.samples ? ` · 市场edge ${ahMarket.correct}/${ahMarket.samples}` : " · 市场edge无样本";
         const cornerRecoSub = cornerReco?.samples ? ` · 参考 ${cornerReco.correct}/${cornerReco.samples}` : " · 参考无样本";
+        const minReferenceSamples = 10;
         const ahReferenceSub = recommended.asian_handicap?.samples
-          ? metricHitSub(recommended.asian_handicap, "强队 -1.5")
+          ? metricHitSub(recommended.asian_handicap, "强队 -1.5", minReferenceSamples)
           : "暂停受让 +1.5，等待强队 -1.5 样本";
         document.getElementById("hero-confidence").textContent = pct(confidence);
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("高置信参考", metricHitText(recommendedCombined), recommendedCombined.samples ? `参考 ${recommendedCombined.correct}/${recommendedCombined.samples} · 低置信过滤` : "等待高置信样本"),
+          metric("高置信参考", metricHitText(recommendedCombined, minReferenceSamples), recommendedCombined.samples ? `参考 ${recommendedCombined.correct}/${recommendedCombined.samples} · 低置信过滤` : "等待高置信样本"),
           metric("全部硬选回测", metricHitText(combined), combined.samples ? `四类市场 ${combined.correct}/${combined.samples}` : "等待可结算样本"),
-          metric("不让球参考", metricHitText(recommended.one_x_two), `${metricHitSub(recommended.one_x_two, "高置信")} · 硬选 ${performance.one_x_two.correct}/${performance.one_x_two.samples}`),
-          metric("让球1.5参考", metricHitText(recommended.asian_handicap), `${ahReferenceSub}${ahMarketSub}`),
-          metric("大小球参考", metricHitText(recommended.over_under), `${metricHitSub(recommended.over_under, "高置信")} · 硬选 ${performance.over_under.correct}/${performance.over_under.samples}`),
-          metric("角球参考", metricHitText(recommended.corners), `${metricHitSub(recommended.corners, "高置信")}${cornerRecoSub}`),
+          metric("不让球参考", metricHitText(recommended.one_x_two, minReferenceSamples), `${metricHitSub(recommended.one_x_two, "高置信", minReferenceSamples)} · 硬选 ${performance.one_x_two.correct}/${performance.one_x_two.samples}`),
+          metric("让球1.5参考", metricHitText(recommended.asian_handicap, minReferenceSamples), `${ahReferenceSub}${ahMarketSub}`),
+          metric("大小球参考", metricHitText(recommended.over_under, minReferenceSamples), `${metricHitSub(recommended.over_under, "高置信", minReferenceSamples)} · 硬选 ${performance.over_under.correct}/${performance.over_under.samples}`),
+          metric("角球参考", metricHitText(recommended.corners, minReferenceSamples), `${metricHitSub(recommended.corners, "高置信", minReferenceSamples)}${cornerRecoSub}`),
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
@@ -4222,12 +4223,15 @@
         };
       }
 
-      function metricHitText(report) {
-        return report?.samples ? pct(report.hit_rate) : "-";
+      function metricHitText(report, minSamples = 1) {
+        if (!report?.samples) return "-";
+        if (Number(report.samples) < minSamples) return "样本不足";
+        return pct(report.hit_rate);
       }
 
-      function metricHitSub(report, label) {
+      function metricHitSub(report, label, minSamples = 1) {
         if (!report?.samples) return "等待可结算样本";
+        if (Number(report.samples) < minSamples) return `${label} ${report.correct}/${report.samples} · 样本不足，不计胜率`;
         return `${label} 命中 ${report.correct}/${report.samples}`;
       }
 
