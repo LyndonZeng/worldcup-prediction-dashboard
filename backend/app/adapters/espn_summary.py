@@ -75,7 +75,7 @@ def fetch_match_summary(event_id: str) -> dict[str, Any]:
         BASE_URL,
         params={"event": event_id},
         headers={"User-Agent": "wc26-dashboard/0.1"},
-        timeout=30,
+        timeout=10,
     )
 
 

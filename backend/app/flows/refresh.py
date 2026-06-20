@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 try:
@@ -109,7 +109,21 @@ def refresh_live_matches():
 @task
 def refresh_espn_summaries():
     live_rows = _read_json_optional("live_matches.json", [])
-    rows = fetch_match_summaries(live_rows)
+    existing_rows = _read_json_optional("espn_match_summaries.json", [])
+    existing_by_id = {row["match_id"]: row for row in existing_rows if row.get("match_id")}
+    rows_by_id = {}
+    rows_to_fetch = []
+    for live_row in live_rows:
+        if not (live_row.get("completed") or live_row.get("status_state") == "in"):
+            continue
+        existing = existing_by_id.get(live_row["match_id"])
+        if existing and existing.get("status") == "available" and live_row.get("completed"):
+            rows_by_id[live_row["match_id"]] = existing
+        else:
+            rows_to_fetch.append(live_row)
+    for row in fetch_match_summaries(rows_to_fetch):
+        rows_by_id[row["match_id"]] = row
+    rows = sorted(rows_by_id.values(), key=lambda row: row["match_number"])
     _write_json("espn_match_summaries.json", rows)
     available = [row for row in rows if row.get("status") == "available"]
     formations = sum(
@@ -146,10 +160,29 @@ def refresh_prediction_markets():
 
 @task
 def refresh_weather():
-    captured_at = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(timezone.utc)
+    captured_at = now.isoformat()
+    live_by_id = {
+        row["match_id"]: row
+        for row in _read_json_optional("live_matches.json", [])
+        if row.get("match_id")
+    }
+    existing_by_id = {
+        row["match_id"]: row
+        for row in _read_json_optional("live_weather.json", [])
+        if row.get("match_id")
+    }
     rows = []
     cache = {}
     for fixture in _read_json("fixtures.json"):
+        kickoff_at = _parse_utc_datetime(fixture["kickoff_utc"])
+        live_row = live_by_id.get(fixture["id"], {})
+        existing_row = existing_by_id.get(fixture["id"])
+        completed_or_old = bool(live_row.get("completed")) or kickoff_at < now - timedelta(hours=3)
+        near_forecast_window = now - timedelta(hours=3) <= kickoff_at <= now + timedelta(days=4)
+        if existing_row and (completed_or_old or not near_forecast_window):
+            rows.append(existing_row)
+            continue
         date = fixture["kickoff_utc"][:10]
         city = fixture["city"]
         key = (city, date)
@@ -187,6 +220,10 @@ def refresh_weather():
     _write_json("live_weather.json", rows)
     live_rows = sum(1 for row in rows if row["status"] == "forecast")
     return {"source": "open_meteo", "rows": len(rows), "forecast_rows": live_rows, "captured_at": captured_at}
+
+
+def _parse_utc_datetime(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
 @task

@@ -8,13 +8,13 @@
   {
     "source": "football-data.org",
     "status": "live",
-    "freshness": "72/104 matched World Cup rows at 2026-06-17T03:08:30.606034+00:00",
+    "freshness": "72/104 matched World Cup rows at 2026-06-19T12:12:14.601906+00:00",
     "purpose": "fixtures, scores and post-match validation"
   },
   {
     "source": "martj42 international_results",
     "status": "live",
-    "freshness": "49477 historical rows; 48 teams covered at 2026-06-17T03:11:17.271751+00:00",
+    "freshness": "49477 historical rows; 48 teams covered at 2026-06-19T12:13:08.064826+00:00",
     "purpose": "historical international results for form calibration"
   },
   {
@@ -26,7 +26,7 @@
   {
     "source": "Open-Meteo",
     "status": "live",
-    "freshness": "72/72 forecast rows at 2026-06-17T03:09:27.669742+00:00",
+    "freshness": "72/72 forecast rows at 2026-06-19T12:12:43.164749+00:00",
     "purpose": "weather, wind and heat context"
   },
   {
@@ -44,25 +44,25 @@
   {
     "source": "Polymarket Gamma",
     "status": "live",
-    "freshness": "60 markets at 2026-06-17T03:11:13.816753+00:00",
+    "freshness": "60 markets at 2026-06-19T12:13:06.674578+00:00",
     "purpose": "prediction market prices"
   },
   {
     "source": "The Odds API / TheStatsAPI",
     "status": "live",
-    "freshness": "3669/54 normalized odds rows at 2026-06-17T03:08:32.846267+00:00; stored snapshots 11483; written=True",
+    "freshness": "3086/44 normalized odds rows at 2026-06-19T12:12:17.090313+00:00; stored snapshots 17610; written=True",
     "purpose": "legal sportsbook odds and Asian handicap lines"
   },
   {
     "source": "ESPN public scoreboard",
     "status": "live_public",
-    "freshness": "72 matched events; ESPN 72; football-data 72; 19 completed; 0 in-play at 2026-06-17T03:08:44.727307+00:00",
+    "freshness": "72 matched events; ESPN 72; football-data 72; 28 completed; 0 in-play at 2026-06-19T12:12:30.736052+00:00",
     "purpose": "no-key live score, official score fallback and basic public match stats"
   },
   {
     "source": "ESPN public match summary",
     "status": "live_public",
-    "freshness": "19/19 match summaries; 38 formations; 418 starters at 2026-06-17T03:08:54.970843+00:00",
+    "freshness": "28/28 match summaries; 56 formations; 616 starters at 2026-06-19T11:50:47.586706+00:00",
     "purpose": "public formations, starters, substitutions, player event stats and expanded team stats"
   }
 ]

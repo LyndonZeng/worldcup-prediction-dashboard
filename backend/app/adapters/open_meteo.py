@@ -61,7 +61,7 @@ def fetch_daily_weather(latitude: float, longitude: float, date: str) -> dict[st
             "timezone": "auto",
         },
         headers={"User-Agent": "wc26-dashboard/0.1"},
-        timeout=30,
+        timeout=8,
     )
     return data.get("daily", {})
 

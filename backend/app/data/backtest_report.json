@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-06-17T03:11:33.709427+00:00",
+  "generated_at": "2026-06-20T04:53:55.286581+00:00",
   "status": "mvp_shadow_until_locked_closing_samples",
   "method": "Formal samples require pre-kickoff model snapshots and closing lines; shadow audit is not leak-safe.",
   "snapshot_counts": {
     "model_prediction_snapshots": 72,
-    "eligible_pre_kickoff_predictions": 53,
-    "closing_line_snapshots": 4020,
+    "eligible_pre_kickoff_predictions": 40,
+    "closing_line_snapshots": 4225,
     "true_closing_lines": 0,
-    "settled_matches": 19
+    "settled_matches": 28
   },
   "formal": {
     "eligible_samples": 0,
@@ -49,68 +49,68 @@
   "shadow": {
     "label": "\u516c\u5f0f\u70df\u6d4b\uff0c\u4e0d\u4f5c\u4e3a\u4e13\u4e1a\u6a21\u578b\u6210\u7ee9",
     "one_x_two": {
-      "samples": 19,
-      "hit_rate": 0.473684,
-      "correct": 9,
-      "brier": 0.203931,
-      "log_loss": 1.005554
+      "samples": 28,
+      "hit_rate": 0.571429,
+      "correct": 16,
+      "brier": 0.191722,
+      "log_loss": 0.954394
     },
     "asian_handicap": {
-      "selections": 9,
-      "roi": -0.753333,
-      "hit_rate": 0.111111,
+      "selections": 23,
+      "roi": -0.592609,
+      "hit_rate": 0.217391,
       "average_clv": null,
-      "unit_profit": -6.78,
-      "correct": 1,
+      "unit_profit": -13.63,
+      "correct": 5,
       "pushes": 0
     },
     "over_under": {
-      "samples": 19,
-      "hit_rate": 0.526316,
-      "correct": 10,
-      "brier": 0.25544,
-      "log_loss": 0.706652
+      "samples": 28,
+      "hit_rate": 0.5,
+      "correct": 14,
+      "brier": 0.261314,
+      "log_loss": 0.718321
     },
     "corners": {
-      "actual_event_samples": 19,
-      "selections": 17,
-      "hit_rate": 0.411765,
-      "correct": 7,
+      "actual_event_samples": 28,
+      "selections": 23,
+      "hit_rate": 0.391304,
+      "correct": 9,
       "line_summary": {
         "over_8.5": {
-          "selections": 6,
-          "correct": 4,
-          "hit_rate": 0.666667
+          "selections": 9,
+          "correct": 5,
+          "hit_rate": 0.555556
         },
         "over_9.5": {
-          "selections": 11,
-          "correct": 3,
-          "hit_rate": 0.272727
+          "selections": 14,
+          "correct": 4,
+          "hit_rate": 0.285714
         }
       }
     }
   },
   "model_comparison": {
     "status": "shadow_parallel_evaluation",
-    "samples": 19,
+    "samples": 28,
     "baseline": {
       "name": "Poisson baseline",
-      "samples": 19,
-      "hit_rate": 0.473684,
-      "correct": 9,
-      "brier": 0.203931,
-      "log_loss": 1.005554
+      "samples": 28,
+      "hit_rate": 0.571429,
+      "correct": 16,
+      "brier": 0.191722,
+      "log_loss": 0.954394
     },
     "dixon_coles": {
       "name": "Dixon-Coles low-score adjustment",
       "rho": -0.06,
-      "samples": 19,
-      "hit_rate": 0.473684,
-      "correct": 9,
-      "brier": 0.201995,
-      "log_loss": 0.992757
+      "samples": 28,
+      "hit_rate": 0.571429,
+      "correct": 16,
+      "brier": 0.190759,
+      "log_loss": 0.945906
     },
-    "delta_log_loss": -0.012797,
+    "delta_log_loss": -0.008488,
     "decision": "keep_poisson_baseline",
     "promotion_rule": "Only promote when walk-forward samples are meaningful and log-loss/Brier improve versus baseline."
   },
