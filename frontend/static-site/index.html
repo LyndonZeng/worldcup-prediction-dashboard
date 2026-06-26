@@ -1926,9 +1926,11 @@
         const ahMarketSub = ahMarket?.samples ? ` · 市场edge ${ahMarket.correct}/${ahMarket.samples}` : " · 市场edge无样本";
         const cornerRecoSub = cornerReco?.samples ? ` · 参考 ${cornerReco.correct}/${cornerReco.samples}` : " · 参考无样本";
         const minReferenceSamples = 10;
+        const ahAll = performance.asian_handicap;
+        const ahAllSub = ahAll?.samples ? metricHitSub(ahAll, "模型方向 -/+1.5", minReferenceSamples) : "等待让球 1.5 样本";
         const ahReferenceSub = recommended.asian_handicap?.samples
-          ? metricHitSub(recommended.asian_handicap, "强队 -1.5", minReferenceSamples)
-          : "暂停受让 +1.5，等待强队 -1.5 样本";
+          ? ` · 高置信 ${recommended.asian_handicap.correct}/${recommended.asian_handicap.samples}${sampleRisk(recommended.asian_handicap, minReferenceSamples)}`
+          : " · 高置信无样本";
         document.getElementById("hero-confidence").textContent = pct(confidence);
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
@@ -1936,7 +1938,7 @@
           metric("高置信参考", metricHitText(recommendedCombined), recommendedCombined.samples ? `参考 ${recommendedCombined.correct}/${recommendedCombined.samples} · 低置信过滤${sampleRisk(recommendedCombined, minReferenceSamples)}` : "等待高置信样本"),
           metric("全部硬选回测", metricHitText(combined), combined.samples ? `四类市场 ${combined.correct}/${combined.samples}` : "等待可结算样本"),
           metric("不让球参考", metricHitText(recommended.one_x_two), `${metricHitSub(recommended.one_x_two, "高置信", minReferenceSamples)} · 硬选 ${performance.one_x_two.correct}/${performance.one_x_two.samples}`),
-          metric("让球1.5参考", metricHitText(recommended.asian_handicap, minReferenceSamples), `${ahReferenceSub}${ahMarketSub}`),
+          metric("让球1.5回测", metricHitText(ahAll, minReferenceSamples), `${ahAllSub}${ahReferenceSub}${ahMarketSub}`),
           metric("大小球参考", metricHitText(recommended.over_under), `${metricHitSub(recommended.over_under, "高置信", minReferenceSamples)} · 硬选 ${performance.over_under.correct}/${performance.over_under.samples}`),
           metric("角球参考", metricHitText(recommended.corners), `${metricHitSub(recommended.corners, "高置信", minReferenceSamples)}${cornerRecoSub}`),
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
