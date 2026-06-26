@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-06-20T04:53:55.286581+00:00",
+  "generated_at": "2026-06-26T14:16:02.891699+00:00",
   "status": "mvp_shadow_until_locked_closing_samples",
   "method": "Formal samples require pre-kickoff model snapshots and closing lines; shadow audit is not leak-safe.",
   "snapshot_counts": {
     "model_prediction_snapshots": 72,
-    "eligible_pre_kickoff_predictions": 40,
-    "closing_line_snapshots": 4225,
+    "eligible_pre_kickoff_predictions": 12,
+    "closing_line_snapshots": 4592,
     "true_closing_lines": 0,
-    "settled_matches": 28
+    "settled_matches": 60
   },
   "formal": {
     "eligible_samples": 0,
@@ -49,68 +49,73 @@
   "shadow": {
     "label": "\u516c\u5f0f\u70df\u6d4b\uff0c\u4e0d\u4f5c\u4e3a\u4e13\u4e1a\u6a21\u578b\u6210\u7ee9",
     "one_x_two": {
-      "samples": 28,
-      "hit_rate": 0.571429,
-      "correct": 16,
-      "brier": 0.191722,
-      "log_loss": 0.954394
+      "samples": 60,
+      "hit_rate": 0.65,
+      "correct": 39,
+      "brier": 0.178731,
+      "log_loss": 0.90179
     },
     "asian_handicap": {
-      "selections": 23,
-      "roi": -0.592609,
-      "hit_rate": 0.217391,
+      "selections": 96,
+      "roi": -0.293021,
+      "hit_rate": 0.354167,
       "average_clv": null,
-      "unit_profit": -13.63,
-      "correct": 5,
-      "pushes": 0
+      "unit_profit": -28.13,
+      "correct": 34,
+      "pushes": 5
     },
     "over_under": {
-      "samples": 28,
-      "hit_rate": 0.5,
-      "correct": 14,
-      "brier": 0.261314,
-      "log_loss": 0.718321
+      "samples": 60,
+      "hit_rate": 0.483333,
+      "correct": 29,
+      "brier": 0.265569,
+      "log_loss": 0.726502
     },
     "corners": {
-      "actual_event_samples": 28,
-      "selections": 23,
-      "hit_rate": 0.391304,
-      "correct": 9,
+      "actual_event_samples": 60,
+      "selections": 49,
+      "hit_rate": 0.44898,
+      "correct": 22,
       "line_summary": {
         "over_8.5": {
-          "selections": 9,
-          "correct": 5,
-          "hit_rate": 0.555556
+          "selections": 14,
+          "correct": 10,
+          "hit_rate": 0.714286
         },
         "over_9.5": {
-          "selections": 14,
-          "correct": 4,
-          "hit_rate": 0.285714
+          "selections": 34,
+          "correct": 11,
+          "hit_rate": 0.323529
+        },
+        "under_8.5": {
+          "selections": 1,
+          "correct": 1,
+          "hit_rate": 1.0
         }
       }
     }
   },
   "model_comparison": {
     "status": "shadow_parallel_evaluation",
-    "samples": 28,
+    "samples": 60,
     "baseline": {
       "name": "Poisson baseline",
-      "samples": 28,
-      "hit_rate": 0.571429,
-      "correct": 16,
-      "brier": 0.191722,
-      "log_loss": 0.954394
+      "samples": 60,
+      "hit_rate": 0.65,
+      "correct": 39,
+      "brier": 0.178731,
+      "log_loss": 0.90179
     },
     "dixon_coles": {
       "name": "Dixon-Coles low-score adjustment",
       "rho": -0.06,
-      "samples": 28,
-      "hit_rate": 0.571429,
-      "correct": 16,
-      "brier": 0.190759,
-      "log_loss": 0.945906
+      "samples": 60,
+      "hit_rate": 0.65,
+      "correct": 39,
+      "brier": 0.179001,
+      "log_loss": 0.899655
     },
-    "delta_log_loss": -0.008488,
+    "delta_log_loss": -0.002135,
     "decision": "keep_poisson_baseline",
     "promotion_rule": "Only promote when walk-forward samples are meaningful and log-loss/Brier improve versus baseline."
   },
@@ -126,6 +131,13 @@
         "proxy_rows": 72
       },
       {
+        "category": "\u5df2\u56de\u6d4b\u56e0\u5b50",
+        "factor_count": 1,
+        "used_in_model_rows": 12,
+        "display_only_rows": 0,
+        "proxy_rows": 0
+      },
+      {
         "category": "\u5f85\u63a5\u5165",
         "factor_count": 1,
         "used_in_model_rows": 0,
@@ -134,9 +146,9 @@
       },
       {
         "category": "\u900f\u660e\u5148\u9a8c",
-        "factor_count": 9,
+        "factor_count": 10,
         "used_in_model_rows": 648,
-        "display_only_rows": 0,
+        "display_only_rows": 60,
         "proxy_rows": 144
       }
     ]

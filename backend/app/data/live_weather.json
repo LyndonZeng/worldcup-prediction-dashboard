@@ -907,12 +907,12 @@
     "forecast_date": "2026-06-26",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 22.0,
-    "humidity_pct": 65.0,
-    "wind_kph": 15.6,
-    "precipitation_mm": 0.0,
-    "condition": "cloudy"
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 21.3,
+    "humidity_pct": 80.0,
+    "wind_kph": 15.0,
+    "precipitation_mm": 13.4,
+    "condition": "heavy rain"
   },
   {
     "match_id": "wc26-062",
@@ -922,12 +922,12 @@
     "forecast_date": "2026-06-26",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 20.7,
-    "humidity_pct": 61.0,
-    "wind_kph": 10.5,
-    "precipitation_mm": 0.0,
-    "condition": "cloudy"
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 16.9,
+    "humidity_pct": 93.0,
+    "wind_kph": 19.4,
+    "precipitation_mm": 18.3,
+    "condition": "heavy rain"
   },
   {
     "match_id": "wc26-063",
@@ -937,10 +937,10 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
     "temperature_c": 29.5,
-    "humidity_pct": 67.0,
-    "wind_kph": 20.1,
+    "humidity_pct": 68.0,
+    "wind_kph": 22.0,
     "precipitation_mm": 0.0,
     "condition": "storm risk"
   },
@@ -952,11 +952,11 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 18.0,
-    "humidity_pct": 88.0,
-    "wind_kph": 8.8,
-    "precipitation_mm": 5.8,
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 19.6,
+    "humidity_pct": 81.0,
+    "wind_kph": 10.6,
+    "precipitation_mm": 0.6,
     "condition": "rain risk"
   },
   {
@@ -967,12 +967,12 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 17.0,
-    "humidity_pct": 66.0,
-    "wind_kph": 13.4,
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 15.3,
+    "humidity_pct": 74.0,
+    "wind_kph": 14.2,
     "precipitation_mm": 0.0,
-    "condition": "clear"
+    "condition": "cloudy"
   },
   {
     "match_id": "wc26-066",
@@ -982,12 +982,12 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 17.6,
-    "humidity_pct": 59.0,
-    "wind_kph": 15.4,
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 14.9,
+    "humidity_pct": 72.0,
+    "wind_kph": 15.8,
     "precipitation_mm": 0.0,
-    "condition": "clear"
+    "condition": "cloudy"
   },
   {
     "match_id": "wc26-067",
@@ -997,12 +997,12 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 26.9,
-    "humidity_pct": 45.0,
-    "wind_kph": 15.7,
-    "precipitation_mm": 0.0,
-    "condition": "cloudy"
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 23.2,
+    "humidity_pct": 71.0,
+    "wind_kph": 9.3,
+    "precipitation_mm": 0.4,
+    "condition": "rain risk"
   },
   {
     "match_id": "wc26-068",
@@ -1012,10 +1012,10 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 27.4,
-    "humidity_pct": 44.0,
-    "wind_kph": 12.7,
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 24.0,
+    "humidity_pct": 74.0,
+    "wind_kph": 11.8,
     "precipitation_mm": 0.0,
     "condition": "cloudy"
   },
@@ -1027,11 +1027,11 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 30.2,
-    "humidity_pct": 59.0,
-    "wind_kph": 23.0,
-    "precipitation_mm": 2.1,
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 28.2,
+    "humidity_pct": 77.0,
+    "wind_kph": 18.4,
+    "precipitation_mm": 1.1,
     "condition": "rain risk"
   },
   {
@@ -1042,12 +1042,12 @@
     "forecast_date": "2026-06-27",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 28.6,
-    "humidity_pct": 55.0,
-    "wind_kph": 9.6,
-    "precipitation_mm": 0.6,
-    "condition": "rain risk"
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 27.7,
+    "humidity_pct": 67.0,
+    "wind_kph": 21.9,
+    "precipitation_mm": 0.0,
+    "condition": "cloudy"
   },
   {
     "match_id": "wc26-071",
@@ -1057,12 +1057,12 @@
     "forecast_date": "2026-06-28",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
-    "temperature_c": 26.5,
-    "humidity_pct": 77.0,
-    "wind_kph": 20.9,
-    "precipitation_mm": 0.6,
-    "condition": "rain risk"
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
+    "temperature_c": 27.2,
+    "humidity_pct": 72.0,
+    "wind_kph": 30.1,
+    "precipitation_mm": 0.0,
+    "condition": "storm risk"
   },
   {
     "match_id": "wc26-072",
@@ -1072,11 +1072,11 @@
     "forecast_date": "2026-06-28",
     "source": "Open-Meteo Forecast API",
     "status": "forecast",
-    "captured_at": "2026-06-17T03:09:27.669742+00:00",
+    "captured_at": "2026-06-26T14:09:55.342891+00:00",
     "temperature_c": 30.8,
     "humidity_pct": 54.0,
-    "wind_kph": 21.7,
-    "precipitation_mm": 0.1,
-    "condition": "rain risk"
+    "wind_kph": 29.2,
+    "precipitation_mm": 0.0,
+    "condition": "clear"
   }
 ]

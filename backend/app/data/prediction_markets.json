@@ -6,21 +6,21 @@
     "slug": "will-spain-win-the-2026-fifa-world-cup-963",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 53880995.760663,
-    "liquidity": 7839269.4865,
+    "volume": 63652974.67485,
+    "liquidity": 9917634.18259,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:12.210291Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.1365
+        "price": 0.1375
       },
       {
         "name": "No",
-        "price": 0.8635
+        "price": 0.8625
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -29,10 +29,10 @@
     "slug": "will-new-zealand-win-the-2026-fifa-world-cup-635",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 46902741.662645,
-    "liquidity": 25977447.95142,
+    "volume": 47523246.662645,
+    "liquidity": 31837124.32808,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:45.105368Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -43,7 +43,7 @@
         "price": 0.9995
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -52,10 +52,10 @@
     "slug": "will-switzerland-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 57524315.830914,
-    "liquidity": 4105668.81927,
+    "volume": 70981303.337043,
+    "liquidity": 4588576.1397,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:12.261607Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -66,7 +66,7 @@
         "price": 0.9915
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -75,21 +75,21 @@
     "slug": "will-england-win-the-2026-fifa-world-cup-937",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 46609407.833341,
-    "liquidity": 5968284.66569,
+    "volume": 57997951.4023,
+    "liquidity": 7009561.26925,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:11:42.901794Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.1285
+        "price": 0.1015
       },
       {
         "name": "No",
-        "price": 0.8715
+        "price": 0.8985
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -112,7 +112,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -121,21 +121,21 @@
     "slug": "will-france-win-the-2026-fifa-world-cup-924",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 62241628.376838,
-    "liquidity": 6209383.02221,
+    "volume": 73039806.654132,
+    "liquidity": 8682211.41919,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:47.566871Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.1845
+        "price": 0.1895
       },
       {
         "name": "No",
-        "price": 0.8155
+        "price": 0.8105
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -144,21 +144,21 @@
     "slug": "will-south-korea-win-the-2026-fifa-world-cup-485",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 84777416.523127,
-    "liquidity": 6951262.61719,
+    "volume": 105691880.562404,
+    "liquidity": 7479383.93749,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:22.055002Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0035
+        "price": 0.0005
       },
       {
         "name": "No",
-        "price": 0.9965
+        "price": 0.9995
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -167,21 +167,21 @@
     "slug": "will-haiti-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 32956991.54182,
-    "liquidity": 26639706.65741,
+    "volume": 33265926.54182,
+    "liquidity": null,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:10.862726Z",
+    "updated_at": "2026-06-21T03:46:03.787562Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0005
+        "price": 0.0
       },
       {
         "name": "No",
-        "price": 0.9995
+        "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -190,21 +190,21 @@
     "slug": "will-brazil-win-the-2026-fifa-world-cup-183",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 44575725.932076,
-    "liquidity": 6324865.70274,
+    "volume": 57603152.045622,
+    "liquidity": 5651624.4993,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:59.424916Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0665
+        "price": 0.0555
       },
       {
         "name": "No",
-        "price": 0.9335
+        "price": 0.9445
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -213,21 +213,21 @@
     "slug": "will-jordan-win-the-2026-fifa-world-cup-233",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 32780584.861883,
-    "liquidity": 26277830.37805,
+    "volume": 33082576.341883,
+    "liquidity": null,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:58.368087Z",
+    "updated_at": "2026-06-24T02:09:49.817852Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0005
+        "price": 0.0
       },
       {
         "name": "No",
-        "price": 0.9995
+        "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -236,21 +236,21 @@
     "slug": "will-curaao-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 43838362.746916,
-    "liquidity": 24924065.54548,
+    "volume": 44007492.746916,
+    "liquidity": null,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:01.600709Z",
+    "updated_at": "2026-06-26T14:08:05.853523Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0005
+        "price": 0.0
       },
       {
         "name": "No",
-        "price": 0.9995
+        "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -259,21 +259,21 @@
     "slug": "will-argentina-win-the-2026-fifa-world-cup-245",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 60922666.52282,
-    "liquidity": 6896178.01302,
+    "volume": 73833698.348385,
+    "liquidity": 8655545.86293,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:04.793906Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.1175
+        "price": 0.1515
       },
       {
         "name": "No",
-        "price": 0.8825
+        "price": 0.8485
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -282,21 +282,21 @@
     "slug": "will-germany-win-the-2026-fifa-world-cup-467",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 54656144.115658,
-    "liquidity": 4306024.06437,
+    "volume": 67560234.525596,
+    "liquidity": 2271044.74478,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:45.405112Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0605
+        "price": 0.0465
       },
       {
         "name": "No",
-        "price": 0.9395
+        "price": 0.9535
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -305,10 +305,10 @@
     "slug": "will-colombia-win-the-2026-fifa-world-cup-734",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 57235586.421207,
-    "liquidity": 4409312.51736,
+    "volume": 72615628.461717,
+    "liquidity": 2889809.41199,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:49.398199Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -319,7 +319,7 @@
         "price": 0.9835
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -328,10 +328,10 @@
     "slug": "will-iran-win-the-2026-fifa-world-cup-788",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 56319180.02679,
-    "liquidity": 17172156.28218,
+    "volume": 61458632.21679,
+    "liquidity": 12992004.64209,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:56.786518Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -342,7 +342,7 @@
         "price": 0.9995
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -351,21 +351,21 @@
     "slug": "will-portugal-win-the-2026-fifa-world-cup-912",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 56243329.459253,
-    "liquidity": 4502728.36951,
+    "volume": 69085482.240764,
+    "liquidity": 4733151.75953,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:49.398215Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0735
+        "price": 0.0835
       },
       {
         "name": "No",
-        "price": 0.9265
+        "price": 0.9165
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -374,10 +374,10 @@
     "slug": "will-ghana-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 53393339.43144,
-    "liquidity": 18964539.36009,
+    "volume": 65690370.430623,
+    "liquidity": 17847540.62598,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:06.54098Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -388,7 +388,7 @@
         "price": 0.9985
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -397,21 +397,21 @@
     "slug": "will-netherlands-win-the-2026-fifa-world-cup-739",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 53873910.204128,
-    "liquidity": 3012402.90775,
+    "volume": 67674719.740156,
+    "liquidity": 3645493.59251,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:06.422739Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0395
+        "price": 0.0575
       },
       {
         "name": "No",
-        "price": 0.9605
+        "price": 0.9425
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -420,10 +420,10 @@
     "slug": "will-algeria-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 62830964.297215,
-    "liquidity": 14329016.43013,
+    "volume": 71709376.357215,
+    "liquidity": 17198189.57649,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:00.573709Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -434,7 +434,7 @@
         "price": 0.9995
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -443,21 +443,21 @@
     "slug": "will-bosnia-herzegovina-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 46137428.665718,
-    "liquidity": 10546635.62208,
+    "volume": 56243979.822718,
+    "liquidity": 14007352.11678,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:55.737679Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0005
+        "price": 0.0015
       },
       {
         "name": "No",
-        "price": 0.9995
+        "price": 0.9985
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -480,7 +480,7 @@
         "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -489,21 +489,21 @@
     "slug": "will-usa-win-the-2026-fifa-world-cup-467",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 79705769.943903,
-    "liquidity": 2266173.48486,
+    "volume": 102709636.412358,
+    "liquidity": 3118014.63965,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:48.131003Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0245
+        "price": 0.0305
       },
       {
         "name": "No",
-        "price": 0.9755
+        "price": 0.9695
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -512,21 +512,21 @@
     "slug": "will-canada-win-the-2026-fifa-world-cup-755",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 61256496.803053,
-    "liquidity": 9156949.14945,
+    "volume": 75572939.39937,
+    "liquidity": 14887762.18613,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:05.036579Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0035
+        "price": 0.0025
       },
       {
         "name": "No",
-        "price": 0.9965
+        "price": 0.9975
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -535,21 +535,21 @@
     "slug": "will-turkiye-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 57729823.19259,
-    "liquidity": 4494182.72652,
+    "volume": 61684097.108673,
+    "liquidity": null,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:59.686625Z",
+    "updated_at": "2026-06-21T06:52:17.735712Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0045
+        "price": 0.0
       },
       {
         "name": "No",
-        "price": 0.9955
+        "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -558,21 +558,21 @@
     "slug": "will-uruguay-win-the-2026-fifa-world-cup-932",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 59596928.512435,
-    "liquidity": 11852292.31694,
+    "volume": 76055044.671543,
+    "liquidity": 9107909.00888,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:51.273313Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0055
+        "price": 0.0015
       },
       {
         "name": "No",
-        "price": 0.9945
+        "price": 0.9985
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -595,7 +595,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -604,21 +604,21 @@
     "slug": "will-mexico-win-the-2026-fifa-world-cup-529",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 76110714.261469,
-    "liquidity": 7338256.6127,
+    "volume": 90149161.24796,
+    "liquidity": 8322412.15275,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:09.899396Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0155
+        "price": 0.0125
       },
       {
         "name": "No",
-        "price": 0.9845
+        "price": 0.9875
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -627,10 +627,10 @@
     "slug": "will-paraguay-win-the-2026-fifa-world-cup-967",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 61234361.906987,
-    "liquidity": 13774056.97965,
+    "volume": 73332360.682465,
+    "liquidity": 7609380.11537,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:20.063754Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -641,7 +641,7 @@
         "price": 0.9985
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -650,21 +650,21 @@
     "slug": "will-scotland-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 60714342.100747,
-    "liquidity": 14070063.65655,
+    "volume": 67918488.50193,
+    "liquidity": 16659496.39077,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:56.039869Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0015
+        "price": 0.0005
       },
       {
         "name": "No",
-        "price": 0.9985
+        "price": 0.9995
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -687,7 +687,7 @@
         "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -696,21 +696,21 @@
     "slug": "will-japan-win-the-2026-fifa-world-cup-112",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 59044579.957347,
-    "liquidity": 3110750.22253,
+    "volume": 80357426.883375,
+    "liquidity": 1642754.31609,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:07.514442Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0155
+        "price": 0.0135
       },
       {
         "name": "No",
-        "price": 0.9845
+        "price": 0.9865
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -719,21 +719,21 @@
     "slug": "will-norway-win-the-2026-fifa-world-cup-893",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 55531761.516182,
-    "liquidity": 3877692.81919,
+    "volume": 71047064.819991,
+    "liquidity": 1656473.47148,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:11.472178Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0255
+        "price": 0.0315
       },
       {
         "name": "No",
-        "price": 0.9745
+        "price": 0.9685
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -756,7 +756,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -779,7 +779,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -788,21 +788,21 @@
     "slug": "will-tunisia-win-the-2026-fifa-world-cup-165",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 36409321.373686,
-    "liquidity": 24085529.81776,
+    "volume": 36470355.983686,
+    "liquidity": null,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:52.802257Z",
+    "updated_at": "2026-06-22T09:00:47.541264Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0005
+        "price": 0.0
       },
       {
         "name": "No",
-        "price": 0.9995
+        "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -825,7 +825,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -834,148 +834,10 @@
     "slug": "will-ecuador-win-the-2026-fifa-world-cup-986",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 60500000.625661,
-    "liquidity": 7831596.30599,
+    "volume": 81846899.898115,
+    "liquidity": 3052161.59994,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:44.456233Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0045
-      },
-      {
-        "name": "No",
-        "price": 0.9955
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558960",
-    "question": "Will Uzbekistan win the 2026 FIFA World Cup?",
-    "slug": "will-uzbekistan-win-the-2026-fifa-world-cup-773",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 61311972.538418,
-    "liquidity": 22135299.03141,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:59.755218Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0005
-      },
-      {
-        "name": "No",
-        "price": 0.9995
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558963",
-    "question": "Will Morocco win the 2026 FIFA World Cup?",
-    "slug": "will-morocco-win-the-2026-fifa-world-cup-464",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 61407074.614321,
-    "liquidity": 1301749.83962,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:11.579771Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0275
-      },
-      {
-        "name": "No",
-        "price": 0.9725
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558979",
-    "question": "Will Panama win the 2026 FIFA World Cup?",
-    "slug": "will-team-z-win-the-2026-fifa-world-cup-316",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 20028210.065757,
-    "liquidity": 27043175.21038,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:54.223783Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0005
-      },
-      {
-        "name": "No",
-        "price": 0.9995
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558982",
-    "question": "Will Iraq win the 2026 FIFA World Cup?",
-    "slug": "will-iraq-win-the-2026-fifa-world-cup",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 30378198.092711,
-    "liquidity": 26885045.64087,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:47.049451Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0005
-      },
-      {
-        "name": "No",
-        "price": 0.9995
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558964",
-    "question": "Will South Africa win the 2026 FIFA World Cup?",
-    "slug": "will-south-africa-win-the-2026-fifa-world-cup",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 39186986.217894,
-    "liquidity": 22321773.51442,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:09.872289Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0005
-      },
-      {
-        "name": "No",
-        "price": 0.9995
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558965",
-    "question": "Will Senegal win the 2026 FIFA World Cup?",
-    "slug": "will-senegal-win-the-2026-fifa-world-cup",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 53810642.784937,
-    "liquidity": 8775455.98126,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:49.16464Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -986,65 +848,19 @@
         "price": 0.9945
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
-    "market_id": "558966",
-    "question": "Will Ivory Coast win the 2026 FIFA World Cup?",
-    "slug": "will-ivory-coast-win-the-2026-fifa-world-cup",
+    "market_id": "558960",
+    "question": "Will Uzbekistan win the 2026 FIFA World Cup?",
+    "slug": "will-uzbekistan-win-the-2026-fifa-world-cup-773",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 71628655.000855,
-    "liquidity": 9737989.88472,
+    "volume": 61505385.738418,
+    "liquidity": 28442074.95457,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:10.563186Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0045
-      },
-      {
-        "name": "No",
-        "price": 0.9955
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558981",
-    "question": "Will Congo DR win the 2026 FIFA World Cup?",
-    "slug": "will-congo-dr-win-the-2026-fifa-world-cup",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 76485397.074072,
-    "liquidity": 22231500.11857,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:01.624688Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0015
-      },
-      {
-        "name": "No",
-        "price": 0.9985
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558970",
-    "question": "Will Cape Verde win the 2026 FIFA World Cup?",
-    "slug": "will-cape-verde-win-the-2026-fifa-world-cup",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 49087714.457164,
-    "liquidity": 20437102.51946,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:00.298375Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -1055,65 +871,19 @@
         "price": 0.9995
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
-    "market_id": "558984",
-    "question": "Will Czechia win the 2026 FIFA World Cup?",
-    "slug": "will-czechia-win-the-2026-fifa-world-cup",
+    "market_id": "558963",
+    "question": "Will Morocco win the 2026 FIFA World Cup?",
+    "slug": "will-morocco-win-the-2026-fifa-world-cup-464",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 56923252.073016,
-    "liquidity": 14909560.30246,
+    "volume": 78090170.366037,
+    "liquidity": 1545842.38226,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:47.541371Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0005
-      },
-      {
-        "name": "No",
-        "price": 0.9995
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558971",
-    "question": "Will Qatar win the 2026 FIFA World Cup?",
-    "slug": "will-qatar-win-the-2026-fifa-world-cup",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 45056852.908332,
-    "liquidity": 24636920.74789,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:18.325392Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0005
-      },
-      {
-        "name": "No",
-        "price": 0.9995
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558946",
-    "question": "Will Belgium win the 2026 FIFA World Cup?",
-    "slug": "will-belgium-win-the-2026-fifa-world-cup-358",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 57837702.238434,
-    "liquidity": 6083172.12212,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:58.23825Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -1124,42 +894,42 @@
         "price": 0.9845
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
-    "market_id": "558958",
-    "question": "Will Australia win the 2026 FIFA World Cup?",
-    "slug": "will-australia-win-the-2026-fifa-world-cup-816",
+    "market_id": "558979",
+    "question": "Will Panama win the 2026 FIFA World Cup?",
+    "slug": "will-team-z-win-the-2026-fifa-world-cup-316",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 69348085.836406,
-    "liquidity": 16501296.07009,
+    "volume": 20049174.385757,
+    "liquidity": null,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:23.797262Z",
+    "updated_at": "2026-06-24T13:35:48.171071Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0045
+        "price": 0.0
       },
       {
         "name": "No",
-        "price": 0.9955
+        "price": 1.0
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
-    "market_id": "558972",
-    "question": "Will Saudi Arabia win the 2026 FIFA World Cup?",
-    "slug": "will-saudi-arabia-win-the-2026-fifa-world-cup",
+    "market_id": "558982",
+    "question": "Will Iraq win the 2026 FIFA World Cup?",
+    "slug": "will-iraq-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 56331714.202884,
-    "liquidity": 16102292.67065,
+    "volume": 30615070.592711,
+    "liquidity": 32800767.66502,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:21.570487Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -1170,7 +940,237 @@
         "price": 0.9995
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558964",
+    "question": "Will South Africa win the 2026 FIFA World Cup?",
+    "slug": "will-south-africa-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 44720108.587894,
+    "liquidity": 22975838.22607,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0005
+      },
+      {
+        "name": "No",
+        "price": 0.9995
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558965",
+    "question": "Will Senegal win the 2026 FIFA World Cup?",
+    "slug": "will-senegal-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 63514053.12244,
+    "liquidity": 6776686.88951,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0025
+      },
+      {
+        "name": "No",
+        "price": 0.9975
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558966",
+    "question": "Will Ivory Coast win the 2026 FIFA World Cup?",
+    "slug": "will-ivory-coast-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 97180621.015924,
+    "liquidity": 6652685.48121,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0035
+      },
+      {
+        "name": "No",
+        "price": 0.9965
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558981",
+    "question": "Will Congo DR win the 2026 FIFA World Cup?",
+    "slug": "will-congo-dr-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 86369378.812072,
+    "liquidity": 20929630.20306,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0005
+      },
+      {
+        "name": "No",
+        "price": 0.9995
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558970",
+    "question": "Will Cape Verde win the 2026 FIFA World Cup?",
+    "slug": "will-cape-verde-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 80200959.252578,
+    "liquidity": 2741421.84804,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0005
+      },
+      {
+        "name": "No",
+        "price": 0.9995
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558984",
+    "question": "Will Czechia win the 2026 FIFA World Cup?",
+    "slug": "will-czechia-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 57485266.933016,
+    "liquidity": null,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T01:30:57.371272Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0
+      },
+      {
+        "name": "No",
+        "price": 1.0
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558946",
+    "question": "Will Belgium win the 2026 FIFA World Cup?",
+    "slug": "will-belgium-win-the-2026-fifa-world-cup-358",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 75513022.363613,
+    "liquidity": 5753465.61095,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0125
+      },
+      {
+        "name": "No",
+        "price": 0.9875
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558958",
+    "question": "Will Australia win the 2026 FIFA World Cup?",
+    "slug": "will-australia-win-the-2026-fifa-world-cup-816",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 75419999.910115,
+    "liquidity": 13545059.18476,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0015
+      },
+      {
+        "name": "No",
+        "price": 0.9985
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558972",
+    "question": "Will Saudi Arabia win the 2026 FIFA World Cup?",
+    "slug": "will-saudi-arabia-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 57216986.512884,
+    "liquidity": 20960087.34611,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0005
+      },
+      {
+        "name": "No",
+        "price": 0.9995
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558971",
+    "question": "Will Qatar win the 2026 FIFA World Cup?",
+    "slug": "will-qatar-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 45097302.848332,
+    "liquidity": null,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-25T21:39:02.337845Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0
+      },
+      {
+        "name": "No",
+        "price": 1.0
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1193,7 +1193,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1202,10 +1202,33 @@
     "slug": "will-austria-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 60180453.942326,
-    "liquidity": 5933751.88496,
+    "volume": 68768451.863704,
+    "liquidity": 6555997.4847,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:44.464476Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
+    "outcomes": [
+      {
+        "name": "Yes",
+        "price": 0.0025
+      },
+      {
+        "name": "No",
+        "price": 0.9975
+      }
+    ],
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
+  },
+  {
+    "source": "Polymarket Gamma",
+    "market_id": "558976",
+    "question": "Will Croatia win the 2026 FIFA World Cup?",
+    "slug": "will-croatia-win-the-2026-fifa-world-cup",
+    "url": "https://polymarket.com/event/world-cup-winner",
+    "category": null,
+    "volume": 81654737.340982,
+    "liquidity": 5934062.50159,
+    "end_date": "2026-07-20T00:00:00Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -1216,30 +1239,7 @@
         "price": 0.9955
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
-  },
-  {
-    "source": "Polymarket Gamma",
-    "market_id": "558976",
-    "question": "Will Croatia win the 2026 FIFA World Cup?",
-    "slug": "will-croatia-win-the-2026-fifa-world-cup",
-    "url": "https://polymarket.com/event/world-cup-winner",
-    "category": null,
-    "volume": 63478290.12732,
-    "liquidity": 5195026.69142,
-    "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:10:22.258334Z",
-    "outcomes": [
-      {
-        "name": "Yes",
-        "price": 0.0065
-      },
-      {
-        "name": "No",
-        "price": 0.9935
-      }
-    ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1262,7 +1262,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1271,10 +1271,10 @@
     "slug": "will-egypt-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 66059278.891283,
-    "liquidity": 9308457.5289,
+    "volume": 80737332.243836,
+    "liquidity": 14403837.7631,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:47.25366Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
@@ -1285,7 +1285,7 @@
         "price": 0.9975
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1294,21 +1294,21 @@
     "slug": "will-sweden-win-the-2026-fifa-world-cup",
     "url": "https://polymarket.com/event/world-cup-winner",
     "category": null,
-    "volume": 48550713.747411,
-    "liquidity": 11205456.27813,
+    "volume": 63958446.25995,
+    "liquidity": 7178358.67958,
     "end_date": "2026-07-20T00:00:00Z",
-    "updated_at": "2026-06-19T12:09:55.029752Z",
+    "updated_at": "2026-06-26T14:07:59.419073Z",
     "outcomes": [
       {
         "name": "Yes",
-        "price": 0.0055
+        "price": 0.0025
       },
       {
         "name": "No",
-        "price": 0.9945
+        "price": 0.9975
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1331,7 +1331,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1354,7 +1354,7 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   },
   {
     "source": "Polymarket Gamma",
@@ -1377,6 +1377,6 @@
         "price": null
       }
     ],
-    "captured_at": "2026-06-19T12:13:06.674578+00:00"
+    "captured_at": "2026-06-26T14:10:14.794638+00:00"
   }
 ]

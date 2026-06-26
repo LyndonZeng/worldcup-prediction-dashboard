@@ -400,7 +400,7 @@ def write_static_payload() -> None:
         build_closing_line_snapshots,
         build_model_prediction_snapshots,
     )
-    from app.services.predictions import all_matches, model_run, tournament_probabilities
+    from app.services.predictions import all_matches, model_run, tournament_probabilities, _tournament_goal_calibration
 
     data_store.teams.cache_clear()
     data_store.fixtures.cache_clear()
@@ -414,6 +414,7 @@ def write_static_payload() -> None:
     data_store.closing_line_snapshots.cache_clear()
     data_store.backtest_report.cache_clear()
     data_store.historical_results_summary.cache_clear()
+    _tournament_goal_calibration.cache_clear()
     matches = all_matches()
     model_prediction_snapshots = build_model_prediction_snapshots(matches, data_store.source_health())
     closing_line_snapshots = build_closing_line_snapshots(data_store.fixtures(), data_store.odds_snapshots())

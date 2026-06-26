@@ -5,6 +5,7 @@ import math
 import random
 import unicodedata
 from datetime import datetime, timezone
+from functools import lru_cache
 from statistics import mean
 
 from . import data_store
@@ -13,7 +14,7 @@ from .odds import devig_three_way, devig_two_way, model_lean
 from .score_model import MatchAdjustments, MatchContext, poisson_pmf, predict_match
 
 DEFAULT_HANDICAP_LINES = [-2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5]
-MODEL_VERSION = "wc26-v0.6-process-squad-style"
+MODEL_VERSION = "wc26-v0.7-live-goal-scale-calibration"
 TITLE_MARKET_ANCHOR_WEIGHT = 0.55
 MONTE_CARLO_RUNS = 4000
 MONTE_CARLO_SEED = 20260612
@@ -1815,7 +1816,7 @@ def _risk_register(home, away, fixture: dict, prediction: dict, factor_breakdown
     return rows
 
 
-def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
+def _factor_breakdown(home, away, fixture: dict, context, include_calibration: bool = True) -> list[dict]:
     elo_edge = max(-1, min(1, (home.elo - away.elo) / 240))
     attack_edge = max(-1, min(1, (home.attack - away.attack) * 4))
     defence_edge = max(-1, min(1, (home.defence - away.defence) * 4))
@@ -1826,6 +1827,13 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
     squad_depth_edge = _squad_depth_edge(home, away)
     style_matchup_edge = _style_matchup_edge(home, away, fixture, context)
     weather_total_goal_drag = round(1 - _weather_total_goal_multiplier(fixture), 3)
+    tournament_calibration = _tournament_goal_calibration(fixture["id"]) if include_calibration else {
+        "multiplier": 1.0,
+        "samples": 0,
+        "observed_avg_goals": None,
+        "expected_avg_goals": None,
+        "applied": False,
+    }
     history = data_store.historical_results_summary()
     weather = _weather_context(fixture)
     return [
@@ -1884,6 +1892,23 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
             "backtest_status": "pending_weather_walk_forward",
             "source": weather["source"],
             "data_quality": "live_forecast" if weather["status"] == "forecast" else "fallback_climate",
+        },
+        {
+            "factor": "Tournament goal calibration",
+            "home_edge": 0.0,
+            "effect": {
+                "total_goal_multiplier": round(tournament_calibration["multiplier"], 3),
+                "samples": tournament_calibration["samples"],
+                "observed_avg_goals": tournament_calibration["observed_avg_goals"],
+                "expected_avg_goals": tournament_calibration["expected_avg_goals"],
+            },
+            "weight": 0.05,
+            "used_in_model": bool(tournament_calibration["applied"]),
+            "status": "live_goal_scale_calibration" if tournament_calibration["applied"] else "not_applied",
+            "category": "已回测因子" if tournament_calibration["applied"] else "透明先验",
+            "backtest_status": "in_tournament_calibration_not_closing_line_validated",
+            "source": "completed match results vs pre-match expected-goal scale",
+            "data_quality": "verified_results" if tournament_calibration["samples"] else "insufficient_sample",
         },
         {
             "factor": "Squad availability prior",
@@ -1954,7 +1979,14 @@ def _factor_breakdown(home, away, fixture: dict, context) -> list[dict]:
     ]
 
 
-def _model_adjustments(home, away, fixture: dict, context, factor_breakdown: list[dict]) -> MatchAdjustments:
+def _model_adjustments(
+    home,
+    away,
+    fixture: dict,
+    context,
+    factor_breakdown: list[dict],
+    apply_goal_calibration: bool = True,
+) -> MatchAdjustments:
     edges = {row["factor"]: row["home_edge"] for row in factor_breakdown}
     contextual_edge = (
         edges["Fixture / venue / travel"] * 0.34
@@ -1968,18 +2000,85 @@ def _model_adjustments(home, away, fixture: dict, context, factor_breakdown: lis
     away_fatigue = _fatigue_goal_multiplier(away, fixture)
     home_goal_mult = _clamp(math.exp(0.34 * contextual_edge) * home_fatigue, 0.76, 1.28)
     away_goal_mult = _clamp(math.exp(-0.34 * contextual_edge) * away_fatigue, 0.76, 1.28)
+    calibration_mult = _tournament_goal_calibration(fixture["id"])["multiplier"] if apply_goal_calibration else 1.0
     total_goal_mult = _clamp(
         _weather_total_goal_multiplier(fixture)
         * _process_total_goal_multiplier(home, away, fixture, context)
-        * _mismatch_total_goal_multiplier(home, away),
+        * _mismatch_total_goal_multiplier(home, away)
+        * calibration_mult,
         0.84,
-        1.18,
+        1.34,
     )
     return MatchAdjustments(
         home_goal_mult=home_goal_mult,
         away_goal_mult=away_goal_mult,
         total_goal_mult=total_goal_mult,
     )
+
+
+@lru_cache(maxsize=128)
+def _tournament_goal_calibration(match_id: str) -> dict:
+    fixture = _fixture_by_id(str(match_id))
+    if not fixture:
+        return _goal_calibration_row(1.0, 0, None, None, False)
+    completed_score = _completed_score(fixture)
+    samples = []
+    for completed_fixture in data_store.fixtures():
+        score = _completed_score(completed_fixture)
+        if not score:
+            continue
+        home = data_store.team_by_id(completed_fixture["home_team_id"])
+        away = data_store.team_by_id(completed_fixture["away_team_id"])
+        context = data_store.context_for_fixture(completed_fixture)
+        factor_breakdown = _factor_breakdown(home, away, completed_fixture, context, include_calibration=False)
+        adjustments = _model_adjustments(
+            home,
+            away,
+            completed_fixture,
+            context,
+            factor_breakdown,
+            apply_goal_calibration=False,
+        )
+        base = predict_match(home, away, context, adjustments)
+        samples.append((score[0] + score[1], base["lambda_home"] + base["lambda_away"]))
+    if len(samples) < 24 or completed_score:
+        return _goal_calibration_row(1.0, len(samples), *_goal_calibration_avgs(samples), False)
+    observed_avg, expected_avg = _goal_calibration_avgs(samples)
+    if not observed_avg or not expected_avg:
+        return _goal_calibration_row(1.0, len(samples), observed_avg, expected_avg, False)
+    raw_multiplier = observed_avg / expected_avg
+    sample_weight = _clamp((len(samples) - 24) / 36, 0.0, 1.0)
+    multiplier = 1 + (_clamp(raw_multiplier, 0.92, 1.18) - 1) * sample_weight
+    return _goal_calibration_row(multiplier, len(samples), observed_avg, expected_avg, True)
+
+
+def _fixture_by_id(match_id: str) -> dict | None:
+    return next((fixture for fixture in data_store.fixtures() if fixture["id"] == match_id), None)
+
+
+def _goal_calibration_avgs(samples: list[tuple[float, float]]) -> tuple[float | None, float | None]:
+    if not samples:
+        return None, None
+    return (
+        round(sum(row[0] for row in samples) / len(samples), 3),
+        round(sum(row[1] for row in samples) / len(samples), 3),
+    )
+
+
+def _goal_calibration_row(
+    multiplier: float,
+    samples: int,
+    observed_avg_goals: float | None,
+    expected_avg_goals: float | None,
+    applied: bool,
+) -> dict:
+    return {
+        "multiplier": round(_clamp(multiplier, 0.92, 1.18), 6),
+        "samples": samples,
+        "observed_avg_goals": observed_avg_goals,
+        "expected_avg_goals": expected_avg_goals,
+        "applied": applied,
+    }
 
 
 def _squad_depth_edge(home, away) -> float:
