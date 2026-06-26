@@ -296,6 +296,50 @@
         box-shadow: inset 3px 0 0 var(--blue);
       }
 
+      .match-view-tabs {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+        padding: 10px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .match-view-tabs button {
+        min-height: 34px;
+        border: 0;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.45);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .match-view-tabs button.active {
+        background: var(--solid);
+        color: var(--ink);
+      }
+
+      #match-list {
+        max-height: calc(100vh - 260px);
+        overflow-y: auto;
+      }
+
+      .match-section-title,
+      .match-empty {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .match-section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.42);
+      }
+
       .team-line {
         justify-content: space-between;
       }
@@ -694,6 +738,10 @@
           width: 100%;
           min-width: 0;
         }
+
+        #match-list {
+          max-height: 560px;
+        }
       }
 
       @media (max-width: 680px) {
@@ -1040,6 +1088,36 @@
 
       .match-row.active {
         box-shadow: inset 3px 0 0 var(--amber);
+      }
+
+      .match-view-tabs {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: rgba(5, 12, 18, 0.92);
+        backdrop-filter: blur(16px);
+      }
+
+      .match-view-tabs button {
+        border: 1px solid rgba(102, 183, 255, 0.14);
+        background: rgba(255, 255, 255, 0.045);
+        color: #8fa0b6;
+      }
+
+      .match-view-tabs button.active {
+        color: #061018;
+        background: linear-gradient(135deg, var(--amber), var(--green));
+        box-shadow: 0 10px 22px rgba(37, 217, 144, 0.16);
+      }
+
+      .match-section-title,
+      .match-empty {
+        border-bottom-color: var(--line);
+        color: #93a7bf;
+      }
+
+      .match-section-title {
+        background: rgba(102, 183, 255, 0.06);
       }
 
       .badge {
@@ -1444,6 +1522,7 @@
       <section class="workspace">
         <aside class="match-list">
           <div class="head"><h2>比赛雷达</h2><span id="match-count">0</span></div>
+          <div id="match-view-tabs" class="match-view-tabs"></div>
           <div id="match-list"></div>
         </aside>
 
@@ -1557,7 +1636,7 @@
         Uzbekistan: "乌兹别克斯坦"
       };
       let livePollTimer = null;
-      let state = { matches: [], tournament: null, sources: [], backtest: null, selected: null, group: "ALL", query: "", tab: "handicap" };
+      let state = { matches: [], tournament: null, sources: [], backtest: null, selected: null, group: "ALL", query: "", matchView: "", tab: "handicap" };
 
       const fallback = {
         matches: [],
@@ -1610,7 +1689,8 @@
           state.tournament = localData.tournament;
           state.sources = localData.sources;
           state.backtest = localData.backtest || null;
-          state.selected = state.matches[0] || null;
+          state.matchView = defaultMatchView(state.matches);
+          state.selected = visibleMatches()[0] || state.matches[0] || null;
           bind();
           render();
           refreshFromApi();
@@ -1627,7 +1707,8 @@
         state.tournament = tournament;
         state.sources = health.sources || [];
         state.backtest = backtest;
-        state.selected = state.matches[0] || null;
+        state.matchView = defaultMatchView(state.matches);
+        state.selected = visibleMatches()[0] || state.matches[0] || null;
         bind();
         render();
         startPublicLivePolling();
@@ -1646,7 +1727,7 @@
         state.tournament = tournament;
         state.sources = health.sources;
         state.backtest = backtest || state.backtest;
-        state.selected = state.matches.find((match) => match.match_id === selectedId) || state.matches[0] || null;
+        state.selected = state.matches.find((match) => match.match_id === selectedId) || visibleMatches()[0] || state.matches[0] || null;
         render();
       }
 
@@ -1672,7 +1753,7 @@
             return applyLiveToMatch({ ...match, live_status: live });
           });
           const selectedId = state.selected?.match_id;
-          state.selected = state.matches.find((match) => match.match_id === selectedId) || state.matches[0] || null;
+          state.selected = state.matches.find((match) => match.match_id === selectedId) || visibleMatches()[0] || state.matches[0] || null;
           updateEspnSource(rows);
           render();
         } catch (_error) {
@@ -1862,11 +1943,12 @@
       function bind() {
         document.getElementById("search").addEventListener("input", (event) => {
           state.query = event.target.value.trim().toLowerCase();
+          state.selected = visibleMatches()[0] || state.selected;
           render();
         });
       }
 
-      function filteredMatches() {
+      function baseFilteredMatches() {
         return state.matches.filter((match) => {
           const inGroup = state.group === "ALL" || match.fixture.group === state.group;
           const q = state.query;
@@ -1877,6 +1959,63 @@
             match.fixture.venue.toLowerCase().includes(q);
           return inGroup && inQuery;
         });
+      }
+
+      function filteredMatches() {
+        return visibleMatches(baseFilteredMatches());
+      }
+
+      function visibleMatches(matches = baseFilteredMatches()) {
+        return matches.filter((match) => matchInView(match, state.matchView || "ALL"));
+      }
+
+      function defaultMatchView(matches) {
+        const counts = matchViewCounts(matches);
+        if (counts.TODAY) return "TODAY";
+        if (counts.LIVE) return "LIVE";
+        if (counts.UPCOMING) return "UPCOMING";
+        if (counts.FINISHED) return "FINISHED";
+        return "ALL";
+      }
+
+      function matchViewCounts(matches) {
+        return {
+          LIVE: matches.filter((match) => matchStatus(match) === "live").length,
+          TODAY: matches.filter(isTodayMatch).length,
+          UPCOMING: matches.filter((match) => matchStatus(match) === "upcoming").length,
+          FINISHED: matches.filter((match) => matchStatus(match) === "finished").length,
+          ALL: matches.length
+        };
+      }
+
+      function matchInView(match, view) {
+        const status = matchStatus(match);
+        if (view === "LIVE") return status === "live";
+        if (view === "TODAY") return isTodayMatch(match);
+        if (view === "UPCOMING") return status === "upcoming";
+        if (view === "FINISHED") return status === "finished";
+        return true;
+      }
+
+      function matchSections() {
+        return [
+          { title: "正在进行", filter: (match) => matchStatus(match) === "live" },
+          { title: "今日未赛", filter: (match) => matchStatus(match) === "upcoming" && isTodayMatch(match) },
+          { title: "未来未赛", filter: (match) => matchStatus(match) === "upcoming" && !isTodayMatch(match) },
+          { title: "今日完赛", filter: (match) => matchStatus(match) === "finished" && isTodayMatch(match), reverse: true },
+          { title: "已完赛", filter: (match) => matchStatus(match) === "finished" && !isTodayMatch(match), reverse: true }
+        ];
+      }
+
+      function matchStatus(match) {
+        const live = match.live_status || {};
+        if (live.status_state === "in") return "live";
+        if (live.completed || live.status_state === "post") return "finished";
+        return "upcoming";
+      }
+
+      function isTodayMatch(match) {
+        return dateKeyInZone(new Date(match.fixture.kickoff_utc), "Asia/Shanghai") === dateKeyInZone(new Date(), "Asia/Shanghai");
       }
 
       function render() {
@@ -1955,26 +2094,63 @@
       }
 
       function renderMatchList() {
-        const matches = filteredMatches();
-        document.getElementById("match-count").textContent = matches.length;
-        document.getElementById("match-list").innerHTML = matches.map((match) => {
-          const active = state.selected && match.match_id === state.selected.match_id;
-          const marketRows = match.handicap_preview.filter((row) => row.market_status === "available").length;
-          return `
-            <button class="match-row ${active ? "active" : ""}" data-match="${match.match_id}">
-              <span class="match-meta">#${match.fixture.match_number} · ${match.fixture.group}组 · ${dateText(match.fixture.kickoff_utc)}</span>
-              <span class="team-line">${team(match.home_team)}<strong>${scoreOrProbability(match, "home")}</strong></span>
-              <span class="team-line">${team(match.away_team)}<strong>${scoreOrProbability(match, "away")}</strong></span>
-              <span class="badges"><em class="badge">${liveLabel(match)}</em><em class="badge">${match.weather?.condition || "normal"}</em><em class="badge">${marketRows ? `${marketRows} 市场` : "模型公平盘"}</em></span>
-            </button>
-          `;
-        }).join("");
+        const baseMatches = baseFilteredMatches();
+        const matches = visibleMatches(baseMatches);
+        renderMatchViewTabs(baseMatches);
+        document.getElementById("match-count").textContent = `${matches.length}/${baseMatches.length}`;
+        document.getElementById("match-list").innerHTML = renderMatchSections(matches) || `<div class="match-empty">当前筛选没有比赛。可以切到“全部”或清空搜索。</div>`;
         document.querySelectorAll("[data-match]").forEach((button) => {
           button.addEventListener("click", () => {
             state.selected = state.matches.find((match) => match.match_id === button.dataset.match);
             render();
           });
         });
+      }
+
+      function renderMatchViewTabs(baseMatches) {
+        const counts = matchViewCounts(baseMatches);
+        const views = [
+          ["LIVE", "进行中", counts.LIVE],
+          ["TODAY", "今日", counts.TODAY],
+          ["UPCOMING", "未赛", counts.UPCOMING],
+          ["FINISHED", "已完赛", counts.FINISHED],
+          ["ALL", "全部", counts.ALL]
+        ];
+        document.getElementById("match-view-tabs").innerHTML = views.map(([key, label, count]) =>
+          `<button class="${state.matchView === key ? "active" : ""}" data-match-view="${key}">${label} ${count}</button>`
+        ).join("");
+        document.querySelectorAll("[data-match-view]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.matchView = button.dataset.matchView;
+            state.selected = visibleMatches()[0] || state.selected;
+            render();
+          });
+        });
+      }
+
+      function renderMatchSections(matches) {
+        return matchSections().map((section) => {
+          const rows = matches.filter(section.filter);
+          if (!rows.length) return "";
+          const orderedRows = section.reverse ? [...rows].reverse() : rows;
+          return `
+            <div class="match-section-title"><span>${section.title}</span><span>${rows.length}</span></div>
+            ${orderedRows.map(renderMatchRow).join("")}
+          `;
+        }).join("");
+      }
+
+      function renderMatchRow(match) {
+        const active = state.selected && match.match_id === state.selected.match_id;
+        const marketRows = match.handicap_preview.filter((row) => row.market_status === "available").length;
+        return `
+          <button class="match-row ${active ? "active" : ""}" data-match="${match.match_id}">
+            <span class="match-meta">#${match.fixture.match_number} · ${match.fixture.group}组 · ${dateText(match.fixture.kickoff_utc)}</span>
+            <span class="team-line">${team(match.home_team)}<strong>${scoreOrProbability(match, "home")}</strong></span>
+            <span class="team-line">${team(match.away_team)}<strong>${scoreOrProbability(match, "away")}</strong></span>
+            <span class="badges"><em class="badge">${liveLabel(match)}</em><em class="badge">${match.weather?.condition || "normal"}</em><em class="badge">${marketRows ? `${marketRows} 市场` : "模型公平盘"}</em></span>
+          </button>
+        `;
       }
 
       function renderDetail() {
