@@ -2046,7 +2046,7 @@
       function renderGroups() {
         const groups = ["ALL", ...Array.from(new Set(state.matches.map((match) => match.fixture.group))).sort()];
         document.getElementById("groups").innerHTML = groups.map((group) =>
-          `<button class="${state.group === group ? "active" : ""}" data-group="${group}">${group === "ALL" ? "全部" : group}</button>`
+          `<button class="${state.group === group ? "active" : ""}" data-group="${group}">${group === "ALL" ? "全部" : group === "KO" ? "淘汰赛" : group}</button>`
         ).join("");
         document.querySelectorAll("[data-group]").forEach((button) => {
           button.addEventListener("click", () => {
@@ -2085,7 +2085,7 @@
           metric("新模型 1X2 烟测", metricHitText(ensemble), ensemble.samples ? `Brier ${metricNumber(ensemble.brier)} · 裸模型 ${metricNumber(comparison.baseline?.brier)}` : "等待同样本比较"),
           metric("新模型大小球烟测", metricHitText(shadowOverUnder), shadowOverUnder.samples ? `Brier ${metricNumber(shadowOverUnder.brier)} · 非锁定成绩` : "等待同样本比较"),
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
-          metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
+          metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场真实淘汰赛程"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
           metric("真实首发", `${realLineups} 场`, "ESPN summary 阵型/首发/球员事件"),
           metric("最高夺冠", top ? pct(top.title_probability) : "-", top ? `${top.team} · 裸模型 ${pct(top.raw_title_probability)}` : "等待模拟"),
@@ -4887,7 +4887,7 @@
             <div class="rail-body" style="padding:10px 0 0">
               ${performanceRow("样本", `${formal.eligible_samples || 0} 场`, "必须赛前锁定，且不能偷看未来")}
               ${performanceRow("不让球 1X2", performanceText(formalOneXTwo), `Brier ${metricNumber(formalOneXTwo.brier)} · log-loss ${metricNumber(formalOneXTwo.log_loss)}`)}
-              ${performanceRow("亚洲让球", performanceText(formalAsian), `ROI ${pctOrDash(formalAsian.roi)} · CLV ${pctOrDash(formalAsian.average_clv)}`)}
+              ${performanceRow("亚洲让球", performanceText(formalAsian), `每场最多 1 个选择 · ROI ${pctOrDash(formalAsian.roi)} · CLV ${pctOrDash(formalAsian.average_clv)}`)}
               ${performanceRow("大小球", performanceText(formalOverUnder), `Brier ${metricNumber(formalOverUnder.brier)} · O/U 2.5`)}
               ${performanceRow("角球", performanceText(formalCorners), `真实角球样本 ${formalCorners.actual_event_samples || 0} 场`)}
               ${performanceRow("公开方向闸门", referenceGateText(formal.public_reference_gate), "未通过的市场只显示概率，不再输出方向")}
@@ -4901,7 +4901,7 @@
               ${performanceRow("不让球 1X2", performanceText(shadowOneXTwo), `Brier ${metricNumber(shadowOneXTwo.brier)} · log-loss ${metricNumber(shadowOneXTwo.log_loss)}`)}
               ${performanceRow("亚洲让球", performanceText(shadowAsian), `走盘 ${shadowAsian.pushes || 0} · ROI ${pctOrDash(shadowAsian.roi)}`)}
               ${performanceRow("大小球", performanceText(shadowOverUnder), `Brier ${metricNumber(shadowOverUnder.brier)} · O/U 2.5`)}
-              ${performanceRow("角球", performanceText(shadowCorners), `真实角球样本 ${shadowCorners.actual_event_samples || 0} 场`)}
+              ${performanceRow("角球", performanceText(shadowCorners), `均值校准后大8.5 Brier ${metricNumber(shadowCorners.probability_metrics?.["8.5"]?.brier)} · 方向仍暂停`)}
             </div>
           </div>
           ${modelComparisonPanel(comparison)}
