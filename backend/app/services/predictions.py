@@ -4,18 +4,28 @@ from __future__ import annotations
 import math
 import random
 import unicodedata
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from statistics import mean
 
 from . import data_store
 from .handicap import asian_market_from_matrix
 from .odds import devig_three_way, devig_two_way, model_lean
-from .score_model import MatchAdjustments, MatchContext, poisson_pmf, predict_match
+from .score_model import (
+    MatchAdjustments,
+    MatchContext,
+    match_market_probabilities,
+    matrix_expected_goals,
+    poisson_pmf,
+    predict_match,
+    rake_scoreline_matrix,
+)
 
 DEFAULT_HANDICAP_LINES = [-2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5]
-MODEL_VERSION = "wc26-v0.7-live-goal-scale-calibration"
+MODEL_VERSION = "wc26-v0.8-deduplicated-market-ensemble"
 TITLE_MARKET_ANCHOR_WEIGHT = 0.55
+MATCH_MARKET_ANCHOR_WEIGHT = 0.75
+MARKET_LOCK_BUFFER_MINUTES = 5
 MONTE_CARLO_RUNS = 4000
 MONTE_CARLO_SEED = 20260612
 
@@ -50,7 +60,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
     match_materials = _match_materials(fixture)
     factor_breakdown = _factor_breakdown(home, away, fixture, context)
     adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
-    prediction = predict_match(home, away, context, adjustments)
+    prediction = _apply_match_market_anchor(fixture, predict_match(home, away, context, adjustments))
     matchup = _matchup_profile(home, away, fixture, context, prediction, factor_breakdown)
     event_predictions = _event_predictions(home, away, fixture, context, prediction, live_status, match_materials)
     market_summary = _market_summary(fixture, prediction)
@@ -155,12 +165,14 @@ def score_matrix_for_fixture(fixture: dict) -> list[list[float]]:
     context = data_store.context_for_fixture(fixture)
     factor_breakdown = _factor_breakdown(home, away, fixture, context)
     adjustments = _model_adjustments(home, away, fixture, context, factor_breakdown)
-    return predict_match(home, away, context, adjustments)["scoreline_matrix"]
+    prediction = _apply_match_market_anchor(fixture, predict_match(home, away, context, adjustments))
+    return prediction["scoreline_matrix"]
 
 
 def handicaps_for_fixture(fixture: dict, lines: list[float] | None = None) -> dict:
     lines = lines or DEFAULT_HANDICAP_LINES
     matrix = score_matrix_for_fixture(fixture)
+    reference_allowed, reference_reason = _handicap_reference_gate()
     rows = []
     for line in lines:
         market = _best_market(fixture["id"], line)
@@ -177,7 +189,12 @@ def handicaps_for_fixture(fixture: dict, lines: list[float] | None = None) -> di
         row["closing_status"] = "pending_closing_line" if market_is_legal else "pending_legal_odds_api"
         row["clv"] = None
         row["backtest_sample"] = 0
-        row["lean"] = model_lean(row["home"]["expected_return"], row["away"]["expected_return"])
+        row["lean"] = (
+            model_lean(row["home"]["expected_return"], row["away"]["expected_return"])
+            if reference_allowed
+            else "none"
+        )
+        row["lean_status"] = "active_research_only" if reference_allowed else reference_reason
         rows.append(row)
     return {
         "match_id": fixture["id"],
@@ -187,6 +204,16 @@ def handicaps_for_fixture(fixture: dict, lines: list[float] | None = None) -> di
         "disclaimer": "Model probability display only; not betting advice.",
         "handicaps": rows,
     }
+
+
+def _handicap_reference_gate() -> tuple[bool, str]:
+    formal = data_store.backtest_report().get("formal", {})
+    asian = formal.get("asian_handicap", {})
+    selections = int(asian.get("selections") or 0)
+    roi = asian.get("roi")
+    if selections >= 30 and (roi is None or float(roi) <= 0):
+        return False, "suspended_negative_locked_roi"
+    return True, "research_only_insufficient_validation"
 
 
 def all_matches() -> list[dict]:
@@ -848,9 +875,9 @@ def model_run() -> dict:
     return {
         "model_version": MODEL_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "score_model": "Poisson scoreline prior with rating, form, fixture/travel, squad-depth, technical-process and style-matchup adjustments; weather affects total-goal tempo rather than team direction",
+        "score_model": "Poisson scoreline prior with rating, form and context adjustments; deduplicated legal pre-kickoff 1X2 and O/U consensus is blended into the final score matrix when available",
         "handicap_engine": "Asian handicap probabilities derived from scoreline matrix",
-        "calibration_status": "v0.6 public snapshot model; process/squad/style inputs are low-weight transparent priors until event, lineup and closing-line backtests mature",
+        "calibration_status": "v0.8 uses time-ordered goal/corner calibration and a 75% market anchor backed by the current settled-sample probability audit; locked snapshots remain the only official performance record",
         "public_boundary": "Information display only; no staking or betting instruction.",
         "market_validation": _market_validation_summary(),
         "factor_policy": [
@@ -896,6 +923,12 @@ def model_run() -> dict:
                 "status": "blocked_without_legal_odds_api",
                 "role": "true market line, closing line, CLV and ROI backtest require a licensed odds source",
             },
+            {
+                "name": "deduplicated match market ensemble",
+                "category": "已回测因子",
+                "status": "used_when_legal_pre_kickoff_prices_exist",
+                "role": "latest price per bookmaker is de-vigged and blended into the score matrix; raw model disagreement stays visible",
+            },
         ],
     }
 
@@ -937,6 +970,134 @@ def _market_validation_summary() -> dict:
     }
 
 
+def _apply_match_market_anchor(fixture: dict, prediction: dict) -> dict:
+    raw_1x2 = (prediction["p_home"], prediction["p_draw"], prediction["p_away"])
+    raw_over = float(prediction["p_over_2_5"])
+    one_x_two = _prematch_market_consensus(fixture["id"], "1x2")
+    total = _prematch_market_consensus(fixture["id"], "over_under", 2.5)
+    target_1x2 = None
+    target_over = None
+    if one_x_two:
+        target_1x2 = _blend_probabilities(
+            raw_1x2,
+            one_x_two["probabilities"],
+            _match_market_weight(one_x_two["books"]),
+        )
+    if total:
+        target_over = (
+            raw_over * (1 - _match_market_weight(total["books"]))
+            + total["probabilities"][0] * _match_market_weight(total["books"])
+        )
+    anchor = {
+        "status": "available" if one_x_two or total else "missing",
+        "method": "deduplicate latest legal pre-kickoff prices by bookmaker, remove margin, blend targets, then rake the score matrix",
+        "one_x_two_weight": _match_market_weight(one_x_two["books"]) if one_x_two else 0.0,
+        "over_under_weight": _match_market_weight(total["books"]) if total else 0.0,
+        "one_x_two_books": one_x_two["books"] if one_x_two else 0,
+        "over_under_books": total["books"] if total else 0,
+        "captured_at": max(
+            [row["captured_at"] for row in [one_x_two, total] if row and row.get("captured_at")],
+            default=None,
+        ),
+        "lock_buffer_minutes": MARKET_LOCK_BUFFER_MINUTES,
+    }
+    raw = {
+        "lambda_home": prediction["lambda_home"],
+        "lambda_away": prediction["lambda_away"],
+        "p_home": prediction["p_home"],
+        "p_draw": prediction["p_draw"],
+        "p_away": prediction["p_away"],
+        "p_over_2_5": prediction["p_over_2_5"],
+    }
+    if target_1x2 is None and target_over is None:
+        return {**prediction, "raw_model": raw, "market_anchor": anchor}
+    matrix = rake_scoreline_matrix(
+        prediction["scoreline_matrix"],
+        target_1x2=target_1x2,
+        target_over_2_5=target_over,
+    )
+    fitted = match_market_probabilities(matrix)
+    lambda_home, lambda_away = matrix_expected_goals(matrix)
+    return {
+        **prediction,
+        "raw_model": raw,
+        "market_anchor": anchor,
+        "lambda_home": round(lambda_home, 4),
+        "lambda_away": round(lambda_away, 4),
+        "scoreline_matrix": matrix,
+        **fitted,
+    }
+
+
+def _prematch_market_consensus(match_id: str, market_type: str, line: float | None = None) -> dict | None:
+    markets = _latest_prematch_markets(match_id, market_type, line)
+    probabilities = []
+    for market in markets:
+        try:
+            if market_type == "1x2":
+                probabilities.append(
+                    devig_three_way(market["price_home"], market["price_draw"], market["price_away"])
+                )
+            elif market_type == "over_under":
+                probabilities.append(devig_two_way(market["price_over"], market["price_under"]))
+        except (KeyError, TypeError, ValueError):
+            continue
+    if not probabilities:
+        return None
+    return {
+        "probabilities": tuple(
+            mean(row[index] for row in probabilities)
+            for index in range(len(probabilities[0]))
+        ),
+        "books": len(probabilities),
+        "captured_at": max(market["captured_at"] for market in markets if market.get("captured_at")),
+    }
+
+
+def _latest_prematch_markets(match_id: str, market_type: str, line: float | None = None) -> list[dict]:
+    fixture = _fixture_by_id(match_id)
+    if not fixture:
+        return []
+    cutoff = _parse_datetime(fixture["kickoff_utc"]) - timedelta(minutes=MARKET_LOCK_BUFFER_MINUTES)
+    latest_by_bookmaker = {}
+    for market in data_store.odds_for_match(match_id, market_type):
+        if not _is_legal_market(market) or not market.get("captured_at"):
+            continue
+        if line is not None and float(market.get("line") or 0) != float(line):
+            continue
+        try:
+            captured_at = _parse_datetime(market["captured_at"])
+        except ValueError:
+            continue
+        if captured_at > cutoff:
+            continue
+        key = str(market.get("bookmaker") or "unknown").strip().lower()
+        previous = latest_by_bookmaker.get(key)
+        if previous is None or market["captured_at"] > previous["captured_at"]:
+            latest_by_bookmaker[key] = market
+    return list(latest_by_bookmaker.values())
+
+
+def _blend_probabilities(model: tuple[float, ...], market: tuple[float, ...], weight: float) -> tuple[float, ...]:
+    blended = tuple((1 - weight) * left + weight * right for left, right in zip(model, market))
+    total = sum(blended)
+    return tuple(value / total for value in blended)
+
+
+def _match_market_weight(books: int) -> float:
+    if books >= 8:
+        return MATCH_MARKET_ANCHOR_WEIGHT
+    if books >= 4:
+        return 0.65
+    if books >= 2:
+        return 0.50
+    return 0.35
+
+
+def _parse_datetime(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+
+
 def _market_summary(fixture: dict, prediction: dict) -> dict:
     return {
         "one_x_two": _one_x_two_market_summary(fixture["id"], prediction),
@@ -950,61 +1111,56 @@ def _one_x_two_market_summary(match_id: str, prediction: dict) -> dict:
         "draw": prediction["p_draw"],
         "away": prediction["p_away"],
     }
-    markets = [
-        market
-        for market in data_store.odds_for_match(match_id, "1x2")
-        if _is_legal_market(market)
-        and market.get("price_home")
-        and market.get("price_draw")
-        and market.get("price_away")
-    ]
+    raw = prediction.get("raw_model") or {}
+    raw_probs = {
+        "home": raw.get("p_home", model_probs["home"]),
+        "draw": raw.get("p_draw", model_probs["draw"]),
+        "away": raw.get("p_away", model_probs["away"]),
+    }
+    consensus = _prematch_market_consensus(match_id, "1x2")
     base = {
         "status": "missing",
         "source": "model_fair_line",
         "books": 0,
         "captured_at": None,
         "model_probabilities": _rounded_probability_dict(model_probs),
+        "raw_model_probabilities": _rounded_probability_dict(raw_probs),
         "fair_decimal_odds": _fair_odds_dict(model_probs),
         "market_probabilities": None,
         "model_delta": None,
+        "final_delta": None,
+        "anchor_weight": 0.0,
     }
-    consensus = []
-    for market in markets:
-        try:
-            consensus.append(devig_three_way(market["price_home"], market["price_draw"], market["price_away"]))
-        except ValueError:
-            continue
     if not consensus:
         return base
     market_probs = {
-        "home": mean(row[0] for row in consensus),
-        "draw": mean(row[1] for row in consensus),
-        "away": mean(row[2] for row in consensus),
+        "home": consensus["probabilities"][0],
+        "draw": consensus["probabilities"][1],
+        "away": consensus["probabilities"][2],
     }
     return {
         **base,
         "status": "available",
-        "source": "The Odds API consensus 1X2",
-        "books": len(consensus),
-        "captured_at": max(market["captured_at"] for market in markets if market.get("captured_at")),
+        "source": "The Odds API deduplicated pre-kickoff consensus 1X2",
+        "books": consensus["books"],
+        "captured_at": consensus["captured_at"],
         "market_probabilities": _rounded_probability_dict(market_probs),
         "model_delta": _rounded_probability_dict(
+            {key: raw_probs[key] - market_probs[key] for key in raw_probs}
+        ),
+        "final_delta": _rounded_probability_dict(
             {key: model_probs[key] - market_probs[key] for key in model_probs}
         ),
+        "anchor_weight": _match_market_weight(consensus["books"]),
     }
 
 
 def _over_under_market_summary(match_id: str, prediction: dict, line: float) -> dict:
     over = prediction.get("p_over_2_5")
     model_probs = {"over": over, "under": 1 - over}
-    markets = [
-        market
-        for market in data_store.odds_for_match(match_id, "over_under")
-        if _is_legal_market(market)
-        and float(market.get("line") or 0) == float(line)
-        and market.get("price_over")
-        and market.get("price_under")
-    ]
+    raw_over = (prediction.get("raw_model") or {}).get("p_over_2_5", over)
+    raw_probs = {"over": raw_over, "under": 1 - raw_over}
+    consensus = _prematch_market_consensus(match_id, "over_under", line)
     base = {
         "line": line,
         "status": "missing",
@@ -1012,32 +1168,33 @@ def _over_under_market_summary(match_id: str, prediction: dict, line: float) -> 
         "books": 0,
         "captured_at": None,
         "model_probabilities": _rounded_probability_dict(model_probs),
+        "raw_model_probabilities": _rounded_probability_dict(raw_probs),
         "fair_decimal_odds": _fair_odds_dict(model_probs),
         "market_probabilities": None,
         "model_delta": None,
+        "final_delta": None,
+        "anchor_weight": 0.0,
     }
-    consensus = []
-    for market in markets:
-        try:
-            consensus.append(devig_two_way(market["price_over"], market["price_under"]))
-        except ValueError:
-            continue
     if not consensus:
         return base
     market_probs = {
-        "over": mean(row[0] for row in consensus),
-        "under": mean(row[1] for row in consensus),
+        "over": consensus["probabilities"][0],
+        "under": consensus["probabilities"][1],
     }
     return {
         **base,
         "status": "available",
-        "source": "The Odds API consensus O/U",
-        "books": len(consensus),
-        "captured_at": max(market["captured_at"] for market in markets if market.get("captured_at")),
+        "source": "The Odds API deduplicated pre-kickoff consensus O/U",
+        "books": consensus["books"],
+        "captured_at": consensus["captured_at"],
         "market_probabilities": _rounded_probability_dict(market_probs),
         "model_delta": _rounded_probability_dict(
+            {key: raw_probs[key] - market_probs[key] for key in raw_probs}
+        ),
+        "final_delta": _rounded_probability_dict(
             {key: model_probs[key] - market_probs[key] for key in model_probs}
         ),
+        "anchor_weight": _match_market_weight(consensus["books"]),
     }
 
 
@@ -1161,14 +1318,19 @@ def _confidence_profile(
 
 
 def _best_market(match_id: str, line: float) -> dict | None:
-    markets = [
-        row
-        for row in data_store.odds_for_match(match_id, "asian_handicap")
-        if float(row["line"]) == float(line)
-    ]
+    markets = _latest_prematch_markets(match_id, "asian_handicap", line)
     if not markets:
         return None
-    return sorted(markets, key=lambda row: row["captured_at"], reverse=True)[0]
+    return {
+        "match_id": match_id,
+        "bookmaker": f"The Odds API consensus ({len(markets)} books)",
+        "market_type": "asian_handicap",
+        "line": float(line),
+        "price_home": round(mean(float(row["price_home"]) for row in markets if row.get("price_home")), 4),
+        "price_away": round(mean(float(row["price_away"]) for row in markets if row.get("price_away")), 4),
+        "captured_at": max(row["captured_at"] for row in markets if row.get("captured_at")),
+        "source": "The Odds API deduplicated pre-kickoff consensus",
+    }
 
 
 def _is_legal_market(market: dict | None) -> bool:
@@ -1483,8 +1645,11 @@ def _event_predictions(
         **_material_team_stats(match_materials, "away"),
     }
     has_live_stats = bool(home_live_stats or away_live_stats)
-    home_corners = _team_corner_expectation(home, away, home_profile, away_profile, context.home_mult)
-    away_corners = _team_corner_expectation(away, home, away_profile, home_profile, context.away_mult)
+    raw_home_corners = _team_corner_expectation(home, away, home_profile, away_profile, context.home_mult)
+    raw_away_corners = _team_corner_expectation(away, home, away_profile, home_profile, context.away_mult)
+    corner_calibration = _tournament_corner_calibration(fixture["id"])
+    home_corners = raw_home_corners * corner_calibration["multiplier"]
+    away_corners = raw_away_corners * corner_calibration["multiplier"]
     home_yellows = _team_yellow_expectation(home, away, home_profile, prediction["p_home"], prediction["p_away"])
     away_yellows = _team_yellow_expectation(away, home, away_profile, prediction["p_away"], prediction["p_home"])
     home_red = _red_card_probability(home_profile)
@@ -1514,6 +1679,8 @@ def _event_predictions(
             "home_expected": round(home_corners, 2),
             "away_expected": round(away_corners, 2),
             "total_expected": round(total_corners, 2),
+            "raw_total_expected": round(raw_home_corners + raw_away_corners, 2),
+            "calibration": corner_calibration,
             "over_8_5_probability": round(_poisson_over(total_corners, 8.5), 6),
             "over_9_5_probability": round(_poisson_over(total_corners, 9.5), 6),
             "live_home": home_live_stats.get("corners"),
@@ -2021,9 +2188,11 @@ def _tournament_goal_calibration(match_id: str) -> dict:
     fixture = _fixture_by_id(str(match_id))
     if not fixture:
         return _goal_calibration_row(1.0, 0, None, None, False)
-    completed_score = _completed_score(fixture)
+    target_kickoff = _parse_datetime(fixture["kickoff_utc"])
     samples = []
     for completed_fixture in data_store.fixtures():
+        if _parse_datetime(completed_fixture["kickoff_utc"]) >= target_kickoff:
+            continue
         score = _completed_score(completed_fixture)
         if not score:
             continue
@@ -2041,7 +2210,7 @@ def _tournament_goal_calibration(match_id: str) -> dict:
         )
         base = predict_match(home, away, context, adjustments)
         samples.append((score[0] + score[1], base["lambda_home"] + base["lambda_away"]))
-    if len(samples) < 24 or completed_score:
+    if len(samples) < 24:
         return _goal_calibration_row(1.0, len(samples), *_goal_calibration_avgs(samples), False)
     observed_avg, expected_avg = _goal_calibration_avgs(samples)
     if not observed_avg or not expected_avg:
@@ -2078,6 +2247,65 @@ def _goal_calibration_row(
         "observed_avg_goals": observed_avg_goals,
         "expected_avg_goals": expected_avg_goals,
         "applied": applied,
+    }
+
+
+@lru_cache(maxsize=128)
+def _tournament_corner_calibration(match_id: str) -> dict:
+    fixture = _fixture_by_id(str(match_id))
+    if not fixture:
+        return _corner_calibration_row(1.0, 0, None, None)
+    target_kickoff = _parse_datetime(fixture["kickoff_utc"])
+    samples = []
+    for completed_fixture in data_store.fixtures():
+        if _parse_datetime(completed_fixture["kickoff_utc"]) >= target_kickoff:
+            continue
+        actual = _completed_corner_total(completed_fixture)
+        if actual is None:
+            continue
+        home = data_store.team_by_id(completed_fixture["home_team_id"])
+        away = data_store.team_by_id(completed_fixture["away_team_id"])
+        context = data_store.context_for_fixture(completed_fixture)
+        home_profile = _tactical_profile(home, completed_fixture, context.home_mult)
+        away_profile = _tactical_profile(away, completed_fixture, context.away_mult)
+        expected = (
+            _team_corner_expectation(home, away, home_profile, away_profile, context.home_mult)
+            + _team_corner_expectation(away, home, away_profile, home_profile, context.away_mult)
+        )
+        samples.append((float(actual), expected))
+    if not samples:
+        return _corner_calibration_row(1.0, 0, None, None)
+    actual_mean = mean(row[0] for row in samples)
+    expected_mean = mean(row[1] for row in samples)
+    raw_multiplier = actual_mean / expected_mean if expected_mean > 0 else 1.0
+    prior_matches = 24
+    multiplier = (prior_matches + len(samples) * raw_multiplier) / (prior_matches + len(samples))
+    return _corner_calibration_row(multiplier, len(samples), actual_mean, expected_mean)
+
+
+def _completed_corner_total(fixture: dict) -> int | None:
+    live = data_store.live_match_for_fixture(fixture["id"])
+    if not live or not live.get("completed"):
+        return None
+    home = (live.get("home_stats") or {}).get("corners")
+    away = (live.get("away_stats") or {}).get("corners")
+    if home is None or away is None:
+        return None
+    return int(home) + int(away)
+
+
+def _corner_calibration_row(
+    multiplier: float,
+    samples: int,
+    actual_mean: float | None,
+    expected_mean: float | None,
+) -> dict:
+    return {
+        "multiplier": round(_clamp(multiplier, 0.82, 1.04), 6),
+        "samples": samples,
+        "actual_mean": round(actual_mean, 3) if actual_mean is not None else None,
+        "expected_mean": round(expected_mean, 3) if expected_mean is not None else None,
+        "method": "walk_forward_empirical_bayes",
     }
 
 

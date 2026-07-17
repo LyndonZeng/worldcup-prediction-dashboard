@@ -399,8 +399,15 @@ def write_static_payload() -> None:
         build_backtest_report,
         build_closing_line_snapshots,
         build_model_prediction_snapshots,
+        merge_model_prediction_snapshots,
     )
-    from app.services.predictions import all_matches, model_run, tournament_probabilities, _tournament_goal_calibration
+    from app.services.predictions import (
+        _tournament_corner_calibration,
+        _tournament_goal_calibration,
+        all_matches,
+        model_run,
+        tournament_probabilities,
+    )
 
     data_store.teams.cache_clear()
     data_store.fixtures.cache_clear()
@@ -415,8 +422,13 @@ def write_static_payload() -> None:
     data_store.backtest_report.cache_clear()
     data_store.historical_results_summary.cache_clear()
     _tournament_goal_calibration.cache_clear()
+    _tournament_corner_calibration.cache_clear()
     matches = all_matches()
-    model_prediction_snapshots = build_model_prediction_snapshots(matches, data_store.source_health())
+    current_prediction_snapshots = build_model_prediction_snapshots(matches, data_store.source_health())
+    model_prediction_snapshots = merge_model_prediction_snapshots(
+        list(data_store.model_prediction_snapshots()),
+        current_prediction_snapshots,
+    )
     closing_line_snapshots = build_closing_line_snapshots(data_store.fixtures(), data_store.odds_snapshots())
     backtest_report = build_backtest_report(matches, model_prediction_snapshots, closing_line_snapshots)
     write_json(DATA_DIR / "model_prediction_snapshots.json", model_prediction_snapshots)
@@ -468,6 +480,8 @@ def compact_match(match: dict) -> dict:
         "event_predictions": match["event_predictions"],
         "market_summary": match["market_summary"],
         "risk_register": match["risk_register"],
+        "raw_model": match.get("raw_model"),
+        "market_anchor": match.get("market_anchor"),
         "lambda_home": match["lambda_home"],
         "lambda_away": match["lambda_away"],
         "p_home": match["p_home"],
@@ -591,6 +605,7 @@ def compact_handicap(row: dict) -> dict:
         "clv": row["clv"],
         "backtest_sample": row["backtest_sample"],
         "lean": row["lean"],
+        "lean_status": row.get("lean_status"),
     }
 
 

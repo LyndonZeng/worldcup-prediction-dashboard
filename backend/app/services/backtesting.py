@@ -50,6 +50,30 @@ def build_model_prediction_snapshots(matches: list[dict], sources: list[dict] | 
     return rows
 
 
+def merge_model_prediction_snapshots(existing: list[dict], current: list[dict]) -> list[dict]:
+    """Keep immutable prediction history instead of replacing it on refresh."""
+    by_id = {}
+    for row in [*existing, *current]:
+        prediction_id = row.get("prediction_id")
+        if prediction_id:
+            by_id[prediction_id] = row
+    rows = list(by_id.values())
+    locked_match_ids = {
+        row.get("match_id")
+        for row in rows
+        if row.get("lock_status") == "eligible_pre_kickoff"
+    }
+    rows = [
+        row
+        for row in rows
+        if row.get("lock_status") != "excluded_post_kickoff" or row.get("match_id") not in locked_match_ids
+    ]
+    return sorted(
+        rows,
+        key=lambda row: (row.get("generated_at") or "", row.get("match_id") or ""),
+    )
+
+
 def build_closing_line_snapshots(fixtures: list[dict], odds_rows: list[dict]) -> list[dict]:
     fixture_by_id = {fixture["id"]: fixture for fixture in fixtures}
     latest_by_key: dict[tuple[Any, ...], dict] = {}
@@ -96,11 +120,7 @@ def build_backtest_report(
     closing_snapshots: list[dict],
 ) -> dict:
     completed = [match for match in matches if _completed_score(match) is not None]
-    locked_by_match = {
-        row["match_id"]: row
-        for row in model_snapshots
-        if row.get("lock_status") == "eligible_pre_kickoff"
-    }
+    locked_by_match = _latest_locked_snapshots(model_snapshots)
     closing_lines = [row for row in closing_snapshots if row.get("is_closing_line")]
     formal_matches = [
         match
@@ -119,8 +139,8 @@ def build_backtest_report(
     model_comparison = _model_comparison_report(completed)
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "status": "mvp_shadow_until_locked_closing_samples",
-        "method": "Formal samples require pre-kickoff model snapshots and closing lines; shadow audit is not leak-safe.",
+        "status": "locked_results_available_closing_line_pending" if formal_matches else "mvp_shadow_until_locked_samples",
+        "method": "Formal accuracy uses predictions preserved at least five minutes before kickoff; CLV remains unavailable until a price is captured inside the closing window.",
         "snapshot_counts": {
             "model_prediction_snapshots": len(model_snapshots),
             "eligible_pre_kickoff_predictions": len(locked_by_match),
@@ -134,6 +154,7 @@ def build_backtest_report(
             "asian_handicap": ah_report,
             "over_under": ou_report,
             "corners": corners_report,
+            "public_reference_gate": _public_reference_gate(ah_report, ou_report, corners_report),
             "notes": [
                 "No sample is counted unless the prediction was locked before kickoff.",
                 "CLV is only calculated against a snapshot captured inside the configured closing window.",
@@ -157,29 +178,65 @@ def build_backtest_report(
     }
 
 
+def _latest_locked_snapshots(model_snapshots: list[dict]) -> dict[str, dict]:
+    locked = {}
+    for row in model_snapshots:
+        if row.get("lock_status") != "eligible_pre_kickoff" or not row.get("match_id"):
+            continue
+        previous = locked.get(row["match_id"])
+        if previous is None or str(row.get("generated_at") or "") > str(previous.get("generated_at") or ""):
+            locked[row["match_id"]] = row
+    return locked
+
+
 def _model_comparison_report(matches: list[dict]) -> dict:
     if not matches:
         return {
             "status": "pending_settled_samples",
             "samples": 0,
             "baseline": _empty_probability_metrics(),
+            "production_ensemble": _empty_probability_metrics(),
+            "market_consensus": _empty_probability_metrics(),
             "dixon_coles": _empty_probability_metrics(),
             "decision": "keep_poisson_baseline",
         }
     baseline_rows = []
+    ensemble_rows = []
+    market_rows = []
     dixon_rows = []
     for match in matches:
         actual_index = _one_x_two_actual_index(match)
+        raw = match.get("raw_model") or {}
+        raw_probs = [
+            raw.get("p_home", match["p_home"]),
+            raw.get("p_draw", match["p_draw"]),
+            raw.get("p_away", match["p_away"]),
+        ]
         baseline_rows.append(
+            {
+                "probs": raw_probs,
+                "actual_index": actual_index,
+            }
+        )
+        ensemble_rows.append(
             {
                 "probs": [match["p_home"], match["p_draw"], match["p_away"]],
                 "actual_index": actual_index,
             }
         )
+        market = (match.get("market_summary") or {}).get("one_x_two") or {}
+        market_probs = market.get("market_probabilities")
+        if market_probs:
+            market_rows.append(
+                {
+                    "probs": [market_probs["home"], market_probs["draw"], market_probs["away"]],
+                    "actual_index": actual_index,
+                }
+            )
         dc = match_market_probabilities(
             dixon_coles_scoreline_matrix(
-                float(match["lambda_home"]),
-                float(match["lambda_away"]),
+                float(raw.get("lambda_home", match["lambda_home"])),
+                float(raw.get("lambda_away", match["lambda_away"])),
                 rho=-0.06,
             )
         )
@@ -190,17 +247,37 @@ def _model_comparison_report(matches: list[dict]) -> dict:
             }
         )
     baseline = _probability_rows_metrics(baseline_rows)
+    ensemble = _probability_rows_metrics(ensemble_rows)
+    market_consensus = _probability_rows_metrics(market_rows)
     dixon_coles = _probability_rows_metrics(dixon_rows)
     delta_log_loss = None
-    if baseline["log_loss"] is not None and dixon_coles["log_loss"] is not None:
-        delta_log_loss = round(dixon_coles["log_loss"] - baseline["log_loss"], 6)
-    decision = "promote_candidate_after_more_samples" if delta_log_loss is not None and delta_log_loss < -0.015 and len(matches) >= 40 else "keep_poisson_baseline"
+    if baseline["log_loss"] is not None and ensemble["log_loss"] is not None:
+        delta_log_loss = round(ensemble["log_loss"] - baseline["log_loss"], 6)
+    improves_brier = (
+        baseline["brier"] is not None
+        and ensemble["brier"] is not None
+        and ensemble["brier"] < baseline["brier"]
+    )
+    decision = (
+        "promote_market_ensemble"
+        if delta_log_loss is not None and delta_log_loss < -0.015 and improves_brier and len(matches) >= 40
+        else "keep_raw_model"
+    )
     return {
         "status": "shadow_parallel_evaluation",
         "samples": len(matches),
         "baseline": {
-            "name": "Poisson baseline",
+            "name": "Raw multi-factor Poisson model",
             **baseline,
+        },
+        "production_ensemble": {
+            "name": "Deduplicated pre-kickoff market ensemble",
+            "market_weight": 0.75,
+            **ensemble,
+        },
+        "market_consensus": {
+            "name": "De-vigged market consensus where available",
+            **market_consensus,
         },
         "dixon_coles": {
             "name": "Dixon-Coles low-score adjustment",
@@ -209,7 +286,20 @@ def _model_comparison_report(matches: list[dict]) -> dict:
         },
         "delta_log_loss": delta_log_loss,
         "decision": decision,
-        "promotion_rule": "Only promote when walk-forward samples are meaningful and log-loss/Brier improve versus baseline.",
+        "promotion_rule": "Promote only when the candidate lowers both log-loss and Brier on at least 40 settled samples.",
+    }
+
+
+def _public_reference_gate(asian: dict, totals: dict, corners: dict) -> dict:
+    asian_failed = (
+        int(asian.get("selections") or 0) >= 30
+        and (asian.get("roi") is None or float(asian["roi"]) <= 0)
+    )
+    return {
+        "asian_handicap": "suspended_negative_locked_roi" if asian_failed else "research_only_insufficient_validation",
+        "over_under": "research_only" if int(totals.get("samples") or 0) else "pending_samples",
+        "corners": "suspended_below_coin_flip" if int(corners.get("selections") or 0) >= 30 and float(corners.get("hit_rate") or 0) < 0.5 else "research_only",
+        "policy": "Keep probabilities visible, but do not emit a directional public lean for markets that fail locked-sample validation.",
     }
 
 

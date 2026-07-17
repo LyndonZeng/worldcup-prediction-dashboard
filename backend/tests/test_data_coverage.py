@@ -5,6 +5,7 @@ from app.services.backtesting import (
     build_backtest_report,
     build_closing_line_snapshots,
     build_model_prediction_snapshots,
+    merge_model_prediction_snapshots,
 )
 from app.services.predictions import all_matches, tournament_probabilities
 
@@ -132,6 +133,12 @@ class DataCoverageTest(unittest.TestCase):
         self.assertIn("dixon_coles", report["model_comparison"])
         self.assertGreaterEqual(report["snapshot_counts"]["settled_matches"], 0)
         self.assertGreaterEqual(report["shadow"]["corners"]["actual_event_samples"], 0)
+
+    def test_prediction_snapshot_merge_preserves_history(self):
+        old = [{"prediction_id": "old", "match_id": "wc26-001", "generated_at": "2026-06-10T00:00:00Z"}]
+        current = [{"prediction_id": "new", "match_id": "wc26-001", "generated_at": "2026-06-11T00:00:00Z"}]
+        merged = merge_model_prediction_snapshots(old, current)
+        self.assertEqual([row["prediction_id"] for row in merged], ["old", "new"])
 
 
 if __name__ == "__main__":

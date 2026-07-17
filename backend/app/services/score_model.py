@@ -68,6 +68,75 @@ def scoreline_matrix(lambda_home: float, lambda_away: float, max_goals: int = 8)
     return [[p / total for p in row] for row in matrix]
 
 
+def rake_scoreline_matrix(
+    matrix: Iterable[Iterable[float]],
+    target_1x2: tuple[float, float, float] | None = None,
+    target_over_2_5: float | None = None,
+    iterations: int = 24,
+) -> list[list[float]]:
+    """Fit market marginals while preserving the model's scoreline shape."""
+    rows = _normalized_matrix(matrix)
+    if target_1x2 is not None:
+        total = sum(target_1x2)
+        if total <= 0 or any(value < 0 for value in target_1x2):
+            raise ValueError("target_1x2 must contain non-negative probabilities")
+        target_1x2 = tuple(value / total for value in target_1x2)
+    if target_over_2_5 is not None and not 0 <= target_over_2_5 <= 1:
+        raise ValueError("target_over_2_5 must be between zero and one")
+
+    for _ in range(max(1, iterations)):
+        if target_1x2 is not None:
+            current = _one_x_two_totals(rows)
+            factors = [target / max(value, 1e-12) for target, value in zip(target_1x2, current)]
+            for home_goals, row in enumerate(rows):
+                for away_goals in range(len(row)):
+                    outcome = 0 if home_goals > away_goals else 1 if home_goals == away_goals else 2
+                    row[away_goals] *= factors[outcome]
+            rows = _normalized_matrix(rows)
+        if target_over_2_5 is not None:
+            current_over = sum(
+                probability
+                for home_goals, row in enumerate(rows)
+                for away_goals, probability in enumerate(row)
+                if home_goals + away_goals >= 3
+            )
+            over_factor = target_over_2_5 / max(current_over, 1e-12)
+            under_factor = (1 - target_over_2_5) / max(1 - current_over, 1e-12)
+            for home_goals, row in enumerate(rows):
+                for away_goals in range(len(row)):
+                    row[away_goals] *= over_factor if home_goals + away_goals >= 3 else under_factor
+            rows = _normalized_matrix(rows)
+    return rows
+
+
+def matrix_expected_goals(matrix: Iterable[Iterable[float]]) -> tuple[float, float]:
+    rows = [list(row) for row in matrix]
+    home = sum(home_goals * probability for home_goals, row in enumerate(rows) for probability in row)
+    away = sum(away_goals * probability for row in rows for away_goals, probability in enumerate(row))
+    return home, away
+
+
+def _normalized_matrix(matrix: Iterable[Iterable[float]]) -> list[list[float]]:
+    rows = [[max(0.0, float(probability)) for probability in row] for row in matrix]
+    total = sum(sum(row) for row in rows)
+    if total <= 0:
+        raise ValueError("scoreline matrix must contain positive probability mass")
+    return [[probability / total for probability in row] for row in rows]
+
+
+def _one_x_two_totals(matrix: list[list[float]]) -> tuple[float, float, float]:
+    home = draw = away = 0.0
+    for home_goals, row in enumerate(matrix):
+        for away_goals, probability in enumerate(row):
+            if home_goals > away_goals:
+                home += probability
+            elif home_goals == away_goals:
+                draw += probability
+            else:
+                away += probability
+    return home, draw, away
+
+
 def dixon_coles_scoreline_matrix(
     lambda_home: float,
     lambda_away: float,

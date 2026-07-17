@@ -4,8 +4,10 @@ from app.services.score_model import (
     MatchAdjustments,
     TeamProfile,
     dixon_coles_scoreline_matrix,
+    matrix_expected_goals,
     match_market_probabilities,
     predict_match,
+    rake_scoreline_matrix,
     scoreline_matrix,
 )
 
@@ -44,6 +46,18 @@ class ScoreModelTest(unittest.TestCase):
         )
         self.assertGreater(adjusted["lambda_home"], base["lambda_home"])
         self.assertLess(adjusted["lambda_away"], base["lambda_away"])
+
+    def test_market_raking_matches_requested_marginals(self):
+        base = scoreline_matrix(1.4, 0.9)
+        fitted = rake_scoreline_matrix(base, target_1x2=(0.55, 0.25, 0.20), target_over_2_5=0.48)
+        probabilities = match_market_probabilities(fitted)
+        self.assertAlmostEqual(sum(sum(row) for row in fitted), 1.0, places=9)
+        self.assertAlmostEqual(probabilities["p_home"], 0.55, places=5)
+        self.assertAlmostEqual(probabilities["p_draw"], 0.25, places=5)
+        self.assertAlmostEqual(probabilities["p_away"], 0.20, places=5)
+        self.assertAlmostEqual(probabilities["p_over_2_5"], 0.48, places=5)
+        home_goals, away_goals = matrix_expected_goals(fitted)
+        self.assertGreater(home_goals, away_goals)
 
 
 if __name__ == "__main__":

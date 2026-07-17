@@ -8,7 +8,7 @@
   {
     "source": "football-data.org",
     "status": "live",
-    "freshness": "72/104 matched World Cup rows at 2026-06-26T14:08:28.849606+00:00",
+    "freshness": "72/104 matched World Cup rows at 2026-07-17T13:54:52.278184+00:00",
     "purpose": "fixtures, scores and post-match validation"
   },
   {
@@ -49,20 +49,20 @@
   },
   {
     "source": "The Odds API / TheStatsAPI",
-    "status": "live",
-    "freshness": "955/16 normalized odds rows at 2026-06-26T14:08:31.875864+00:00; stored snapshots 18565; written=True",
+    "status": "live_snapshot",
+    "freshness": "0/0 normalized odds rows at 2026-06-26T14:08:34Z; stored snapshots 18565; written=False",
     "purpose": "legal sportsbook odds and Asian handicap lines"
   },
   {
     "source": "ESPN public scoreboard",
     "status": "live_public",
-    "freshness": "72 matched events; ESPN 72; football-data 72; 60 completed; 0 in-play at 2026-06-26T14:08:44.323044+00:00",
+    "freshness": "72 matched events; ESPN 72; football-data 72; 72 completed; 0 in-play at 2026-07-17T13:55:05.133747+00:00",
     "purpose": "no-key live score, official score fallback and basic public match stats"
   },
   {
     "source": "ESPN public match summary",
     "status": "live_public",
-    "freshness": "60/60 match summaries; 120 formations; 1320 starters at 2026-06-19T11:50:47.586706+00:00",
+    "freshness": "72/72 match summaries; 144 formations; 1584 starters at 2026-07-17T13:53:14.536741+00:00",
     "purpose": "public formations, starters, substitutions, player event stats and expanded team stats"
   }
 ]

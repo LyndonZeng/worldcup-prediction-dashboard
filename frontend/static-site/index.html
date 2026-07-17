@@ -1690,10 +1690,10 @@
           state.sources = localData.sources;
           state.backtest = localData.backtest || null;
           state.matchView = defaultMatchView(state.matches);
-          state.selected = visibleMatches()[0] || state.matches[0] || null;
+          state.selected = firstVisibleMatch() || state.matches[0] || null;
           bind();
           render();
-          refreshFromApi();
+          if (new URLSearchParams(window.location.search).get("api") === "1") refreshFromApi();
           startPublicLivePolling();
           return;
         }
@@ -1708,7 +1708,7 @@
         state.sources = health.sources || [];
         state.backtest = backtest;
         state.matchView = defaultMatchView(state.matches);
-        state.selected = visibleMatches()[0] || state.matches[0] || null;
+        state.selected = firstVisibleMatch() || state.matches[0] || null;
         bind();
         render();
         startPublicLivePolling();
@@ -1727,7 +1727,7 @@
         state.tournament = tournament;
         state.sources = health.sources;
         state.backtest = backtest || state.backtest;
-        state.selected = state.matches.find((match) => match.match_id === selectedId) || visibleMatches()[0] || state.matches[0] || null;
+        state.selected = state.matches.find((match) => match.match_id === selectedId) || firstVisibleMatch() || state.matches[0] || null;
         render();
       }
 
@@ -1753,7 +1753,7 @@
             return applyLiveToMatch({ ...match, live_status: live });
           });
           const selectedId = state.selected?.match_id;
-          state.selected = state.matches.find((match) => match.match_id === selectedId) || visibleMatches()[0] || state.matches[0] || null;
+          state.selected = state.matches.find((match) => match.match_id === selectedId) || firstVisibleMatch() || state.matches[0] || null;
           updateEspnSource(rows);
           render();
         } catch (_error) {
@@ -1943,7 +1943,7 @@
       function bind() {
         document.getElementById("search").addEventListener("input", (event) => {
           state.query = event.target.value.trim().toLowerCase();
-          state.selected = visibleMatches()[0] || state.selected;
+          state.selected = firstVisibleMatch() || state.selected;
           render();
         });
       }
@@ -1967,6 +1967,16 @@
 
       function visibleMatches(matches = baseFilteredMatches()) {
         return matches.filter((match) => matchInView(match, state.matchView || "ALL"));
+      }
+
+      function firstVisibleMatch() {
+        const matches = visibleMatches();
+        if (!matches.length) return null;
+        const live = matches.find((match) => matchStatus(match) === "live");
+        if (live) return live;
+        const upcoming = matches.find((match) => matchStatus(match) === "upcoming");
+        if (upcoming) return upcoming;
+        return matches[matches.length - 1];
       }
 
       function defaultMatchView(matches) {
@@ -2041,7 +2051,7 @@
         document.querySelectorAll("[data-group]").forEach((button) => {
           button.addEventListener("click", () => {
             state.group = button.dataset.group;
-            const next = filteredMatches()[0];
+            const next = firstVisibleMatch();
             if (next) state.selected = next;
             render();
           });
@@ -2054,32 +2064,26 @@
         const confidence = state.selected ? confidenceScore(state.selected) : 0;
         const current = state.selected ? currentWinProjection(state.selected) : null;
         const currentLeader = current && currentLeaderText(state.selected, current);
-        const performance = marketPerformanceSummary(state.matches);
-        const combined = combinedPerformance(performance);
-        const recommended = recommendedPerformanceSummary(state.matches);
-        const recommendedCombined = combinedPerformance(recommended);
+        const formal = state.backtest?.formal || {};
+        const formalOneXTwo = normalizePerformance(formal.one_x_two, { samples: 0, correct: 0, hit_rate: null });
+        const formalAsian = normalizePerformance(formal.asian_handicap, { samples: 0, correct: 0, hit_rate: null });
+        const formalOverUnder = normalizePerformance(formal.over_under, { samples: 0, correct: 0, hit_rate: null });
+        const formalCorners = normalizePerformance(formal.corners, { samples: 0, correct: 0, hit_rate: null });
+        const comparison = state.backtest?.model_comparison || {};
+        const ensemble = normalizePerformance(comparison.production_ensemble, { samples: 0, correct: 0, hit_rate: null });
+        const shadowOverUnder = normalizePerformance(state.backtest?.shadow?.over_under, { samples: 0, correct: 0, hit_rate: null });
         const liveSources = state.sources.filter((source) => source.status !== "planned").length;
         const realLineups = state.matches.filter((match) => materialAvailable(match)).length;
-        const ahMarket = performance.asian_handicap_market;
-        const cornerReco = performance.corners_recommended;
-        const ahMarketSub = ahMarket?.samples ? ` · 市场edge ${ahMarket.correct}/${ahMarket.samples}` : " · 市场edge无样本";
-        const cornerRecoSub = cornerReco?.samples ? ` · 参考 ${cornerReco.correct}/${cornerReco.samples}` : " · 参考无样本";
-        const minReferenceSamples = 10;
-        const ahAll = performance.asian_handicap;
-        const ahAllSub = ahAll?.samples ? metricHitSub(ahAll, "模型方向 -/+1.5", minReferenceSamples) : "等待让球 1.5 样本";
-        const ahReferenceSub = recommended.asian_handicap?.samples
-          ? ` · 高置信 ${recommended.asian_handicap.correct}/${recommended.asian_handicap.samples}${sampleRisk(recommended.asian_handicap, minReferenceSamples)}`
-          : " · 高置信无样本";
         document.getElementById("hero-confidence").textContent = pct(confidence);
         document.getElementById("hero-markets").textContent = `${marketCount} handicap markets`;
         document.getElementById("hero-sources").textContent = `${liveSources}/${state.sources.length} data sources`;
         document.getElementById("metrics").innerHTML = [
-          metric("高置信参考", metricHitText(recommendedCombined), recommendedCombined.samples ? `参考 ${recommendedCombined.correct}/${recommendedCombined.samples} · 低置信过滤${sampleRisk(recommendedCombined, minReferenceSamples)}` : "等待高置信样本"),
-          metric("全部硬选回测", metricHitText(combined), combined.samples ? `四类市场 ${combined.correct}/${combined.samples}` : "等待可结算样本"),
-          metric("不让球参考", metricHitText(recommended.one_x_two), `${metricHitSub(recommended.one_x_two, "高置信", minReferenceSamples)} · 硬选 ${performance.one_x_two.correct}/${performance.one_x_two.samples}`),
-          metric("让球1.5回测", metricHitText(ahAll, minReferenceSamples), `${ahAllSub}${ahReferenceSub}${ahMarketSub}`),
-          metric("大小球参考", metricHitText(recommended.over_under), `${metricHitSub(recommended.over_under, "高置信", minReferenceSamples)} · 硬选 ${performance.over_under.correct}/${performance.over_under.samples}`),
-          metric("角球参考", metricHitText(recommended.corners), `${metricHitSub(recommended.corners, "高置信", minReferenceSamples)}${cornerRecoSub}`),
+          metric("赛前锁定 1X2", metricHitText(formalOneXTwo), metricHitSub(formalOneXTwo, "真实发布")),
+          metric("赛前锁定让球", metricHitText(formalAsian), `${metricHitSub(formalAsian, "真实发布")} · ROI ${pctOrDash(formal.asian_handicap?.roi)} · 已暂停方向`),
+          metric("赛前锁定大小球", metricHitText(formalOverUnder), metricHitSub(formalOverUnder, "真实发布")),
+          metric("赛前锁定角球", metricHitText(formalCorners), `${metricHitSub(formalCorners, "真实发布")} · 已暂停方向`),
+          metric("新模型 1X2 烟测", metricHitText(ensemble), ensemble.samples ? `Brier ${metricNumber(ensemble.brier)} · 裸模型 ${metricNumber(comparison.baseline?.brier)}` : "等待同样本比较"),
+          metric("新模型大小球烟测", metricHitText(shadowOverUnder), shadowOverUnder.samples ? `Brier ${metricNumber(shadowOverUnder.brier)} · 非锁定成绩` : "等待同样本比较"),
           metric("单场当前胜率", currentLeader ? currentLeader.value : "-", current ? currentLeader.sub : "等待比赛选择"),
           metric("赛制覆盖", `${state.tournament?.projected_matches_total || state.matches.length} 场`, "72 场小组赛 + 32 场淘汰赛投影"),
           metric("亚洲盘口", `${marketCount} 条`, "含半赢、走盘、公平赔率"),
@@ -2122,7 +2126,7 @@
         document.querySelectorAll("[data-match-view]").forEach((button) => {
           button.addEventListener("click", () => {
             state.matchView = button.dataset.matchView;
-            state.selected = visibleMatches()[0] || state.selected;
+            state.selected = firstVisibleMatch() || state.selected;
             render();
           });
         });
@@ -2256,7 +2260,7 @@
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>主队盘口</th><th>${match.home_team.name}</th><th>${match.away_team.name}</th><th>走盘</th><th>公平赔率</th><th>市场赔率</th><th>模型倾向</th></tr>
+                <tr><th>主队盘口</th><th>${match.home_team.name}</th><th>${match.away_team.name}</th><th>走盘</th><th>公平赔率</th><th>市场赔率</th><th>方向状态</th></tr>
               </thead>
               <tbody>
                 ${match.handicap_preview.map((row) => `
@@ -2267,7 +2271,7 @@
                     <td>${pct(row.home.push)}</td>
                     <td><span class="mono">${odds(row.home.fair_decimal_odds)}</span><small>客 ${odds(row.away.fair_decimal_odds)}</small></td>
                     <td><span class="mono">${row.market_status === "available" ? odds(row.home.market_decimal_odds) : row.market_status === "proxy" ? "样例盘口" : "暂无市场"}</span><small>${row.market_status === "available" ? `客 ${odds(row.away.market_decimal_odds)}` : row.source} · ${row.closing_status || "closing pending"}</small></td>
-                    <td><span class="lean ${row.lean === "home" ? "home-lean" : row.lean === "away" ? "away-lean" : ""}">${row.lean === "home" ? "主队" : row.lean === "away" ? "客队" : "观察"}</span></td>
+                    <td><span class="lean ${row.lean === "home" ? "home-lean" : row.lean === "away" ? "away-lean" : ""}">${row.lean_status === "suspended_negative_locked_roi" ? "已暂停" : row.lean === "home" ? "主队" : row.lean === "away" ? "客队" : "观察"}</span></td>
                   </tr>
                 `).join("")}
               </tbody>
@@ -3547,7 +3551,21 @@
           scoreReference(match),
           cornersReference(match),
           cardsReference(match)
-        ];
+        ].map(applyReferenceGate);
+      }
+
+      function applyReferenceGate(row) {
+        const gate = state.backtest?.formal?.public_reference_gate || {};
+        const isHandicap = ["亚洲让球", "欧洲让球胜平负", "Polymarket 线型参考"].includes(row.category);
+        const gateStatus = isHandicap ? gate.asian_handicap : row.category === "角球" ? gate.corners : null;
+        if (!String(gateStatus || "").startsWith("suspended")) return row;
+        return {
+          ...row,
+          source_type: "赛前锁定回测未通过",
+          confidence: "低",
+          pick: "已暂停方向输出",
+          note: `该市场的真实赛前锁定成绩未通过准入门槛，当前只保留概率和数据展示。${row.note}`
+        };
       }
 
       function outcomeRows(match) {
@@ -4851,7 +4869,7 @@
         document.getElementById("backtest-status").textContent = report.status ? "MVP" : "pending";
         document.getElementById("backtest").innerHTML = `
           <div class="subpanel" style="margin:12px">
-            <span class="data-chip">闭盘验证 MVP · 非投注建议</span>
+            <span class="data-chip">赛前锁定验证 · 闭盘线待补 · 非投注建议</span>
             <p class="source-note">${report.method || "等待快照生成"} </p>
           </div>
           <div class="grid" style="padding:0 12px 12px">
@@ -4865,13 +4883,14 @@
             ${tile("角球命中", performanceText(formalCorners))}
           </div>
           <div class="subpanel" style="margin:0 12px 12px">
-            <h3>正式闭盘回测</h3>
+            <h3>正式赛前锁定成绩</h3>
             <div class="rail-body" style="padding:10px 0 0">
               ${performanceRow("样本", `${formal.eligible_samples || 0} 场`, "必须赛前锁定，且不能偷看未来")}
               ${performanceRow("不让球 1X2", performanceText(formalOneXTwo), `Brier ${metricNumber(formalOneXTwo.brier)} · log-loss ${metricNumber(formalOneXTwo.log_loss)}`)}
               ${performanceRow("亚洲让球", performanceText(formalAsian), `ROI ${pctOrDash(formalAsian.roi)} · CLV ${pctOrDash(formalAsian.average_clv)}`)}
               ${performanceRow("大小球", performanceText(formalOverUnder), `Brier ${metricNumber(formalOverUnder.brier)} · O/U 2.5`)}
               ${performanceRow("角球", performanceText(formalCorners), `真实角球样本 ${formalCorners.actual_event_samples || 0} 场`)}
+              ${performanceRow("公开方向闸门", referenceGateText(formal.public_reference_gate), "未通过的市场只显示概率，不再输出方向")}
             </div>
             <p class="source-note">${(formal.notes || []).join(" ") || "等待第一批真实赛前锁定与闭盘样本。"}</p>
           </div>
@@ -4893,12 +4912,16 @@
       function modelComparisonPanel(comparison) {
         if (!comparison || !comparison.samples) return "";
         const baseline = comparison.baseline || {};
+        const ensemble = comparison.production_ensemble || {};
+        const market = comparison.market_consensus || {};
         const dixonColes = comparison.dixon_coles || {};
         return `
           <div class="subpanel" style="margin:0 12px 12px">
             <h3>模型候选并行评测</h3>
             <div class="rail-body" style="padding:10px 0 0">
-              ${performanceRow("Poisson baseline", performanceText(baseline), `Brier ${metricNumber(baseline.brier)} · log-loss ${metricNumber(baseline.log_loss)}`)}
+              ${performanceRow("裸多因子模型", performanceText(baseline), `Brier ${metricNumber(baseline.brier)} · log-loss ${metricNumber(baseline.log_loss)}`)}
+              ${performanceRow("当前生产融合", performanceText(ensemble), `市场权重 ${pct(ensemble.market_weight || 0)} · Brier ${metricNumber(ensemble.brier)} · log-loss ${metricNumber(ensemble.log_loss)}`)}
+              ${performanceRow("去水市场共识", performanceText(market), `仅统计有真实赛前赔率的 ${market.samples || 0} 场`)}
               ${performanceRow("Dixon-Coles", performanceText(dixonColes), `rho ${value(dixonColes.rho, 2)} · log-loss ${metricNumber(dixonColes.log_loss)}`)}
               ${performanceRow("升级判定", modelDecisionText(comparison.decision), `log-loss 差 ${signedMetric(comparison.delta_log_loss)} · 样本 ${comparison.samples}`)}
             </div>
@@ -4953,8 +4976,16 @@
       }
 
       function modelDecisionText(decision) {
+        if (decision === "promote_market_ensemble") return "启用市场融合";
         if (decision === "promote_candidate_after_more_samples") return "候选占优";
-        return "保留 baseline";
+        if (decision === "keep_raw_model") return "保留裸模型";
+        return "继续观察";
+      }
+
+      function referenceGateText(gate) {
+        if (!gate) return "pending";
+        const suspended = [gate.asian_handicap, gate.corners].filter((value) => String(value || "").startsWith("suspended")).length;
+        return suspended ? `暂停 ${suspended} 类市场` : "研究展示";
       }
 
       function bracketBoard(bracket) {

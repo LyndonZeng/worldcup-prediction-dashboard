@@ -279,7 +279,7 @@ def update_source_health(report: dict) -> None:
     odds = report["odds"]
     set_row(
         "The Odds API / TheStatsAPI",
-        "live" if odds["rows"] else ("configured_empty" if odds["raw_rows"] == 0 else "unmatched"),
+        "live_snapshot" if odds["stored_rows"] else ("configured_empty" if odds["raw_rows"] == 0 else "unmatched"),
         f'{odds["rows"]}/{odds["raw_rows"]} normalized odds rows at {odds["captured_at"]}; stored snapshots {odds["stored_rows"]}; written={odds["written"]}',
         "legal sportsbook odds and Asian handicap lines",
     )

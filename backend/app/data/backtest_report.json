@@ -1,45 +1,62 @@
 {
-  "generated_at": "2026-06-26T14:16:02.891699+00:00",
-  "status": "mvp_shadow_until_locked_closing_samples",
-  "method": "Formal samples require pre-kickoff model snapshots and closing lines; shadow audit is not leak-safe.",
+  "generated_at": "2026-07-17T14:17:57.211701+00:00",
+  "status": "locked_results_available_closing_line_pending",
+  "method": "Formal accuracy uses predictions preserved at least five minutes before kickoff; CLV remains unavailable until a price is captured inside the closing window.",
   "snapshot_counts": {
-    "model_prediction_snapshots": 72,
-    "eligible_pre_kickoff_predictions": 12,
+    "model_prediction_snapshots": 84,
+    "eligible_pre_kickoff_predictions": 72,
     "closing_line_snapshots": 4592,
     "true_closing_lines": 0,
-    "settled_matches": 60
+    "settled_matches": 72
   },
   "formal": {
-    "eligible_samples": 0,
+    "eligible_samples": 72,
     "one_x_two": {
-      "samples": 0,
-      "hit_rate": null,
-      "correct": 0,
-      "brier": null,
-      "log_loss": null
+      "samples": 72,
+      "hit_rate": 0.652778,
+      "correct": 47,
+      "brier": 0.177715,
+      "log_loss": 0.901948
     },
     "asian_handicap": {
-      "selections": 0,
-      "roi": null,
-      "hit_rate": null,
+      "selections": 158,
+      "roi": -0.209019,
+      "hit_rate": 0.373418,
       "average_clv": null,
-      "unit_profit": 0,
-      "correct": 0,
-      "pushes": 0
+      "unit_profit": -33.025,
+      "correct": 59,
+      "pushes": 15
     },
     "over_under": {
-      "samples": 0,
-      "hit_rate": null,
-      "correct": 0,
-      "brier": null,
-      "log_loss": null
+      "samples": 72,
+      "hit_rate": 0.513889,
+      "correct": 37,
+      "brier": 0.261464,
+      "log_loss": 0.717041
     },
     "corners": {
-      "actual_event_samples": 0,
-      "selections": 0,
-      "hit_rate": null,
-      "correct": 0,
-      "line_summary": {}
+      "actual_event_samples": 72,
+      "selections": 57,
+      "hit_rate": 0.438596,
+      "correct": 25,
+      "line_summary": {
+        "over_9.5": {
+          "selections": 42,
+          "correct": 14,
+          "hit_rate": 0.333333
+        },
+        "over_8.5": {
+          "selections": 15,
+          "correct": 11,
+          "hit_rate": 0.733333
+        }
+      }
+    },
+    "public_reference_gate": {
+      "asian_handicap": "suspended_negative_locked_roi",
+      "over_under": "research_only",
+      "corners": "suspended_below_coin_flip",
+      "policy": "Keep probabilities visible, but do not emit a directional public lean for markets that fail locked-sample validation."
     },
     "notes": [
       "No sample is counted unless the prediction was locked before kickoff.",
@@ -49,75 +66,92 @@
   "shadow": {
     "label": "\u516c\u5f0f\u70df\u6d4b\uff0c\u4e0d\u4f5c\u4e3a\u4e13\u4e1a\u6a21\u578b\u6210\u7ee9",
     "one_x_two": {
-      "samples": 60,
-      "hit_rate": 0.65,
-      "correct": 39,
-      "brier": 0.178731,
-      "log_loss": 0.90179
+      "samples": 72,
+      "hit_rate": 0.652778,
+      "correct": 47,
+      "brier": 0.160499,
+      "log_loss": 0.825372
     },
     "asian_handicap": {
-      "selections": 96,
-      "roi": -0.293021,
-      "hit_rate": 0.354167,
+      "selections": 90,
+      "roi": -0.365681,
+      "hit_rate": 0.3,
       "average_clv": null,
-      "unit_profit": -28.13,
-      "correct": 34,
-      "pushes": 5
+      "unit_profit": -32.9113,
+      "correct": 27,
+      "pushes": 9
     },
     "over_under": {
-      "samples": 60,
-      "hit_rate": 0.483333,
-      "correct": 29,
-      "brier": 0.265569,
-      "log_loss": 0.726502
+      "samples": 72,
+      "hit_rate": 0.597222,
+      "correct": 43,
+      "brier": 0.238101,
+      "log_loss": 0.669711
     },
     "corners": {
-      "actual_event_samples": 60,
-      "selections": 49,
-      "hit_rate": 0.44898,
-      "correct": 22,
+      "actual_event_samples": 72,
+      "selections": 59,
+      "hit_rate": 0.457627,
+      "correct": 27,
       "line_summary": {
         "over_8.5": {
-          "selections": 14,
-          "correct": 10,
-          "hit_rate": 0.714286
+          "selections": 26,
+          "correct": 13,
+          "hit_rate": 0.5
         },
         "over_9.5": {
-          "selections": 34,
-          "correct": 11,
-          "hit_rate": 0.323529
+          "selections": 22,
+          "correct": 7,
+          "hit_rate": 0.318182
         },
         "under_8.5": {
-          "selections": 1,
-          "correct": 1,
-          "hit_rate": 1.0
+          "selections": 11,
+          "correct": 7,
+          "hit_rate": 0.636364
         }
       }
     }
   },
   "model_comparison": {
     "status": "shadow_parallel_evaluation",
-    "samples": 60,
+    "samples": 72,
     "baseline": {
-      "name": "Poisson baseline",
-      "samples": 60,
-      "hit_rate": 0.65,
-      "correct": 39,
-      "brier": 0.178731,
-      "log_loss": 0.90179
+      "name": "Raw multi-factor Poisson model",
+      "samples": 72,
+      "hit_rate": 0.652778,
+      "correct": 47,
+      "brier": 0.175265,
+      "log_loss": 0.891617
+    },
+    "production_ensemble": {
+      "name": "Deduplicated pre-kickoff market ensemble",
+      "market_weight": 0.75,
+      "samples": 72,
+      "hit_rate": 0.652778,
+      "correct": 47,
+      "brier": 0.160499,
+      "log_loss": 0.825372
+    },
+    "market_consensus": {
+      "name": "De-vigged market consensus where available",
+      "samples": 56,
+      "hit_rate": 0.732143,
+      "correct": 41,
+      "brier": 0.140022,
+      "log_loss": 0.737651
     },
     "dixon_coles": {
       "name": "Dixon-Coles low-score adjustment",
       "rho": -0.06,
-      "samples": 60,
-      "hit_rate": 0.65,
-      "correct": 39,
-      "brier": 0.179001,
-      "log_loss": 0.899655
+      "samples": 72,
+      "hit_rate": 0.652778,
+      "correct": 47,
+      "brier": 0.175135,
+      "log_loss": 0.887822
     },
-    "delta_log_loss": -0.002135,
-    "decision": "keep_poisson_baseline",
-    "promotion_rule": "Only promote when walk-forward samples are meaningful and log-loss/Brier improve versus baseline."
+    "delta_log_loss": -0.066245,
+    "decision": "promote_market_ensemble",
+    "promotion_rule": "Promote only when the candidate lowers both log-loss and Brier on at least 40 settled samples."
   },
   "factor_gate": {
     "status": "active_transparency_gate",
@@ -133,7 +167,7 @@
       {
         "category": "\u5df2\u56de\u6d4b\u56e0\u5b50",
         "factor_count": 1,
-        "used_in_model_rows": 12,
+        "used_in_model_rows": 48,
         "display_only_rows": 0,
         "proxy_rows": 0
       },
@@ -148,7 +182,7 @@
         "category": "\u900f\u660e\u5148\u9a8c",
         "factor_count": 10,
         "used_in_model_rows": 648,
-        "display_only_rows": 60,
+        "display_only_rows": 24,
         "proxy_rows": 144
       }
     ]
