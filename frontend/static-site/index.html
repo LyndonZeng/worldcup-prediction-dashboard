@@ -298,7 +298,7 @@
 
       .match-view-tabs {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 6px;
         padding: 10px;
         border-bottom: 1px solid var(--line);
@@ -770,6 +770,10 @@
 
         .factor {
           grid-template-columns: 1fr;
+        }
+
+        .match-view-tabs {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
         }
       }
     </style>
@@ -1981,8 +1985,9 @@
 
       function defaultMatchView(matches) {
         const counts = matchViewCounts(matches);
-        if (counts.TODAY) return "TODAY";
         if (counts.LIVE) return "LIVE";
+        if (counts.TODAY) return "TODAY";
+        if (counts.CLOSING) return "CLOSING";
         if (counts.UPCOMING) return "UPCOMING";
         if (counts.FINISHED) return "FINISHED";
         return "ALL";
@@ -1992,6 +1997,7 @@
         return {
           LIVE: matches.filter((match) => matchStatus(match) === "live").length,
           TODAY: matches.filter(isTodayMatch).length,
+          CLOSING: matches.filter(isClosingStageMatch).length,
           UPCOMING: matches.filter((match) => matchStatus(match) === "upcoming").length,
           FINISHED: matches.filter((match) => matchStatus(match) === "finished").length,
           ALL: matches.length
@@ -2002,12 +2008,19 @@
         const status = matchStatus(match);
         if (view === "LIVE") return status === "live";
         if (view === "TODAY") return isTodayMatch(match);
+        if (view === "CLOSING") return isClosingStageMatch(match);
         if (view === "UPCOMING") return status === "upcoming";
         if (view === "FINISHED") return status === "finished";
         return true;
       }
 
       function matchSections() {
+        if (state.matchView === "CLOSING") {
+          return [
+            { title: "决赛周末", filter: (match) => matchStatus(match) !== "finished" },
+            { title: "半决赛赛果", filter: (match) => matchStatus(match) === "finished", reverse: true }
+          ];
+        }
         return [
           { title: "正在进行", filter: (match) => matchStatus(match) === "live" },
           { title: "今日未赛", filter: (match) => matchStatus(match) === "upcoming" && isTodayMatch(match) },
@@ -2026,6 +2039,10 @@
 
       function isTodayMatch(match) {
         return dateKeyInZone(new Date(match.fixture.kickoff_utc), "Asia/Shanghai") === dateKeyInZone(new Date(), "Asia/Shanghai");
+      }
+
+      function isClosingStageMatch(match) {
+        return Number(match.fixture.match_number) >= 101;
       }
 
       function render() {
@@ -2116,6 +2133,7 @@
         const views = [
           ["LIVE", "进行中", counts.LIVE],
           ["TODAY", "今日", counts.TODAY],
+          ["CLOSING", "收官", counts.CLOSING],
           ["UPCOMING", "未赛", counts.UPCOMING],
           ["FINISHED", "已完赛", counts.FINISHED],
           ["ALL", "全部", counts.ALL]
