@@ -1,20 +1,20 @@
 [
   {
     "source": "FIFA / public match schedule",
-    "status": "seeded",
-    "freshness": "2026-06-10 public schedule snapshot",
-    "purpose": "48-team groups and 72 group fixtures"
+    "status": "live_public",
+    "freshness": "104/104 fixtures; ESPN knockout rows 32 at 2026-07-17T15:12:24.857683+00:00",
+    "purpose": "48-team groups and complete 104-match fixture path"
   },
   {
     "source": "football-data.org",
     "status": "live",
-    "freshness": "72/104 matched World Cup rows at 2026-07-17T13:54:52.278184+00:00",
+    "freshness": "104/104 matched World Cup rows at 2026-07-17T15:12:24.857683+00:00",
     "purpose": "fixtures, scores and post-match validation"
   },
   {
     "source": "martj42 international_results",
     "status": "live",
-    "freshness": "49477 historical rows; 48 teams covered at 2026-06-26T14:10:16.759955+00:00",
+    "freshness": "49520 historical rows; 48 teams covered at 2026-07-17T15:13:16.094250+00:00",
     "purpose": "historical international results for form calibration"
   },
   {
@@ -26,7 +26,7 @@
   {
     "source": "Open-Meteo",
     "status": "live",
-    "freshness": "72/72 forecast rows at 2026-06-26T14:09:55.342891+00:00",
+    "freshness": "100/104 forecast rows at 2026-07-17T15:13:12.037934+00:00",
     "purpose": "weather, wind and heat context"
   },
   {
@@ -44,25 +44,25 @@
   {
     "source": "Polymarket Gamma",
     "status": "live",
-    "freshness": "60 markets at 2026-06-26T14:10:14.794638+00:00",
+    "freshness": "60 markets at 2026-07-17T15:13:14.805492+00:00",
     "purpose": "prediction market prices"
   },
   {
     "source": "The Odds API / TheStatsAPI",
     "status": "live_snapshot",
-    "freshness": "0/0 normalized odds rows at 2026-06-26T14:08:34Z; stored snapshots 18565; written=False",
+    "freshness": "166/2 normalized odds rows at 2026-07-17T15:12:28.059653+00:00; stored snapshots 18731; written=True",
     "purpose": "legal sportsbook odds and Asian handicap lines"
   },
   {
     "source": "ESPN public scoreboard",
     "status": "live_public",
-    "freshness": "72 matched events; ESPN 72; football-data 72; 72 completed; 0 in-play at 2026-07-17T13:55:05.133747+00:00",
+    "freshness": "104 matched events; ESPN 104; football-data 104; 102 completed; 0 in-play at 2026-07-17T15:12:37.962127+00:00",
     "purpose": "no-key live score, official score fallback and basic public match stats"
   },
   {
     "source": "ESPN public match summary",
     "status": "live_public",
-    "freshness": "72/72 match summaries; 144 formations; 1584 starters at 2026-07-17T13:53:14.536741+00:00",
+    "freshness": "102/102 match summaries; 204 formations; 2244 starters at 2026-06-19T11:50:47.586706+00:00",
     "purpose": "public formations, starters, substitutions, player event stats and expanded team stats"
   }
 ]

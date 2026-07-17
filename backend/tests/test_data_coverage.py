@@ -11,11 +11,13 @@ from app.services.predictions import all_matches, tournament_probabilities
 
 
 class DataCoverageTest(unittest.TestCase):
-    def test_seed_dataset_contains_full_group_stage(self):
+    def test_dataset_contains_complete_tournament_schedule(self):
         teams = data_store.teams()
         fixtures = data_store.fixtures()
         self.assertEqual(len(teams), 48)
-        self.assertEqual(len(fixtures), 72)
+        self.assertEqual(len(fixtures), 104)
+        self.assertEqual(fixtures[-2]["stage"], "Third Place")
+        self.assertEqual(fixtures[-1]["stage"], "Final")
         self.assertEqual({team.group for team in teams.values()}, set("ABCDEFGHIJKL"))
 
     def test_every_fixture_references_known_teams(self):
@@ -28,7 +30,7 @@ class DataCoverageTest(unittest.TestCase):
     def test_predictions_and_tournament_cover_seed_dataset(self):
         matches = all_matches()
         tournament = tournament_probabilities()
-        self.assertEqual(len(matches), 72)
+        self.assertEqual(len(matches), 104)
         self.assertEqual(len(tournament["teams"]), 48)
         self.assertAlmostEqual(
             sum(row["title_probability"] for row in tournament["teams"]),
@@ -41,6 +43,14 @@ class DataCoverageTest(unittest.TestCase):
         self.assertEqual(
             sum(len(round_row["matches"]) for round_row in tournament["bracket"]["rounds"]),
             32,
+        )
+        self.assertIn("actual ESPN/FIFA knockout schedule", tournament["bracket"]["source"])
+        self.assertTrue(
+            all(
+                row["expected_points"] <= 9
+                for group in tournament["group_table"]
+                for row in group["rows"]
+            )
         )
         self.assertIn("raw_title_probability", tournament["teams"][0])
         self.assertIn("title_anchor", tournament)

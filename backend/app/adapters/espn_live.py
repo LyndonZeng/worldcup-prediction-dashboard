@@ -7,7 +7,7 @@ but not a substitute for licensed event data.
 from __future__ import annotations
 
 import unicodedata
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -15,6 +15,33 @@ from .http import get_json
 
 BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard"
 ET = ZoneInfo("America/New_York")
+KNOCKOUT_START = date(2026, 6, 28)
+KNOCKOUT_END = date(2026, 7, 19)
+
+KNOCKOUT_STAGE_BY_MATCH = {
+    **{number: "Round of 32" for number in range(73, 89)},
+    **{number: "Round of 16" for number in range(89, 97)},
+    **{number: "Quarter-final" for number in range(97, 101)},
+    **{number: "Semi-final" for number in range(101, 103)},
+    103: "Third Place",
+    104: "Final",
+}
+
+CITY_ALIASES = {
+    "Arlington, Texas": "Arlington",
+    "Atlanta, Georgia": "Atlanta",
+    "Boston, Massachusetts": "Boston",
+    "East Rutherford, New Jersey": "East Rutherford",
+    "Houston, Texas": "Houston",
+    "Inglewood, California": "Inglewood",
+    "Kansas City, Missouri": "Kansas City",
+    "Los Angeles, California": "Inglewood",
+    "Miami Gardens, Florida": "Miami",
+    "Philadelphia, Pennsylvania": "Philadelphia",
+    "Santa Clara, California": "Santa Clara",
+    "Seattle, Washington": "Seattle",
+    "Vancouver, British Columbia": "Vancouver",
+}
 
 TEAM_ALIASES = {
     "bosnia herzegovina": "bih",
@@ -77,6 +104,74 @@ def fetch_live_match_statuses(fixtures: list[dict], teams: list[dict]) -> list[d
         payload = fetch_scoreboard(date_key)
         events.extend(payload.get("events", []))
     return normalize_events(fixtures, teams, events, captured_at)
+
+
+def fetch_knockout_fixtures(teams: list[dict]) -> list[dict]:
+    payload = get_json(
+        BASE_URL,
+        params={
+            "dates": f'{KNOCKOUT_START.strftime("%Y%m%d")}-{KNOCKOUT_END.strftime("%Y%m%d")}',
+            "limit": 200,
+        },
+        headers={"User-Agent": "wc26-dashboard/0.1"},
+        timeout=45,
+    )
+    events = payload.get("events", [])
+    return normalize_knockout_fixtures(teams, events)
+
+
+def normalize_knockout_fixtures(teams: list[dict], events: list[dict]) -> list[dict]:
+    aliases = _team_aliases(teams)
+    candidates = {}
+    for event in events:
+        competition = (event.get("competitions") or [{}])[0]
+        competitors = competition.get("competitors") or []
+        by_side = {row.get("homeAway"): row for row in competitors}
+        if "home" not in by_side or "away" not in by_side:
+            continue
+        home_id = _team_id_for_competitor(by_side["home"], aliases)
+        away_id = _team_id_for_competitor(by_side["away"], aliases)
+        kickoff = event.get("date") or competition.get("date")
+        if not home_id or not away_id or not kickoff:
+            continue
+        kickoff_at = _parse_utc(kickoff)
+        local_date = kickoff_at.astimezone(ET).date()
+        if not KNOCKOUT_START <= local_date <= KNOCKOUT_END:
+            continue
+        event_id = str(event.get("id") or f"{home_id}-{away_id}-{kickoff}")
+        venue = competition.get("venue") or {}
+        address = venue.get("address") or {}
+        raw_city = str(address.get("city") or "")
+        city = CITY_ALIASES.get(raw_city, raw_city.split(",", 1)[0] or "Unknown")
+        candidates[event_id] = {
+            "espn_event_id": event.get("id"),
+            "kickoff_utc": kickoff_at.isoformat().replace("+00:00", "Z"),
+            "venue": venue.get("fullName") or "TBD",
+            "city": city,
+            "home_team_id": home_id,
+            "away_team_id": away_id,
+        }
+    ordered = sorted(candidates.values(), key=lambda row: row["kickoff_utc"])
+    rows = []
+    for match_number, row in enumerate(ordered[:32], start=73):
+        stage = KNOCKOUT_STAGE_BY_MATCH[match_number]
+        notes = ["neutral venue", "knockout regulation-time model"]
+        if stage == "Third Place":
+            notes.extend(["third-place open-play prior", "rotation uncertainty"])
+        elif stage == "Final":
+            notes.extend(["final caution prior", "extra-time excluded from 1X2"])
+        rows.append(
+            {
+                "id": f"wc26-{match_number:03d}",
+                "match_number": match_number,
+                "stage": stage,
+                "group": "KO",
+                **row,
+                "source_quality": "espn_public_schedule",
+                "context": {"home_mult": 1.0, "away_mult": 1.0, "notes": notes},
+            }
+        )
+    return rows
 
 
 def normalize_events(fixtures: list[dict], teams: list[dict], events: list[dict], captured_at: str) -> list[dict]:

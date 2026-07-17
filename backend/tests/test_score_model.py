@@ -2,6 +2,7 @@ import unittest
 
 from app.services.score_model import (
     MatchAdjustments,
+    MatchContext,
     TeamProfile,
     dixon_coles_scoreline_matrix,
     matrix_expected_goals,
@@ -46,6 +47,12 @@ class ScoreModelTest(unittest.TestCase):
         )
         self.assertGreater(adjusted["lambda_home"], base["lambda_home"])
         self.assertLess(adjusted["lambda_away"], base["lambda_away"])
+
+    def test_neutral_venue_removes_designated_home_advantage(self):
+        home = TeamProfile("h", "Home", "A", "HOM", "us", 1800, 0.05, 0.05)
+        away = TeamProfile("a", "Away", "A", "AWY", "mx", 1800, 0.05, 0.05)
+        prediction = predict_match(home, away, MatchContext(notes=("neutral venue",)))
+        self.assertAlmostEqual(prediction["lambda_home"], prediction["lambda_away"], places=6)
 
     def test_market_raking_matches_requested_marginals(self):
         base = scoreline_matrix(1.4, 0.9)

@@ -10,15 +10,13 @@ BASE_URL = "https://gamma-api.polymarket.com"
 WORLD_CUP_TERMS = ("world cup", "fifa world cup", "soccer world cup", "football world cup")
 
 
-def search_world_cup_markets(limit: int = 100) -> list[dict[str, Any]]:
+def search_world_cup_markets(limit: int = 500) -> list[dict[str, Any]]:
     events = get_json(
         f"{BASE_URL}/events",
         params={
             "active": "true",
             "closed": "false",
             "limit": limit,
-            "order": "volume_24hr",
-            "ascending": "false",
         },
         headers={"User-Agent": "wc26-dashboard/0.1"},
         timeout=30,

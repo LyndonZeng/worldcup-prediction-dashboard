@@ -223,6 +223,10 @@ SOURCE_HEALTH = [
 
 
 def main() -> None:
+    if "--reset-seed" not in sys.argv:
+        write_static_payload()
+        print("Rebuilt the static payload from the current provider snapshots.")
+        return
     teams = build_teams()
     fixtures = build_fixtures()
     odds = build_odds_snapshots(teams, fixtures)
@@ -231,7 +235,7 @@ def main() -> None:
     write_json(DATA_DIR / "odds_snapshots.json", odds)
     write_json(DATA_DIR / "source_health.json", SOURCE_HEALTH)
     write_static_payload()
-    print(f"Built {len(teams)} teams, {len(fixtures)} fixtures and {len(odds)} odds snapshots.")
+    print(f"Reset seed data: {len(teams)} teams, {len(fixtures)} fixtures and {len(odds)} odds snapshots.")
 
 
 def build_teams() -> list[dict]:
@@ -402,6 +406,10 @@ def write_static_payload() -> None:
         merge_model_prediction_snapshots,
     )
     from app.services.predictions import (
+        _corner_probability_calibration,
+        _corner_distribution_profile,
+        _raw_corner_probability_for_fixture,
+        _tournament_team_form,
         _tournament_corner_calibration,
         _tournament_goal_calibration,
         all_matches,
@@ -423,6 +431,10 @@ def write_static_payload() -> None:
     data_store.historical_results_summary.cache_clear()
     _tournament_goal_calibration.cache_clear()
     _tournament_corner_calibration.cache_clear()
+    _raw_corner_probability_for_fixture.cache_clear()
+    _corner_probability_calibration.cache_clear()
+    _corner_distribution_profile.cache_clear()
+    _tournament_team_form.cache_clear()
     matches = all_matches()
     current_prediction_snapshots = build_model_prediction_snapshots(matches, data_store.source_health())
     model_prediction_snapshots = merge_model_prediction_snapshots(
@@ -506,6 +518,7 @@ def compact_form(form: dict) -> dict:
         "clean_sheet_rate": form["clean_sheet_rate"],
         "latest_result_date": form["latest_result_date"],
         "source": form["source"],
+        "tournament": form.get("tournament"),
     }
 
 

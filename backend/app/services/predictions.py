@@ -22,9 +22,9 @@ from .score_model import (
 )
 
 DEFAULT_HANDICAP_LINES = [-2.5, -2, -1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5]
-MODEL_VERSION = "wc26-v0.8-deduplicated-market-ensemble"
+MODEL_VERSION = "wc26-v0.9-knockout-rolling-ensemble"
 TITLE_MARKET_ANCHOR_WEIGHT = 0.55
-MATCH_MARKET_ANCHOR_WEIGHT = 0.75
+MATCH_MARKET_ANCHOR_WEIGHT = 0.85
 MARKET_LOCK_BUFFER_MINUTES = 5
 MONTE_CARLO_RUNS = 4000
 MONTE_CARLO_SEED = 20260612
@@ -84,7 +84,7 @@ def prediction_for_fixture(fixture: dict) -> dict:
         "context": {"notes": list(context.notes), "home_mult": context.home_mult, "away_mult": context.away_mult},
         "live_status": live_status,
         "match_materials": match_materials,
-        "team_form": _team_form(home, away),
+        "team_form": _team_form(home, away, fixture),
         "tactical_profile": _tactical_match_profile(home, away, fixture, context, live_status, match_materials),
         "availability": _availability(home, away, match_materials),
         "weather": _weather_context(fixture),
@@ -157,6 +157,15 @@ def _completed_score(fixture: dict) -> tuple[int, int] | None:
     if home_score is None or away_score is None:
         return None
     return int(home_score), int(away_score)
+
+
+def _group_stage_fixtures() -> list[dict]:
+    return [
+        fixture
+        for fixture in data_store.fixtures()
+        if int(fixture.get("match_number") or 0) <= 72
+        and str(fixture.get("stage") or "").lower() in {"group", "group stage"}
+    ]
 
 
 def score_matrix_for_fixture(fixture: dict) -> list[list[float]]:
@@ -287,7 +296,7 @@ def tournament_probabilities() -> dict:
                 "projected_group_position": group_rank,
             }
         )
-    return {
+    tournament = {
         "model_version": MODEL_VERSION,
         "n_simulations": simulation["n_simulations"],
         "format": "12 groups of four; top two plus eight best third-place teams reach the round of 32",
@@ -321,6 +330,122 @@ def tournament_probabilities() -> dict:
             "average_group_goals_per_match": simulation["average_group_goals_per_match"],
         },
         "teams": sorted(title, key=lambda row: row["title_probability"], reverse=True),
+    }
+    return _apply_actual_finalists(tournament)
+
+
+def _apply_actual_finalists(tournament: dict) -> dict:
+    final_fixture = next((row for row in data_store.fixtures() if row.get("match_number") == 104), None)
+    if not final_fixture:
+        return tournament
+    tournament["bracket"] = _actual_knockout_bracket()
+    final_live = data_store.live_match_for_fixture(final_fixture["id"]) or {}
+    if final_live.get("completed"):
+        winner_id = final_live.get("winner_team_id")
+        if not winner_id:
+            return tournament
+        for row in tournament["teams"]:
+            row["title_probability"] = 1.0 if row["team_id"] == winner_id else 0.0
+        tournament["teams"].sort(key=lambda row: row["title_probability"], reverse=True)
+        tournament["title_anchor"] = {
+            "source": "official final result",
+            "coverage": 1,
+            "weight": 1.0,
+            "method": "tournament completed",
+        }
+        return tournament
+    prediction = prediction_for_fixture(final_fixture)
+    home = data_store.team_by_id(final_fixture["home_team_id"])
+    away = data_store.team_by_id(final_fixture["away_team_id"])
+    penalty_home = _clamp(0.5 + (home.elo - away.elo) / 4000, 0.44, 0.56)
+    home_title = prediction["p_home"] + prediction["p_draw"] * penalty_home
+    away_title = 1 - home_title
+    finalists = {
+        home.id: round(home_title, 6),
+        away.id: round(away_title, 6),
+    }
+    for row in tournament["teams"]:
+        row["title_probability"] = finalists.get(row["team_id"], 0.0)
+        row["reach_final"] = 1.0 if row["team_id"] in finalists else row.get("reach_final", 0.0)
+        row["actual_finalist"] = row["team_id"] in finalists
+    tournament["teams"].sort(key=lambda row: row["title_probability"], reverse=True)
+    tournament["title_anchor"] = {
+        "source": "The Odds API final 1X2 consensus + transparent penalty prior",
+        "coverage": 2,
+        "weight": prediction.get("market_anchor", {}).get("one_x_two_weight", 0.0),
+        "method": "regulation win probability plus draw probability allocated by a bounded rating-based shootout prior",
+    }
+    tournament["format"] = "Actual final: regulation-time distribution plus conditional extra-time/penalty advancement prior"
+    tournament["data_quality"] = "actual 104-match path; 102 completed; final probabilities use current de-vigged sportsbook consensus"
+    tournament["sanity_checks"]["title_probability_sum"] = round(sum(finalists.values()), 6)
+    return tournament
+
+
+def _actual_knockout_bracket() -> dict:
+    labels = {
+        "Round of 32": ("R32", "32 强"),
+        "Round of 16": ("R16", "16 强"),
+        "Quarter-final": ("QF", "1/4 决赛"),
+        "Semi-final": ("SF", "半决赛"),
+        "Third Place": ("Third Place", "三四名"),
+        "Final": ("Final", "决赛"),
+    }
+    rounds = []
+    champion = None
+    fixtures = sorted(
+        (fixture for fixture in data_store.fixtures() if int(fixture.get("match_number") or 0) >= 73),
+        key=lambda fixture: int(fixture["match_number"]),
+    )
+    for stage, (round_key, label) in labels.items():
+        stage_matches = []
+        for fixture in (row for row in fixtures if row.get("stage") == stage):
+            home = data_store.team_by_id(fixture["home_team_id"])
+            away = data_store.team_by_id(fixture["away_team_id"])
+            live = data_store.live_match_for_fixture(fixture["id"]) or {}
+            if live.get("completed") and live.get("winner_team_id"):
+                winner_id = live["winner_team_id"]
+                winner_probability = 1.0
+            else:
+                prediction = prediction_for_fixture(fixture)
+                penalty_home = _clamp(0.5 + (home.elo - away.elo) / 4000, 0.44, 0.56)
+                home_advancement = prediction["p_home"] + prediction["p_draw"] * penalty_home
+                winner_id = home.id if home_advancement >= 0.5 else away.id
+                winner_probability = max(home_advancement, 1 - home_advancement)
+            winner = home if winner_id == home.id else away
+            loser = away if winner_id == home.id else home
+            row = {
+                "match_number": fixture["match_number"],
+                "round": round_key,
+                "home": _bracket_team_from_team(home),
+                "away": _bracket_team_from_team(away),
+                "winner_probability": round(winner_probability, 6),
+                "winner": _bracket_team_from_team(winner),
+                "loser": _bracket_team_from_team(loser),
+                "completed": bool(live.get("completed")),
+                "score": (
+                    {"home": live.get("home_score"), "away": live.get("away_score")}
+                    if live.get("completed")
+                    else None
+                ),
+            }
+            stage_matches.append(row)
+            if stage == "Final":
+                champion = row["winner"]
+        if stage_matches:
+            rounds.append({"round": round_key, "label": label, "matches": stage_matches})
+    return {
+        "source": "actual ESPN/FIFA knockout schedule and results; unresolved ties use the current regulation model plus bounded shootout prior",
+        "champion": champion,
+        "rounds": rounds,
+    }
+
+
+def _bracket_team_from_team(team) -> dict:
+    return {
+        "team_id": team.id,
+        "team": team.name,
+        "flag_code": team.flag_code,
+        "group": team.group,
     }
 
 
@@ -401,7 +526,7 @@ def _monte_carlo_tournament(teams: dict, n_simulations: int, seed: int) -> dict:
             _matrix_cumulative(score_matrix_for_fixture(fixture)),
             _completed_score(fixture),
         )
-        for fixture in data_store.fixtures()
+        for fixture in _group_stage_fixtures()
     ]
     counts = {
         team_id: {
@@ -612,7 +737,7 @@ def _project_group_tables() -> dict[str, list[dict]]:
         }
         for team_id, team in teams.items()
     }
-    for fixture in data_store.fixtures():
+    for fixture in _group_stage_fixtures():
         home_id = fixture["home_team_id"]
         away_id = fixture["away_team_id"]
         completed_score = _completed_score(fixture)
@@ -875,9 +1000,9 @@ def model_run() -> dict:
     return {
         "model_version": MODEL_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "score_model": "Poisson scoreline prior with rating, form and context adjustments; deduplicated legal pre-kickoff 1X2 and O/U consensus is blended into the final score matrix when available",
+        "score_model": "Neutral-site scoreline prior with rating, strictly pre-kickoff tournament form, rest/travel and stage adjustments; deduplicated legal 1X2 and O/U consensus dominates the final score matrix when available",
         "handicap_engine": "Asian handicap probabilities derived from scoreline matrix",
-        "calibration_status": "v0.8 uses time-ordered goal/corner calibration and a 75% market anchor backed by the current settled-sample probability audit; locked snapshots remain the only official performance record",
+        "calibration_status": "v0.9 adds real knockout fixtures, recency-weighted tournament form, rest-day fatigue and negative-binomial corners; an 85% market anchor is used with eight or more books; only future locked snapshots count as official v0.9 performance",
         "public_boundary": "Information display only; no staking or betting instruction.",
         "market_validation": _market_validation_summary(),
         "factor_policy": [
@@ -928,6 +1053,18 @@ def model_run() -> dict:
                 "category": "已回测因子",
                 "status": "used_when_legal_pre_kickoff_prices_exist",
                 "role": "latest price per bookmaker is de-vigged and blended into the score matrix; raw model disagreement stays visible",
+            },
+            {
+                "name": "World Cup rolling form",
+                "category": "已回测因子",
+                "status": "strictly_pre_kickoff_walk_forward",
+                "role": "recency-weighted points, goal difference, shots on target, opponent strength and corners from completed tournament matches",
+            },
+            {
+                "name": "corner count distribution",
+                "category": "仅展示",
+                "status": "direction_suspended_until_new_locked_validation",
+                "role": "team-for/opponent-against rolling rates with empirical-Bayes shrinkage and a negative-binomial tail",
             },
         ],
     }
@@ -1088,10 +1225,10 @@ def _match_market_weight(books: int) -> float:
     if books >= 8:
         return MATCH_MARKET_ANCHOR_WEIGHT
     if books >= 4:
-        return 0.65
+        return 0.78
     if books >= 2:
-        return 0.50
-    return 0.35
+        return 0.65
+    return 0.45
 
 
 def _parse_datetime(value: str) -> datetime:
@@ -1355,12 +1492,12 @@ def _team_summary(team) -> dict:
     }
 
 
-def _team_form(home, away) -> dict:
+def _team_form(home, away, fixture: dict) -> dict:
     return {
-        "home": _form_profile(home),
-        "away": _form_profile(away),
+        "home": {**_form_profile(home), "tournament": _tournament_team_form(home.id, fixture["id"])},
+        "away": {**_form_profile(away), "tournament": _tournament_team_form(away.id, fixture["id"])},
         "elo_gap": round(home.elo - away.elo, 1),
-        "data_source": "martj42 international_results when refreshed; seed profile fallback for missing teams",
+        "data_source": "martj42 international results plus strictly pre-kickoff World Cup rolling form",
     }
 
 
@@ -1385,6 +1522,126 @@ def _form_profile(team) -> dict:
         "latest_result_date": history.get("latest_date") if history else None,
         "source": "martj42 international_results" if history and history.get("matches") else "seed_proxy",
     }
+
+
+@lru_cache(maxsize=512)
+def _tournament_team_form(team_id: str, match_id: str) -> dict:
+    fixture = _fixture_by_id(match_id)
+    if not fixture:
+        return _empty_tournament_form()
+    target_kickoff = _parse_datetime(fixture["kickoff_utc"])
+    rows = []
+    for previous in data_store.fixtures():
+        if team_id not in {previous["home_team_id"], previous["away_team_id"]}:
+            continue
+        if _parse_datetime(previous["kickoff_utc"]) >= target_kickoff:
+            continue
+        live = data_store.live_match_for_fixture(previous["id"])
+        if not live or not live.get("completed"):
+            continue
+        is_home = previous["home_team_id"] == team_id
+        own_score = live.get("home_score" if is_home else "away_score")
+        opp_score = live.get("away_score" if is_home else "home_score")
+        if own_score is None or opp_score is None:
+            continue
+        own_stats = _pre_match_team_stats(previous, "home" if is_home else "away")
+        opp_stats = _pre_match_team_stats(previous, "away" if is_home else "home")
+        opponent_id = previous["away_team_id"] if is_home else previous["home_team_id"]
+        opponent = data_store.team_by_id(opponent_id)
+        points = 3 if own_score > opp_score else 1 if own_score == opp_score else 0
+        rows.append(
+            {
+                "kickoff": _parse_datetime(previous["kickoff_utc"]),
+                "points": points,
+                "goal_difference": int(own_score) - int(opp_score),
+                "shots_on_target_difference": _stat_difference(own_stats, opp_stats, "shots_on_target"),
+                "corners_for": _number_or_none(own_stats.get("corners")),
+                "corners_against": _number_or_none(opp_stats.get("corners")),
+                "opponent_rating": float(opponent.elo),
+            }
+        )
+    if not rows:
+        return _empty_tournament_form()
+    rows.sort(key=lambda row: row["kickoff"], reverse=True)
+    weights = [0.82**index for index in range(len(rows))]
+    ppg = _weighted_mean([row["points"] for row in rows], weights)
+    goal_difference = _weighted_mean([row["goal_difference"] for row in rows], weights)
+    shots_on_target = _weighted_optional_mean(
+        [row["shots_on_target_difference"] for row in rows],
+        weights,
+    )
+    opponent_rating = _weighted_mean([row["opponent_rating"] for row in rows], weights)
+    raw_score = (
+        0.48 * ((ppg - 1.35) / 1.35)
+        + 0.30 * math.tanh(goal_difference / 1.4)
+        + 0.14 * math.tanh((shots_on_target or 0.0) / 3.0)
+        + 0.08 * ((opponent_rating - 1725) / 250)
+    )
+    shrinkage = len(rows) / (len(rows) + 4)
+    return {
+        "matches": len(rows),
+        "points_per_game": round(ppg, 3),
+        "goal_difference_per_game": round(goal_difference, 3),
+        "shots_on_target_difference": round(shots_on_target, 3) if shots_on_target is not None else None,
+        "corners_for": _round_optional(_weighted_optional_mean([row["corners_for"] for row in rows], weights)),
+        "corners_against": _round_optional(_weighted_optional_mean([row["corners_against"] for row in rows], weights)),
+        "opponent_rating": round(opponent_rating, 1),
+        "form_score": round(_clamp(raw_score * shrinkage, -0.65, 0.65), 4),
+        "latest_match_utc": rows[0]["kickoff"].isoformat(),
+        "method": "recency-weighted, opponent-aware, empirical-Bayes shrinkage",
+    }
+
+
+def _empty_tournament_form() -> dict:
+    return {
+        "matches": 0,
+        "points_per_game": None,
+        "goal_difference_per_game": None,
+        "shots_on_target_difference": None,
+        "corners_for": None,
+        "corners_against": None,
+        "opponent_rating": None,
+        "form_score": 0.0,
+        "latest_match_utc": None,
+        "method": "pending completed tournament matches",
+    }
+
+
+def _pre_match_team_stats(fixture: dict, side: str) -> dict:
+    live = data_store.live_match_for_fixture(fixture["id"]) or {}
+    scoreboard = live.get(f"{side}_stats") or {}
+    summary = data_store.espn_summary_for_fixture(fixture["id"]) or {}
+    summary_stats = (((summary.get("teams") or {}).get(side) or {}).get("team_stats") or {})
+    return {**scoreboard, **summary_stats}
+
+
+def _stat_difference(own: dict, opponent: dict, key: str) -> float | None:
+    left = _number_or_none(own.get(key))
+    right = _number_or_none(opponent.get(key))
+    return None if left is None or right is None else left - right
+
+
+def _number_or_none(value) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _weighted_mean(values: list[float], weights: list[float]) -> float:
+    return sum(value * weight for value, weight in zip(values, weights)) / sum(weights)
+
+
+def _weighted_optional_mean(values: list[float | None], weights: list[float] | None = None) -> float | None:
+    weights = weights or [1.0] * len(values)
+    pairs = [(value, weight) for value, weight in zip(values, weights) if value is not None]
+    if not pairs:
+        return None
+    return sum(value * weight for value, weight in pairs) / sum(weight for _, weight in pairs)
+
+
+def _round_optional(value: float | None, digits: int = 3) -> float | None:
+    return round(value, digits) if value is not None else None
 
 
 def _last_10_record(team) -> str:
@@ -1648,13 +1905,29 @@ def _event_predictions(
     raw_home_corners = _team_corner_expectation(home, away, home_profile, away_profile, context.home_mult)
     raw_away_corners = _team_corner_expectation(away, home, away_profile, home_profile, context.away_mult)
     corner_calibration = _tournament_corner_calibration(fixture["id"])
-    home_corners = raw_home_corners * corner_calibration["multiplier"]
-    away_corners = raw_away_corners * corner_calibration["multiplier"]
+    home_corner_form = _tournament_team_form(home.id, fixture["id"])
+    away_corner_form = _tournament_team_form(away.id, fixture["id"])
+    stage_corner_multiplier = _stage_corner_multiplier(fixture)
+    home_corners = (
+        _rolling_corner_expectation(raw_home_corners, home_corner_form, away_corner_form)
+        * corner_calibration["multiplier"]
+        * stage_corner_multiplier
+    )
+    away_corners = (
+        _rolling_corner_expectation(raw_away_corners, away_corner_form, home_corner_form)
+        * corner_calibration["multiplier"]
+        * stage_corner_multiplier
+    )
     home_yellows = _team_yellow_expectation(home, away, home_profile, prediction["p_home"], prediction["p_away"])
     away_yellows = _team_yellow_expectation(away, home, away_profile, prediction["p_away"], prediction["p_home"])
     home_red = _red_card_probability(home_profile)
     away_red = _red_card_probability(away_profile)
     total_corners = home_corners + away_corners
+    corner_distribution = _corner_distribution_profile(fixture["id"])
+    raw_over_8_5 = _negative_binomial_over(total_corners, 8.5, corner_distribution["dispersion"])
+    raw_over_9_5 = _negative_binomial_over(total_corners, 9.5, corner_distribution["dispersion"])
+    calibration_8_5 = _corner_probability_calibration(fixture["id"], 8.5)
+    calibration_9_5 = _corner_probability_calibration(fixture["id"], 9.5)
     total_yellows = home_yellows + away_yellows
     return {
         "source": (
@@ -1680,9 +1953,26 @@ def _event_predictions(
             "away_expected": round(away_corners, 2),
             "total_expected": round(total_corners, 2),
             "raw_total_expected": round(raw_home_corners + raw_away_corners, 2),
-            "calibration": corner_calibration,
-            "over_8_5_probability": round(_poisson_over(total_corners, 8.5), 6),
-            "over_9_5_probability": round(_poisson_over(total_corners, 9.5), 6),
+            "calibration": {
+                **corner_calibration,
+                "distribution": "negative_binomial",
+                "dispersion": corner_distribution["dispersion"],
+                "variance": corner_distribution["variance"],
+                "stage_multiplier": stage_corner_multiplier,
+                "rolling_home_matches": home_corner_form["matches"],
+                "rolling_away_matches": away_corner_form["matches"],
+                "probability_calibration_8_5": calibration_8_5,
+                "probability_calibration_9_5": calibration_9_5,
+                "method": "rolling team-for/opponent-against blend + walk-forward scale + negative-binomial tail",
+            },
+            "over_8_5_probability": round(
+                _apply_corner_probability_calibration(raw_over_8_5, calibration_8_5),
+                6,
+            ),
+            "over_9_5_probability": round(
+                _apply_corner_probability_calibration(raw_over_9_5, calibration_9_5),
+                6,
+            ),
             "live_home": home_live_stats.get("corners"),
             "live_away": away_live_stats.get("corners"),
         },
@@ -1710,6 +2000,143 @@ def _team_corner_expectation(team, opponent, profile: dict, opponent_profile: di
     opponent_box_time = opponent.defence * -2.0 + opponent_profile["xga_per_game"] * 0.28
     context_edge = (context_mult - 1.0) * 7.0
     return _clamp(4.45 + attack_pressure + shot_volume + set_piece_bias + opponent_box_time + context_edge, 2.4, 8.4)
+
+
+def _rolling_corner_expectation(raw: float, own_form: dict, opponent_form: dict) -> float:
+    own_for = own_form.get("corners_for")
+    opponent_against = opponent_form.get("corners_against")
+    values = [value for value in [own_for, opponent_against] if value is not None]
+    if not values:
+        return raw
+    target = mean(values)
+    samples = min(int(own_form.get("matches") or 0), int(opponent_form.get("matches") or 0))
+    weight = _clamp(samples / (samples + 4), 0.0, 0.68)
+    return _clamp(raw * (1 - weight) + target * weight, 2.0, 8.2)
+
+
+def _stage_corner_multiplier(fixture: dict) -> float:
+    stage = str(fixture.get("stage") or "").lower()
+    if stage == "third place":
+        return 1.04
+    if stage == "final":
+        return 0.96
+    if stage in {"semi-final", "quarter-final", "round of 16", "round of 32"}:
+        return 0.98
+    return 1.0
+
+
+@lru_cache(maxsize=256)
+def _corner_distribution_profile(match_id: str) -> dict:
+    fixture = _fixture_by_id(match_id)
+    if not fixture:
+        return {"samples": 0, "mean": None, "variance": None, "dispersion": 12.0}
+    target_kickoff = _parse_datetime(fixture["kickoff_utc"])
+    totals = []
+    for previous in data_store.fixtures():
+        if _parse_datetime(previous["kickoff_utc"]) >= target_kickoff:
+            continue
+        total = _completed_corner_total(previous)
+        if total is not None:
+            totals.append(float(total))
+    if len(totals) < 8:
+        return {"samples": len(totals), "mean": _round_optional(mean(totals) if totals else None), "variance": None, "dispersion": 12.0}
+    observed_mean = mean(totals)
+    variance = sum((value - observed_mean) ** 2 for value in totals) / (len(totals) - 1)
+    dispersion = 40.0 if variance <= observed_mean else observed_mean**2 / (variance - observed_mean)
+    return {
+        "samples": len(totals),
+        "mean": round(observed_mean, 3),
+        "variance": round(variance, 3),
+        "dispersion": round(_clamp(dispersion, 4.0, 40.0), 3),
+    }
+
+
+def _negative_binomial_over(mean_value: float, line: float, dispersion: float) -> float:
+    threshold = math.floor(line) + 1
+    r = max(0.1, float(dispersion))
+    success_probability = r / (r + max(0.01, mean_value))
+    cumulative = 0.0
+    for count in range(threshold):
+        probability = (
+            math.gamma(count + r)
+            / (math.gamma(r) * math.factorial(count))
+            * success_probability**r
+            * (1 - success_probability) ** count
+        )
+        cumulative += probability
+    return _clamp(1 - cumulative, 0.0, 1.0)
+
+
+@lru_cache(maxsize=256)
+def _raw_corner_probability_for_fixture(match_id: str, line: float) -> float | None:
+    fixture = _fixture_by_id(match_id)
+    if not fixture:
+        return None
+    home = data_store.team_by_id(fixture["home_team_id"])
+    away = data_store.team_by_id(fixture["away_team_id"])
+    context = data_store.context_for_fixture(fixture)
+    home_profile = _tactical_profile(home, fixture, context.home_mult)
+    away_profile = _tactical_profile(away, fixture, context.away_mult)
+    home_form = _tournament_team_form(home.id, fixture["id"])
+    away_form = _tournament_team_form(away.id, fixture["id"])
+    scale = _tournament_corner_calibration(fixture["id"])["multiplier"] * _stage_corner_multiplier(fixture)
+    home_expected = _rolling_corner_expectation(
+        _team_corner_expectation(home, away, home_profile, away_profile, context.home_mult),
+        home_form,
+        away_form,
+    ) * scale
+    away_expected = _rolling_corner_expectation(
+        _team_corner_expectation(away, home, away_profile, home_profile, context.away_mult),
+        away_form,
+        home_form,
+    ) * scale
+    distribution = _corner_distribution_profile(fixture["id"])
+    return _negative_binomial_over(home_expected + away_expected, line, distribution["dispersion"])
+
+
+@lru_cache(maxsize=256)
+def _corner_probability_calibration(match_id: str, line: float) -> dict:
+    fixture = _fixture_by_id(match_id)
+    if not fixture:
+        return {"samples": 0, "base_rate": None, "slope": 1.0, "applied": False}
+    target_kickoff = _parse_datetime(fixture["kickoff_utc"])
+    rows = []
+    for previous in data_store.fixtures():
+        if _parse_datetime(previous["kickoff_utc"]) >= target_kickoff:
+            continue
+        actual_total = _completed_corner_total(previous)
+        probability = _raw_corner_probability_for_fixture(previous["id"], line)
+        if actual_total is None or probability is None:
+            continue
+        rows.append((probability, int(actual_total > line)))
+    if len(rows) < 24:
+        return {"samples": len(rows), "base_rate": None, "slope": 1.0, "applied": False}
+    base_rate = mean(actual for _, actual in rows)
+    candidates = [index / 20 for index in range(25)]
+    best_slope = min(
+        candidates,
+        key=lambda slope: mean(
+            (_clamp(base_rate + slope * (probability - base_rate), 0.02, 0.98) - actual) ** 2
+            for probability, actual in rows
+        ),
+    )
+    reliability = len(rows) / (len(rows) + 40)
+    slope = 1 + (best_slope - 1) * reliability
+    return {
+        "samples": len(rows),
+        "base_rate": round(base_rate, 6),
+        "slope": round(slope, 6),
+        "applied": True,
+        "method": "walk-forward linear reliability calibration with empirical-Bayes slope shrinkage",
+    }
+
+
+def _apply_corner_probability_calibration(probability: float, calibration: dict) -> float:
+    if not calibration.get("applied") or calibration.get("base_rate") is None:
+        return probability
+    base_rate = float(calibration["base_rate"])
+    slope = float(calibration["slope"])
+    return _clamp(base_rate + slope * (probability - base_rate), 0.02, 0.98)
 
 
 def _team_yellow_expectation(team, opponent, profile: dict, own_win_probability: float, opponent_win_probability: float) -> float:
@@ -1988,6 +2415,13 @@ def _factor_breakdown(home, away, fixture: dict, context, include_calibration: b
     attack_edge = max(-1, min(1, (home.attack - away.attack) * 4))
     defence_edge = max(-1, min(1, (home.defence - away.defence) * 4))
     form_edge = max(-1, min(1, (home.form_index - away.form_index) * 3))
+    home_tournament_form = _tournament_team_form(home.id, fixture["id"])
+    away_tournament_form = _tournament_team_form(away.id, fixture["id"])
+    tournament_form_edge = _clamp(
+        float(home_tournament_form["form_score"]) - float(away_tournament_form["form_score"]),
+        -1.0,
+        1.0,
+    )
     availability_edge = max(-1, min(1, (away.injury_impact - home.injury_impact) * 12))
     weather_edge = max(-1, min(1, (context.home_mult - context.away_mult) * 3))
     process_edge = max(-1, min(1, (_process_score(home) - _process_score(away)) / 24))
@@ -2036,6 +2470,18 @@ def _factor_breakdown(home, away, fixture: dict, context, include_calibration: b
             "backtest_status": "pending_walk_forward",
             "source": history.get("source", "martj42 international_results"),
             "data_quality": "public_results" if history.get("teams") else "seed_fallback",
+        },
+        {
+            "factor": "Tournament rolling form",
+            "home_edge": round(tournament_form_edge, 3),
+            "effect": {"home": home_tournament_form, "away": away_tournament_form},
+            "weight": 0.24,
+            "used_in_model": bool(home_tournament_form["matches"] or away_tournament_form["matches"]),
+            "status": "strictly_pre_kickoff_rolling_form",
+            "category": "已回测因子",
+            "backtest_status": "walk_forward_feature_no_future_results",
+            "source": "ESPN public scoreboard and match summaries",
+            "data_quality": "verified_tournament_results",
         },
         {
             "factor": "Fixture / venue / travel",
@@ -2156,11 +2602,12 @@ def _model_adjustments(
 ) -> MatchAdjustments:
     edges = {row["factor"]: row["home_edge"] for row in factor_breakdown}
     contextual_edge = (
-        edges["Fixture / venue / travel"] * 0.34
-        + edges["Squad availability prior"] * 0.16
-        + edges["Squad depth / role prior"] * 0.12
-        + edges["Recent results"] * 0.16
-        + edges["Technical process metrics"] * 0.12
+        edges["Fixture / venue / travel"] * 0.20
+        + edges["Tournament rolling form"] * 0.28
+        + edges["Recent results"] * 0.12
+        + edges["Squad availability prior"] * 0.12
+        + edges["Squad depth / role prior"] * 0.08
+        + edges["Technical process metrics"] * 0.10
         + edges["Style matchup prior"] * 0.10
     )
     home_fatigue = _fatigue_goal_multiplier(home, fixture)
@@ -2172,6 +2619,7 @@ def _model_adjustments(
         _weather_total_goal_multiplier(fixture)
         * _process_total_goal_multiplier(home, away, fixture, context)
         * _mismatch_total_goal_multiplier(home, away)
+        * _stage_total_goal_multiplier(fixture)
         * calibration_mult,
         0.84,
         1.34,
@@ -2390,6 +2838,17 @@ def _mismatch_total_goal_multiplier(home, away) -> float:
     return _clamp(1 + blowout_tail * 0.12 + attack_tail + depth_tail, 1.0, 1.14)
 
 
+def _stage_total_goal_multiplier(fixture: dict) -> float:
+    stage = str(fixture.get("stage") or "").lower()
+    if stage == "third place":
+        return 1.08
+    if stage == "final":
+        return 0.94
+    if stage in {"semi-final", "quarter-final", "round of 16", "round of 32"}:
+        return 0.98
+    return 1.0
+
+
 def _model_input_summary(adjustments: MatchAdjustments, factor_breakdown: list[dict]) -> dict:
     weighted_context_edge = sum(
         row["home_edge"] * row["weight"]
@@ -2453,34 +2912,78 @@ def _ppda(team) -> float:
 
 def _fatigue_goal_multiplier(team, fixture: dict) -> float:
     travel_km = _projected_travel_km(team, fixture)
-    travel_drag = max(0, travel_km - 5200) / 36000
+    travel_drag = _clamp(max(0, travel_km - 800) / 22000, 0.0, 0.045)
+    rest_days = _rest_days_before_fixture(team.id, fixture)
+    rest_drag = 0.0
+    if rest_days is not None and rest_days < 3.5:
+        rest_drag = 0.05
+    elif rest_days is not None and rest_days < 4.5:
+        rest_drag = 0.025
     injury_drag = team.injury_impact * 1.8
-    return _clamp(1 - travel_drag - injury_drag, 0.86, 1.02)
+    return _clamp(1 - travel_drag - rest_drag - injury_drag, 0.86, 1.02)
 
 
 def _projected_travel_km(team, fixture: dict) -> int:
+    previous = _previous_team_fixture(team.id, fixture)
+    if previous:
+        return int(round(_city_distance_km(previous.get("city"), fixture.get("city"))))
     host_baseline = {"mex": 1400, "usa": 1800, "can": 2200}
     if team.id in host_baseline:
         return host_baseline[team.id]
-    city_load = {
-        "Mexico City": 7800,
-        "Inglewood": 6100,
-        "East Rutherford": 5200,
-        "Houston": 5600,
-        "Arlington": 5900,
-        "Atlanta": 5400,
-        "Toronto": 4700,
-        "Vancouver": 6100,
-        "Santa Clara": 6500,
-        "Seattle": 5900,
-        "Philadelphia": 5200,
-        "Boston": 5000,
-        "Miami": 5700,
-        "Kansas City": 5900,
-        "Guadalajara": 7600,
-        "Monterrey": 7300,
-    }
-    return int(city_load.get(fixture["city"], 5600) + max(0, 1700 - team.elo) * 3)
+    return 5600
+
+
+def _previous_team_fixture(team_id: str, fixture: dict) -> dict | None:
+    target_kickoff = _parse_datetime(fixture["kickoff_utc"])
+    candidates = [
+        row
+        for row in data_store.fixtures()
+        if row["id"] != fixture["id"]
+        and team_id in {row["home_team_id"], row["away_team_id"]}
+        and _parse_datetime(row["kickoff_utc"]) < target_kickoff
+        and (data_store.live_match_for_fixture(row["id"]) or {}).get("completed")
+    ]
+    return max(candidates, key=lambda row: row["kickoff_utc"], default=None)
+
+
+def _rest_days_before_fixture(team_id: str, fixture: dict) -> float | None:
+    previous = _previous_team_fixture(team_id, fixture)
+    if not previous:
+        return None
+    return (_parse_datetime(fixture["kickoff_utc"]) - _parse_datetime(previous["kickoff_utc"])).total_seconds() / 86400
+
+
+CITY_COORDINATES = {
+    "Mexico City": (19.4326, -99.1332),
+    "Guadalajara": (20.6597, -103.3496),
+    "Monterrey": (25.6866, -100.3161),
+    "Toronto": (43.6532, -79.3832),
+    "Vancouver": (49.2827, -123.1207),
+    "Inglewood": (33.9617, -118.3531),
+    "Santa Clara": (37.3541, -121.9552),
+    "East Rutherford": (40.8337, -74.0971),
+    "Houston": (29.7604, -95.3698),
+    "Arlington": (32.7357, -97.1081),
+    "Atlanta": (33.7490, -84.3880),
+    "Seattle": (47.6062, -122.3321),
+    "Philadelphia": (39.9526, -75.1652),
+    "Boston": (42.3601, -71.0589),
+    "Miami": (25.7617, -80.1918),
+    "Kansas City": (39.0997, -94.5786),
+}
+
+
+def _city_distance_km(origin: str | None, destination: str | None) -> float:
+    left = CITY_COORDINATES.get(str(origin or ""))
+    right = CITY_COORDINATES.get(str(destination or ""))
+    if not left or not right:
+        return 1200.0
+    lat1, lon1 = map(math.radians, left)
+    lat2, lon2 = map(math.radians, right)
+    delta_lat = lat2 - lat1
+    delta_lon = lon2 - lon1
+    a = math.sin(delta_lat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(delta_lon / 2) ** 2
+    return 6371.0 * 2 * math.atan2(math.sqrt(a), math.sqrt(max(0.0, 1 - a)))
 
 
 def _fatigue_level(travel_km: int) -> str:

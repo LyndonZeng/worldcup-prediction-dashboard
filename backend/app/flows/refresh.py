@@ -15,7 +15,7 @@ except ImportError:  # keeps local tests usable before optional deps are install
         return fn if fn else lambda wrapped: wrapped
 
 from app.adapters.football_data import fetch_world_cup_matches, normalize_matches as normalize_football_data_matches
-from app.adapters.espn_live import fetch_live_match_statuses
+from app.adapters.espn_live import fetch_knockout_fixtures, fetch_live_match_statuses
 from app.adapters.espn_summary import fetch_match_summaries
 from app.adapters.international_results import fetch_results_csv, parse_results, summarize_team_results
 from app.adapters.odds_api import fetch_world_cup_odds, normalize_odds
@@ -50,6 +50,12 @@ def refresh_fixtures():
     captured_at = datetime.now(timezone.utc).isoformat()
     fixtures = _read_json("fixtures.json")
     teams = _read_json("teams.json")
+    knockout_fixtures = fetch_knockout_fixtures(teams)
+    if knockout_fixtures:
+        fixtures_by_id = {row["id"]: row for row in fixtures}
+        fixtures_by_id.update({row["id"]: row for row in knockout_fixtures})
+        fixtures = sorted(fixtures_by_id.values(), key=lambda row: row["match_number"])
+        _write_json("fixtures.json", fixtures)
     raw_rows = fetch_world_cup_matches()
     rows = normalize_football_data_matches(fixtures, teams, raw_rows, captured_at)
     if rows:
@@ -58,6 +64,8 @@ def refresh_fixtures():
         "source": "football-data.org",
         "raw_rows": len(raw_rows),
         "rows": len(rows),
+        "knockout_rows": len(knockout_fixtures),
+        "fixture_rows": len(fixtures),
         "captured_at": captured_at,
         "written": bool(rows),
     }
@@ -276,6 +284,13 @@ def update_source_health(report: dict) -> None:
         f'{fixtures["rows"]}/{fixtures["raw_rows"]} matched World Cup rows at {fixtures["captured_at"]}',
         "fixtures, scores and post-match validation",
     )
+    if "FIFA / public match schedule" in by_name:
+        by_name["FIFA / public match schedule"] = {
+            **by_name["FIFA / public match schedule"],
+            "status": "live_public",
+            "freshness": f'{fixtures["fixture_rows"]}/104 fixtures; ESPN knockout rows {fixtures["knockout_rows"]} at {fixtures["captured_at"]}',
+            "purpose": "48-team groups and complete 104-match fixture path",
+        }
     odds = report["odds"]
     set_row(
         "The Odds API / TheStatsAPI",

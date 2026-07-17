@@ -1,7 +1,7 @@
 import unittest
 
 from app.adapters.football_data import normalize_matches as normalize_football_data_matches
-from app.adapters.espn_live import normalize_events
+from app.adapters.espn_live import normalize_events, normalize_knockout_fixtures
 from app.adapters.espn_summary import normalize_summary
 from app.adapters.international_results import parse_results, summarize_team_results
 from app.adapters.odds_api import normalize_odds
@@ -115,6 +115,32 @@ class PublicDataAdaptersTest(unittest.TestCase):
         self.assertEqual(rows[0]["away_team_id"], "bih")
         self.assertEqual(rows[0]["home_stats"]["shots"], 14)
         self.assertEqual(rows[0]["away_stats"]["possession_pct"], 47.2)
+
+    def test_espn_knockout_fixtures_are_numbered_and_neutral(self):
+        teams = [
+            {"id": "fra", "name": "France", "fifa_code": "FRA"},
+            {"id": "eng", "name": "England", "fifa_code": "ENG"},
+        ]
+        events = [
+            {
+                "id": "ko-1",
+                "date": "2026-06-28T19:00:00Z",
+                "competitions": [
+                    {
+                        "venue": {"fullName": "Test Stadium", "address": {"city": "Miami Gardens, Florida"}},
+                        "competitors": [
+                            {"homeAway": "home", "team": {"displayName": "France"}},
+                            {"homeAway": "away", "team": {"displayName": "England"}},
+                        ],
+                    }
+                ],
+            }
+        ]
+        rows = normalize_knockout_fixtures(teams, events)
+        self.assertEqual(rows[0]["id"], "wc26-073")
+        self.assertEqual(rows[0]["stage"], "Round of 32")
+        self.assertEqual(rows[0]["city"], "Miami")
+        self.assertIn("neutral venue", rows[0]["context"]["notes"])
 
     def test_espn_summary_normalization_extracts_lineups_and_player_events(self):
         live_row = {

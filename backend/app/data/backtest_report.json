@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-17T14:17:57.211701+00:00",
+  "generated_at": "2026-07-17T15:16:03.736869+00:00",
   "status": "locked_results_available_closing_line_pending",
   "method": "Formal accuracy uses predictions preserved at least five minutes before kickoff; CLV remains unavailable until a price is captured inside the closing window.",
   "snapshot_counts": {
-    "model_prediction_snapshots": 84,
-    "eligible_pre_kickoff_predictions": 72,
-    "closing_line_snapshots": 4592,
+    "model_prediction_snapshots": 244,
+    "eligible_pre_kickoff_predictions": 74,
+    "closing_line_snapshots": 4756,
     "true_closing_lines": 0,
-    "settled_matches": 72
+    "settled_matches": 102
   },
   "formal": {
     "eligible_samples": 72,
@@ -19,13 +19,15 @@
       "log_loss": 0.901948
     },
     "asian_handicap": {
-      "selections": 158,
-      "roi": -0.209019,
-      "hit_rate": 0.373418,
+      "selections": 63,
+      "roi": -0.239683,
+      "hit_rate": 0.301587,
       "average_clv": null,
-      "unit_profit": -33.025,
-      "correct": 59,
-      "pushes": 15
+      "unit_profit": -15.1,
+      "correct": 19,
+      "pushes": 8,
+      "selection_policy": "maximum one pre-kickoff edge-qualified market per match",
+      "covered_matches": 63
     },
     "over_under": {
       "samples": 72,
@@ -50,6 +52,22 @@
           "correct": 11,
           "hit_rate": 0.733333
         }
+      },
+      "probability_metrics": {
+        "8.5": {
+          "samples": 69,
+          "hit_rate": 0.594203,
+          "correct": 41,
+          "brier": 0.283904,
+          "log_loss": 0.789386
+        },
+        "9.5": {
+          "samples": 69,
+          "hit_rate": 0.391304,
+          "correct": 27,
+          "brier": 0.312054,
+          "log_loss": 0.833065
+        }
       }
     },
     "public_reference_gate": {
@@ -66,71 +84,89 @@
   "shadow": {
     "label": "\u516c\u5f0f\u70df\u6d4b\uff0c\u4e0d\u4f5c\u4e3a\u4e13\u4e1a\u6a21\u578b\u6210\u7ee9",
     "one_x_two": {
-      "samples": 72,
-      "hit_rate": 0.652778,
-      "correct": 47,
-      "brier": 0.160499,
-      "log_loss": 0.825372
+      "samples": 102,
+      "hit_rate": 0.696078,
+      "correct": 71,
+      "brier": 0.15864,
+      "log_loss": 0.821526
     },
     "asian_handicap": {
-      "selections": 90,
-      "roi": -0.365681,
+      "selections": 40,
+      "roi": -0.377787,
       "hit_rate": 0.3,
       "average_clv": null,
-      "unit_profit": -32.9113,
-      "correct": 27,
-      "pushes": 9
+      "unit_profit": -15.1115,
+      "correct": 12,
+      "pushes": 5,
+      "selection_policy": "maximum one pre-kickoff edge-qualified market per match",
+      "covered_matches": 40
     },
     "over_under": {
-      "samples": 72,
-      "hit_rate": 0.597222,
-      "correct": 43,
-      "brier": 0.238101,
-      "log_loss": 0.669711
+      "samples": 102,
+      "hit_rate": 0.656863,
+      "correct": 67,
+      "brier": 0.2323,
+      "log_loss": 0.657655
     },
     "corners": {
-      "actual_event_samples": 72,
-      "selections": 59,
-      "hit_rate": 0.457627,
-      "correct": 27,
+      "actual_event_samples": 102,
+      "selections": 50,
+      "hit_rate": 0.5,
+      "correct": 25,
       "line_summary": {
         "over_8.5": {
-          "selections": 26,
-          "correct": 13,
-          "hit_rate": 0.5
+          "selections": 34,
+          "correct": 19,
+          "hit_rate": 0.558824
         },
         "over_9.5": {
-          "selections": 22,
-          "correct": 7,
-          "hit_rate": 0.318182
+          "selections": 6,
+          "correct": 2,
+          "hit_rate": 0.333333
         },
         "under_8.5": {
-          "selections": 11,
-          "correct": 7,
-          "hit_rate": 0.636364
+          "selections": 10,
+          "correct": 4,
+          "hit_rate": 0.4
+        }
+      },
+      "probability_metrics": {
+        "8.5": {
+          "samples": 102,
+          "hit_rate": 0.539216,
+          "correct": 55,
+          "brier": 0.250788,
+          "log_loss": 0.695707
+        },
+        "9.5": {
+          "samples": 102,
+          "hit_rate": 0.509804,
+          "correct": 52,
+          "brier": 0.262459,
+          "log_loss": 0.719537
         }
       }
     }
   },
   "model_comparison": {
     "status": "shadow_parallel_evaluation",
-    "samples": 72,
+    "samples": 102,
     "baseline": {
       "name": "Raw multi-factor Poisson model",
-      "samples": 72,
-      "hit_rate": 0.652778,
-      "correct": 47,
-      "brier": 0.175265,
-      "log_loss": 0.891617
+      "samples": 102,
+      "hit_rate": 0.696078,
+      "correct": 71,
+      "brier": 0.170891,
+      "log_loss": 0.876608
     },
     "production_ensemble": {
       "name": "Deduplicated pre-kickoff market ensemble",
-      "market_weight": 0.75,
-      "samples": 72,
-      "hit_rate": 0.652778,
-      "correct": 47,
-      "brier": 0.160499,
-      "log_loss": 0.825372
+      "market_weight": 0.85,
+      "samples": 102,
+      "hit_rate": 0.696078,
+      "correct": 71,
+      "brier": 0.15864,
+      "log_loss": 0.821526
     },
     "market_consensus": {
       "name": "De-vigged market consensus where available",
@@ -143,13 +179,13 @@
     "dixon_coles": {
       "name": "Dixon-Coles low-score adjustment",
       "rho": -0.06,
-      "samples": 72,
-      "hit_rate": 0.652778,
-      "correct": 47,
-      "brier": 0.175135,
-      "log_loss": 0.887822
+      "samples": 102,
+      "hit_rate": 0.696078,
+      "correct": 71,
+      "brier": 0.171263,
+      "log_loss": 0.875806
     },
-    "delta_log_loss": -0.066245,
+    "delta_log_loss": -0.055082,
     "decision": "promote_market_ensemble",
     "promotion_rule": "Promote only when the candidate lowers both log-loss and Brier on at least 40 settled samples."
   },
@@ -161,29 +197,29 @@
         "category": "\u4ec5\u5c55\u793a",
         "factor_count": 1,
         "used_in_model_rows": 0,
-        "display_only_rows": 72,
-        "proxy_rows": 72
+        "display_only_rows": 104,
+        "proxy_rows": 104
       },
       {
         "category": "\u5df2\u56de\u6d4b\u56e0\u5b50",
-        "factor_count": 1,
-        "used_in_model_rows": 48,
-        "display_only_rows": 0,
+        "factor_count": 2,
+        "used_in_model_rows": 160,
+        "display_only_rows": 24,
         "proxy_rows": 0
       },
       {
         "category": "\u5f85\u63a5\u5165",
         "factor_count": 1,
         "used_in_model_rows": 0,
-        "display_only_rows": 72,
+        "display_only_rows": 104,
         "proxy_rows": 0
       },
       {
         "category": "\u900f\u660e\u5148\u9a8c",
         "factor_count": 10,
-        "used_in_model_rows": 648,
+        "used_in_model_rows": 936,
         "display_only_rows": 24,
-        "proxy_rows": 144
+        "proxy_rows": 208
       }
     ]
   },

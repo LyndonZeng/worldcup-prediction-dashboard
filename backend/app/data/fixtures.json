@@ -1299,5 +1299,681 @@
         "indoor or retractable-roof weather reduction"
       ]
     }
+  },
+  {
+    "id": "wc26-073",
+    "match_number": 73,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760486",
+    "kickoff_utc": "2026-06-28T19:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "rsa",
+    "away_team_id": "can",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-074",
+    "match_number": 74,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760487",
+    "kickoff_utc": "2026-06-29T17:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "bra",
+    "away_team_id": "jpn",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-075",
+    "match_number": 75,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760489",
+    "kickoff_utc": "2026-06-29T20:30:00Z",
+    "venue": "Gillette Stadium",
+    "city": "Foxborough",
+    "home_team_id": "ger",
+    "away_team_id": "par",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-076",
+    "match_number": 76,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760488",
+    "kickoff_utc": "2026-06-30T01:00:00Z",
+    "venue": "Estadio BBVA",
+    "city": "Guadalupe",
+    "home_team_id": "ned",
+    "away_team_id": "mar",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-077",
+    "match_number": 77,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760490",
+    "kickoff_utc": "2026-06-30T17:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "civ",
+    "away_team_id": "nor",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-078",
+    "match_number": 78,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760492",
+    "kickoff_utc": "2026-06-30T21:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "fra",
+    "away_team_id": "swe",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-079",
+    "match_number": 79,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760491",
+    "kickoff_utc": "2026-07-01T02:00:00Z",
+    "venue": "Estadio Banorte",
+    "city": "Mexico City",
+    "home_team_id": "mex",
+    "away_team_id": "ecu",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-080",
+    "match_number": 80,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760495",
+    "kickoff_utc": "2026-07-01T16:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "eng",
+    "away_team_id": "cod",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-081",
+    "match_number": 81,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760493",
+    "kickoff_utc": "2026-07-01T20:00:00Z",
+    "venue": "Lumen Field",
+    "city": "Seattle",
+    "home_team_id": "bel",
+    "away_team_id": "sen",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-082",
+    "match_number": 82,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760494",
+    "kickoff_utc": "2026-07-02T00:00:00Z",
+    "venue": "Levi's Stadium",
+    "city": "Santa Clara",
+    "home_team_id": "usa",
+    "away_team_id": "bih",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-083",
+    "match_number": 83,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760497",
+    "kickoff_utc": "2026-07-02T19:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "esp",
+    "away_team_id": "aut",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-084",
+    "match_number": 84,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760496",
+    "kickoff_utc": "2026-07-02T23:00:00Z",
+    "venue": "BMO Field",
+    "city": "Toronto",
+    "home_team_id": "por",
+    "away_team_id": "cro",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-085",
+    "match_number": 85,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760498",
+    "kickoff_utc": "2026-07-03T03:00:00Z",
+    "venue": "BC Place",
+    "city": "Vancouver",
+    "home_team_id": "sui",
+    "away_team_id": "alg",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-086",
+    "match_number": 86,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760499",
+    "kickoff_utc": "2026-07-03T18:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "aus",
+    "away_team_id": "egy",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-087",
+    "match_number": 87,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760500",
+    "kickoff_utc": "2026-07-03T22:00:00Z",
+    "venue": "Hard Rock Stadium",
+    "city": "Miami",
+    "home_team_id": "arg",
+    "away_team_id": "cpv",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-088",
+    "match_number": 88,
+    "stage": "Round of 32",
+    "group": "KO",
+    "espn_event_id": "760501",
+    "kickoff_utc": "2026-07-04T01:30:00Z",
+    "venue": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "home_team_id": "col",
+    "away_team_id": "gha",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-089",
+    "match_number": 89,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760502",
+    "kickoff_utc": "2026-07-04T17:00:00Z",
+    "venue": "NRG Stadium",
+    "city": "Houston",
+    "home_team_id": "can",
+    "away_team_id": "mar",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-090",
+    "match_number": 90,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760503",
+    "kickoff_utc": "2026-07-04T21:00:00Z",
+    "venue": "Lincoln Financial Field",
+    "city": "Philadelphia",
+    "home_team_id": "par",
+    "away_team_id": "fra",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-091",
+    "match_number": 91,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760504",
+    "kickoff_utc": "2026-07-05T20:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "bra",
+    "away_team_id": "nor",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-092",
+    "match_number": 92,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760505",
+    "kickoff_utc": "2026-07-06T01:00:00Z",
+    "venue": "Estadio Banorte",
+    "city": "Mexico City",
+    "home_team_id": "mex",
+    "away_team_id": "eng",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-093",
+    "match_number": 93,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760506",
+    "kickoff_utc": "2026-07-06T19:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "por",
+    "away_team_id": "esp",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-094",
+    "match_number": 94,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760507",
+    "kickoff_utc": "2026-07-07T00:00:00Z",
+    "venue": "Lumen Field",
+    "city": "Seattle",
+    "home_team_id": "usa",
+    "away_team_id": "bel",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-095",
+    "match_number": 95,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760509",
+    "kickoff_utc": "2026-07-07T16:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "arg",
+    "away_team_id": "egy",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-096",
+    "match_number": 96,
+    "stage": "Round of 16",
+    "group": "KO",
+    "espn_event_id": "760508",
+    "kickoff_utc": "2026-07-07T20:00:00Z",
+    "venue": "BC Place",
+    "city": "Vancouver",
+    "home_team_id": "sui",
+    "away_team_id": "col",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-097",
+    "match_number": 97,
+    "stage": "Quarter-final",
+    "group": "KO",
+    "espn_event_id": "760510",
+    "kickoff_utc": "2026-07-09T20:00:00Z",
+    "venue": "Gillette Stadium",
+    "city": "Foxborough",
+    "home_team_id": "fra",
+    "away_team_id": "mar",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-098",
+    "match_number": 98,
+    "stage": "Quarter-final",
+    "group": "KO",
+    "espn_event_id": "760511",
+    "kickoff_utc": "2026-07-10T19:00:00Z",
+    "venue": "SoFi Stadium",
+    "city": "Inglewood",
+    "home_team_id": "esp",
+    "away_team_id": "bel",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-099",
+    "match_number": 99,
+    "stage": "Quarter-final",
+    "group": "KO",
+    "espn_event_id": "760512",
+    "kickoff_utc": "2026-07-11T21:00:00Z",
+    "venue": "Hard Rock Stadium",
+    "city": "Miami",
+    "home_team_id": "nor",
+    "away_team_id": "eng",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-100",
+    "match_number": 100,
+    "stage": "Quarter-final",
+    "group": "KO",
+    "espn_event_id": "760513",
+    "kickoff_utc": "2026-07-12T01:00:00Z",
+    "venue": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "home_team_id": "arg",
+    "away_team_id": "sui",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-101",
+    "match_number": 101,
+    "stage": "Semi-final",
+    "group": "KO",
+    "espn_event_id": "760514",
+    "kickoff_utc": "2026-07-14T19:00:00Z",
+    "venue": "AT&T Stadium",
+    "city": "Arlington",
+    "home_team_id": "fra",
+    "away_team_id": "esp",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-102",
+    "match_number": 102,
+    "stage": "Semi-final",
+    "group": "KO",
+    "espn_event_id": "760515",
+    "kickoff_utc": "2026-07-15T19:00:00Z",
+    "venue": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "home_team_id": "eng",
+    "away_team_id": "arg",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model"
+      ]
+    }
+  },
+  {
+    "id": "wc26-103",
+    "match_number": 103,
+    "stage": "Third Place",
+    "group": "KO",
+    "espn_event_id": "760516",
+    "kickoff_utc": "2026-07-18T21:00:00Z",
+    "venue": "Hard Rock Stadium",
+    "city": "Miami",
+    "home_team_id": "fra",
+    "away_team_id": "eng",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model",
+        "third-place open-play prior",
+        "rotation uncertainty"
+      ]
+    }
+  },
+  {
+    "id": "wc26-104",
+    "match_number": 104,
+    "stage": "Final",
+    "group": "KO",
+    "espn_event_id": "760517",
+    "kickoff_utc": "2026-07-19T19:00:00Z",
+    "venue": "MetLife Stadium",
+    "city": "East Rutherford",
+    "home_team_id": "esp",
+    "away_team_id": "arg",
+    "source_quality": "espn_public_schedule",
+    "context": {
+      "home_mult": 1.0,
+      "away_mult": 1.0,
+      "notes": [
+        "neutral venue",
+        "knockout regulation-time model",
+        "final caution prior",
+        "extra-time excluded from 1X2"
+      ]
+    }
   }
 ]

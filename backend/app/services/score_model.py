@@ -53,8 +53,10 @@ def expected_goals(
     elo_term = (home.elo - away.elo) / 720.0
     home_quality = home.attack - away.defence + 0.11 * home.form_index - home.injury_impact
     away_quality = away.attack - home.defence + 0.11 * away.form_index - away.injury_impact
-    lambda_home = math.exp(math.log(1.26) + 0.34 * elo_term + home_quality) * context.home_mult
-    lambda_away = math.exp(math.log(1.05) - 0.34 * elo_term + away_quality) * context.away_mult
+    neutral_site = "neutral venue" in context.notes
+    base_home, base_away = (1.155, 1.155) if neutral_site else (1.26, 1.05)
+    lambda_home = math.exp(math.log(base_home) + 0.34 * elo_term + home_quality) * context.home_mult
+    lambda_away = math.exp(math.log(base_away) - 0.34 * elo_term + away_quality) * context.away_mult
     lambda_home *= adjustments.home_goal_mult * adjustments.total_goal_mult
     lambda_away *= adjustments.away_goal_mult * adjustments.total_goal_mult
     return max(0.08, min(lambda_home, 4.5)), max(0.08, min(lambda_away, 4.5))

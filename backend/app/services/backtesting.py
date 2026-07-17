@@ -272,7 +272,7 @@ def _model_comparison_report(matches: list[dict]) -> dict:
         },
         "production_ensemble": {
             "name": "Deduplicated pre-kickoff market ensemble",
-            "market_weight": 0.75,
+            "market_weight": 0.85,
             **ensemble,
         },
         "market_consensus": {
@@ -442,7 +442,10 @@ def _asian_handicap_report(
         score = _completed_score(match)
         if score is None:
             continue
+        match_candidates = []
         for handicap in snapshot.get("handicap_probabilities", []):
+            if handicap.get("market_status") != "available":
+                continue
             for side in ["home", "away"]:
                 expected_return = handicap[side].get("expected_return")
                 odds = handicap[side].get("market_decimal_odds")
@@ -461,7 +464,7 @@ def _asian_handicap_report(
                     side,
                 )
                 closing_odds = closing.get("price_home" if side == "home" else "price_away") if closing else None
-                selections.append(
+                match_candidates.append(
                     {
                         "match_id": match["match_id"],
                         "side": side,
@@ -471,8 +474,11 @@ def _asian_handicap_report(
                         "clv": _clv(odds, closing_odds),
                         "settlement": settlement,
                         "profit": profit,
+                        "expected_return": float(expected_return),
                     }
                 )
+        if match_candidates:
+            selections.append(max(match_candidates, key=lambda row: row["expected_return"]))
     if not selections:
         return {
             "selections": 0,
@@ -495,6 +501,8 @@ def _asian_handicap_report(
         "unit_profit": round(unit_profit, 6),
         "correct": len(positive),
         "pushes": len(pushes),
+        "selection_policy": "maximum one pre-kickoff edge-qualified market per match",
+        "covered_matches": len({row["match_id"] for row in selections}),
     }
 
 
@@ -530,13 +538,24 @@ def _over_under_report(matches: list[dict], snapshots: dict[str, dict]) -> dict:
 def _corners_report(matches: list[dict], snapshots: dict[str, dict]) -> dict:
     selections = []
     actual_event_samples = 0
+    probability_rows = {8.5: [], 9.5: []}
     for match in matches:
         actual_total = _actual_total_corners(match)
         if actual_total is None:
             continue
         actual_event_samples += 1
         snapshot = snapshots[match["match_id"]]
-        selection = _corner_selection(snapshot.get("event_probabilities", {}).get("corners", {}))
+        corners = snapshot.get("event_probabilities", {}).get("corners", {})
+        for line, key in [(8.5, "over_8_5_probability"), (9.5, "over_9_5_probability")]:
+            probability = _safe_float(corners.get(key))
+            if probability is not None:
+                probability_rows[line].append(
+                    {
+                        "probs": [1 - probability, probability],
+                        "actual_index": int(actual_total > line),
+                    }
+                )
+        selection = _corner_selection(corners)
         if selection is None:
             continue
         won = _corner_won(actual_total, selection["side"], selection["line"])
@@ -557,6 +576,10 @@ def _corners_report(matches: list[dict], snapshots: dict[str, dict]) -> dict:
             "hit_rate": None,
             "correct": 0,
             "line_summary": {},
+            "probability_metrics": {
+                str(line): _probability_rows_metrics(rows)
+                for line, rows in probability_rows.items()
+            },
         }
     correct = sum(1 for row in selections if row["won"])
     return {
@@ -565,6 +588,10 @@ def _corners_report(matches: list[dict], snapshots: dict[str, dict]) -> dict:
         "hit_rate": round(correct / len(selections), 6),
         "correct": correct,
         "line_summary": _corner_line_summary(selections),
+        "probability_metrics": {
+            str(line): _probability_rows_metrics(rows)
+            for line, rows in probability_rows.items()
+        },
     }
 
 

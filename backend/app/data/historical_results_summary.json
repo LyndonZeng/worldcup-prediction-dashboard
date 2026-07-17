@@ -1,21 +1,37 @@
 {
   "source": "martj42/international_results",
-  "captured_at": "2026-06-26T14:10:16.759955+00:00",
-  "result_rows": 49477,
+  "captured_at": "2026-07-17T15:13:16.094250+00:00",
+  "result_rows": 49520,
   "teams": {
     "mex": {
       "matches": 10,
-      "wins": 8,
+      "wins": 7,
       "draws": 2,
-      "losses": 0,
-      "goals_for": 20,
-      "goals_against": 2,
-      "last_10": "8W-2D-0L",
-      "goals_for_per_match": 2.0,
-      "goals_against_per_match": 0.2,
-      "form_index": 0.177,
-      "latest_date": "2026-06-24",
+      "losses": 1,
+      "goals_for": 19,
+      "goals_against": 5,
+      "last_10": "7W-2D-1L",
+      "goals_for_per_match": 1.9,
+      "goals_against_per_match": 0.5,
+      "form_index": 0.131,
+      "latest_date": "2026-07-05",
       "recent": [
+        {
+          "date": "2026-07-05",
+          "opponent": "England",
+          "goals_for": 2,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-30",
+          "opponent": "Ecuador",
+          "goals_for": 2,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-24",
           "opponent": "Czech Republic",
@@ -39,22 +55,6 @@
           "goals_against": 0,
           "result": "W",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-04",
-          "opponent": "Serbia",
-          "goals_for": 5,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-30",
-          "opponent": "Australia",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
@@ -69,8 +69,16 @@
       "goals_for_per_match": 0.9,
       "goals_against_per_match": 1.1,
       "form_index": -0.041,
-      "latest_date": "2026-06-24",
+      "latest_date": "2026-06-28",
       "recent": [
+        {
+          "date": "2026-06-28",
+          "opponent": "Canada",
+          "goals_for": 0,
+          "goals_against": 1,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-24",
           "opponent": "South Korea",
@@ -101,14 +109,6 @@
           "goals_for": 1,
           "goals_against": 0,
           "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-29",
-          "opponent": "Nicaragua",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
           "tournament": "Friendly"
         }
       ]
@@ -225,17 +225,33 @@
     },
     "can": {
       "matches": 10,
-      "wins": 3,
-      "draws": 6,
-      "losses": 1,
-      "goals_for": 15,
-      "goals_against": 6,
-      "last_10": "3W-6D-1L",
-      "goals_for_per_match": 1.5,
-      "goals_against_per_match": 0.6,
-      "form_index": 0.023,
-      "latest_date": "2026-06-24",
+      "wins": 4,
+      "draws": 4,
+      "losses": 2,
+      "goals_for": 16,
+      "goals_against": 9,
+      "last_10": "4W-4D-2L",
+      "goals_for_per_match": 1.6,
+      "goals_against_per_match": 0.9,
+      "form_index": 0.029,
+      "latest_date": "2026-07-04",
       "recent": [
+        {
+          "date": "2026-07-04",
+          "opponent": "Morocco",
+          "goals_for": 0,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-28",
+          "opponent": "South Africa",
+          "goals_for": 1,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-24",
           "opponent": "Switzerland",
@@ -259,38 +275,30 @@
           "goals_against": 1,
           "result": "D",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-05",
-          "opponent": "Republic of Ireland",
-          "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-01",
-          "opponent": "Uzbekistan",
-          "goals_for": 2,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "bih": {
       "matches": 10,
-      "wins": 3,
+      "wins": 2,
       "draws": 6,
-      "losses": 1,
-      "goals_for": 16,
-      "goals_against": 12,
-      "last_10": "3W-6D-1L",
-      "goals_for_per_match": 1.6,
-      "goals_against_per_match": 1.2,
-      "form_index": 0.01,
-      "latest_date": "2026-06-24",
+      "losses": 2,
+      "goals_for": 12,
+      "goals_against": 13,
+      "last_10": "2W-6D-2L",
+      "goals_for_per_match": 1.2,
+      "goals_against_per_match": 1.3,
+      "form_index": -0.039,
+      "latest_date": "2026-07-01",
       "recent": [
+        {
+          "date": "2026-07-01",
+          "opponent": "United States",
+          "goals_for": 0,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-24",
           "opponent": "Qatar",
@@ -320,14 +328,6 @@
           "opponent": "Panama",
           "goals_for": 1,
           "goals_against": 1,
-          "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-29",
-          "opponent": "North Macedonia",
-          "goals_for": 0,
-          "goals_against": 0,
           "result": "D",
           "tournament": "Friendly"
         }
@@ -391,16 +391,40 @@
     "sui": {
       "matches": 10,
       "wins": 4,
-      "draws": 5,
-      "losses": 1,
-      "goals_for": 20,
-      "goals_against": 11,
-      "last_10": "4W-5D-1L",
-      "goals_for_per_match": 2.0,
-      "goals_against_per_match": 1.1,
-      "form_index": 0.046,
-      "latest_date": "2026-06-24",
+      "draws": 4,
+      "losses": 2,
+      "goals_for": 18,
+      "goals_against": 12,
+      "last_10": "4W-4D-2L",
+      "goals_for_per_match": 1.8,
+      "goals_against_per_match": 1.2,
+      "form_index": 0.027,
+      "latest_date": "2026-07-11",
       "recent": [
+        {
+          "date": "2026-07-11",
+          "opponent": "Argentina",
+          "goals_for": 1,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-07",
+          "opponent": "Colombia",
+          "goals_for": 0,
+          "goals_against": 0,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-02",
+          "opponent": "Algeria",
+          "goals_for": 2,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-24",
           "opponent": "Canada",
@@ -416,30 +440,6 @@
           "goals_against": 1,
           "result": "W",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-13",
-          "opponent": "Qatar",
-          "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-06",
-          "opponent": "Australia",
-          "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-31",
-          "opponent": "Jordan",
-          "goals_for": 4,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
@@ -448,14 +448,30 @@
       "wins": 6,
       "draws": 2,
       "losses": 2,
-      "goals_for": 24,
+      "goals_for": 23,
       "goals_against": 11,
       "last_10": "6W-2D-2L",
-      "goals_for_per_match": 2.4,
+      "goals_for_per_match": 2.3,
       "goals_against_per_match": 1.1,
-      "form_index": 0.092,
-      "latest_date": "2026-06-24",
+      "form_index": 0.09,
+      "latest_date": "2026-07-05",
       "recent": [
+        {
+          "date": "2026-07-05",
+          "opponent": "Norway",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-29",
+          "opponent": "Japan",
+          "goals_for": 2,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-24",
           "opponent": "Scotland",
@@ -479,38 +495,46 @@
           "goals_against": 1,
           "result": "D",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-06",
-          "opponent": "Egypt",
-          "goals_for": 2,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-31",
-          "opponent": "Panama",
-          "goals_for": 6,
-          "goals_against": 2,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "mar": {
       "matches": 10,
       "wins": 6,
-      "draws": 4,
-      "losses": 0,
+      "draws": 3,
+      "losses": 1,
       "goals_for": 22,
-      "goals_against": 6,
-      "last_10": "6W-4D-0L",
+      "goals_against": 8,
+      "last_10": "6W-3D-1L",
       "goals_for_per_match": 2.2,
-      "goals_against_per_match": 0.6,
-      "form_index": 0.124,
-      "latest_date": "2026-06-24",
+      "goals_against_per_match": 0.8,
+      "form_index": 0.107,
+      "latest_date": "2026-07-09",
       "recent": [
+        {
+          "date": "2026-07-09",
+          "opponent": "France",
+          "goals_for": 0,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-04",
+          "opponent": "Canada",
+          "goals_for": 3,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-29",
+          "opponent": "Netherlands",
+          "goals_for": 1,
+          "goals_against": 1,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-24",
           "opponent": "Haiti",
@@ -526,30 +550,6 @@
           "goals_against": 0,
           "result": "W",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-13",
-          "opponent": "Brazil",
-          "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-07",
-          "opponent": "Norway",
-          "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-02",
-          "opponent": "Madagascar",
-          "goals_for": 4,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
@@ -665,17 +665,33 @@
     },
     "usa": {
       "matches": 10,
-      "wins": 6,
+      "wins": 5,
       "draws": 0,
-      "losses": 4,
-      "goals_for": 23,
-      "goals_against": 18,
-      "last_10": "6W-0D-4L",
-      "goals_for_per_match": 2.3,
-      "goals_against_per_match": 1.8,
-      "form_index": 0.048,
-      "latest_date": "2026-06-25",
+      "losses": 5,
+      "goals_for": 22,
+      "goals_against": 20,
+      "last_10": "5W-0D-5L",
+      "goals_for_per_match": 2.2,
+      "goals_against_per_match": 2.0,
+      "form_index": 0.005,
+      "latest_date": "2026-07-06",
       "recent": [
+        {
+          "date": "2026-07-06",
+          "opponent": "Belgium",
+          "goals_for": 1,
+          "goals_against": 4,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-01",
+          "opponent": "Bosnia and Herzegovina",
+          "goals_for": 2,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Turkey",
@@ -699,22 +715,6 @@
           "goals_against": 1,
           "result": "W",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-06",
-          "opponent": "Germany",
-          "goals_for": 1,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-31",
-          "opponent": "Senegal",
-          "goals_for": 3,
-          "goals_against": 2,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
@@ -723,14 +723,30 @@
       "wins": 4,
       "draws": 2,
       "losses": 4,
-      "goals_for": 13,
-      "goals_against": 13,
+      "goals_for": 12,
+      "goals_against": 11,
       "last_10": "4W-2D-4L",
-      "goals_for_per_match": 1.3,
-      "goals_against_per_match": 1.3,
-      "form_index": -0.012,
-      "latest_date": "2026-06-25",
+      "goals_for_per_match": 1.2,
+      "goals_against_per_match": 1.1,
+      "form_index": -0.01,
+      "latest_date": "2026-07-04",
       "recent": [
+        {
+          "date": "2026-07-04",
+          "opponent": "France",
+          "goals_for": 0,
+          "goals_against": 1,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-29",
+          "opponent": "Germany",
+          "goals_for": 1,
+          "goals_against": 1,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Australia",
@@ -754,38 +770,30 @@
           "goals_against": 4,
           "result": "L",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-05",
-          "opponent": "Nicaragua",
-          "goals_for": 4,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Morocco",
-          "goals_for": 1,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
         }
       ]
     },
     "aus": {
       "matches": 10,
       "wins": 3,
-      "draws": 2,
-      "losses": 5,
+      "draws": 3,
+      "losses": 4,
       "goals_for": 10,
-      "goals_against": 11,
-      "last_10": "3W-2D-5L",
+      "goals_against": 10,
+      "last_10": "3W-3D-4L",
       "goals_for_per_match": 1.0,
-      "goals_against_per_match": 1.1,
-      "form_index": -0.05,
-      "latest_date": "2026-06-25",
+      "goals_against_per_match": 1.0,
+      "form_index": -0.036,
+      "latest_date": "2026-07-03",
       "recent": [
+        {
+          "date": "2026-07-03",
+          "opponent": "Egypt",
+          "goals_for": 1,
+          "goals_against": 1,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Paraguay",
@@ -816,14 +824,6 @@
           "goals_for": 1,
           "goals_against": 1,
           "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-30",
-          "opponent": "Mexico",
-          "goals_for": 0,
-          "goals_against": 1,
-          "result": "L",
           "tournament": "Friendly"
         }
       ]
@@ -885,17 +885,25 @@
     },
     "ger": {
       "matches": 10,
-      "wins": 9,
-      "draws": 0,
+      "wins": 8,
+      "draws": 1,
       "losses": 1,
       "goals_for": 31,
-      "goals_against": 9,
-      "last_10": "9W-0D-1L",
+      "goals_against": 10,
+      "last_10": "8W-1D-1L",
       "goals_for_per_match": 3.1,
-      "goals_against_per_match": 0.9,
-      "form_index": 0.18,
-      "latest_date": "2026-06-25",
+      "goals_against_per_match": 1.0,
+      "form_index": 0.173,
+      "latest_date": "2026-06-29",
       "recent": [
+        {
+          "date": "2026-06-29",
+          "opponent": "Paraguay",
+          "goals_for": 1,
+          "goals_against": 1,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Ecuador",
@@ -925,14 +933,6 @@
           "opponent": "United States",
           "goals_for": 2,
           "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-31",
-          "opponent": "Finland",
-          "goals_for": 4,
-          "goals_against": 0,
           "result": "W",
           "tournament": "Friendly"
         }
@@ -996,16 +996,24 @@
     "civ": {
       "matches": 10,
       "wins": 7,
-      "draws": 1,
-      "losses": 2,
+      "draws": 0,
+      "losses": 3,
       "goals_for": 20,
-      "goals_against": 9,
-      "last_10": "7W-1D-2L",
+      "goals_against": 10,
+      "last_10": "7W-0D-3L",
       "goals_for_per_match": 2.0,
-      "goals_against_per_match": 0.9,
-      "form_index": 0.112,
-      "latest_date": "2026-06-25",
+      "goals_against_per_match": 1.0,
+      "form_index": 0.097,
+      "latest_date": "2026-06-30",
       "recent": [
+        {
+          "date": "2026-06-30",
+          "opponent": "Norway",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Cura\u00e7ao",
@@ -1037,30 +1045,30 @@
           "goals_against": 1,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Scotland",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "ecu": {
       "matches": 10,
       "wins": 4,
-      "draws": 5,
-      "losses": 1,
-      "goals_for": 12,
-      "goals_against": 6,
-      "last_10": "4W-5D-1L",
-      "goals_for_per_match": 1.2,
-      "goals_against_per_match": 0.6,
-      "form_index": 0.039,
-      "latest_date": "2026-06-25",
+      "draws": 4,
+      "losses": 2,
+      "goals_for": 11,
+      "goals_against": 7,
+      "last_10": "4W-4D-2L",
+      "goals_for_per_match": 1.1,
+      "goals_against_per_match": 0.7,
+      "form_index": 0.022,
+      "latest_date": "2026-06-30",
       "recent": [
+        {
+          "date": "2026-06-30",
+          "opponent": "Mexico",
+          "goals_for": 0,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Germany",
@@ -1092,30 +1100,30 @@
           "goals_against": 0,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-30",
-          "opponent": "Saudi Arabia",
-          "goals_for": 2,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "ned": {
       "matches": 10,
-      "wins": 6,
-      "draws": 3,
+      "wins": 5,
+      "draws": 4,
       "losses": 1,
-      "goals_for": 24,
-      "goals_against": 9,
-      "last_10": "6W-3D-1L",
-      "goals_for_per_match": 2.4,
-      "goals_against_per_match": 0.9,
-      "form_index": 0.11,
-      "latest_date": "2026-06-25",
+      "goals_for": 21,
+      "goals_against": 10,
+      "last_10": "5W-4D-1L",
+      "goals_for_per_match": 2.1,
+      "goals_against_per_match": 1.0,
+      "form_index": 0.075,
+      "latest_date": "2026-06-29",
       "recent": [
+        {
+          "date": "2026-06-29",
+          "opponent": "Morocco",
+          "goals_for": 1,
+          "goals_against": 1,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Tunisia",
@@ -1147,30 +1155,30 @@
           "goals_against": 1,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-03",
-          "opponent": "Algeria",
-          "goals_for": 0,
-          "goals_against": 1,
-          "result": "L",
-          "tournament": "Friendly"
         }
       ]
     },
     "jpn": {
       "matches": 10,
       "wins": 7,
-      "draws": 3,
-      "losses": 0,
-      "goals_for": 20,
+      "draws": 2,
+      "losses": 1,
+      "goals_for": 19,
       "goals_against": 7,
-      "last_10": "7W-3D-0L",
-      "goals_for_per_match": 2.0,
+      "last_10": "7W-2D-1L",
+      "goals_for_per_match": 1.9,
       "goals_against_per_match": 0.7,
-      "form_index": 0.14,
-      "latest_date": "2026-06-25",
+      "form_index": 0.126,
+      "latest_date": "2026-06-29",
       "recent": [
+        {
+          "date": "2026-06-29",
+          "opponent": "Brazil",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Sweden",
@@ -1202,14 +1210,6 @@
           "goals_against": 0,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "England",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
@@ -1219,13 +1219,21 @@
       "draws": 3,
       "losses": 4,
       "goals_for": 18,
-      "goals_against": 21,
+      "goals_against": 23,
       "last_10": "3W-3D-4L",
       "goals_for_per_match": 1.8,
-      "goals_against_per_match": 2.1,
-      "form_index": -0.044,
-      "latest_date": "2026-06-25",
+      "goals_against_per_match": 2.3,
+      "form_index": -0.049,
+      "latest_date": "2026-06-30",
       "recent": [
+        {
+          "date": "2026-06-30",
+          "opponent": "France",
+          "goals_for": 0,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-25",
           "opponent": "Japan",
@@ -1256,14 +1264,6 @@
           "goals_for": 2,
           "goals_against": 2,
           "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-01",
-          "opponent": "Norway",
-          "goals_for": 1,
-          "goals_against": 3,
-          "result": "L",
           "tournament": "Friendly"
         }
       ]
@@ -1325,17 +1325,49 @@
     },
     "bel": {
       "matches": 10,
-      "wins": 5,
-      "draws": 5,
-      "losses": 0,
-      "goals_for": 26,
-      "goals_against": 7,
-      "last_10": "5W-5D-0L",
-      "goals_for_per_match": 2.6,
-      "goals_against_per_match": 0.7,
-      "form_index": 0.107,
-      "latest_date": "2026-06-21",
+      "wins": 6,
+      "draws": 3,
+      "losses": 1,
+      "goals_for": 27,
+      "goals_against": 10,
+      "last_10": "6W-3D-1L",
+      "goals_for_per_match": 2.7,
+      "goals_against_per_match": 1.0,
+      "form_index": 0.115,
+      "latest_date": "2026-07-10",
       "recent": [
+        {
+          "date": "2026-07-10",
+          "opponent": "Spain",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-06",
+          "opponent": "United States",
+          "goals_for": 4,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-01",
+          "opponent": "Senegal",
+          "goals_for": 3,
+          "goals_against": 2,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-26",
+          "opponent": "New Zealand",
+          "goals_for": 5,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-21",
           "opponent": "Iran",
@@ -1343,54 +1375,46 @@
           "goals_against": 0,
           "result": "D",
           "tournament": "FIFA World Cup"
+        }
+      ]
+    },
+    "egy": {
+      "matches": 10,
+      "wins": 3,
+      "draws": 5,
+      "losses": 2,
+      "goals_for": 14,
+      "goals_against": 9,
+      "last_10": "3W-5D-2L",
+      "goals_for_per_match": 1.4,
+      "goals_against_per_match": 0.9,
+      "form_index": 0.0,
+      "latest_date": "2026-07-07",
+      "recent": [
+        {
+          "date": "2026-07-07",
+          "opponent": "Argentina",
+          "goals_for": 2,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-15",
-          "opponent": "Egypt",
+          "date": "2026-07-03",
+          "opponent": "Australia",
           "goals_for": 1,
           "goals_against": 1,
           "result": "D",
           "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-06",
-          "opponent": "Tunisia",
-          "goals_for": 5,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-02",
-          "opponent": "Croatia",
-          "goals_for": 2,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Mexico",
+          "date": "2026-06-26",
+          "opponent": "Iran",
           "goals_for": 1,
           "goals_against": 1,
           "result": "D",
-          "tournament": "Friendly"
-        }
-      ]
-    },
-    "egy": {
-      "matches": 10,
-      "wins": 5,
-      "draws": 3,
-      "losses": 2,
-      "goals_for": 16,
-      "goals_against": 8,
-      "last_10": "5W-3D-2L",
-      "goals_for_per_match": 1.6,
-      "goals_against_per_match": 0.8,
-      "form_index": 0.056,
-      "latest_date": "2026-06-21",
-      "recent": [
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-21",
           "opponent": "New Zealand",
@@ -1406,46 +1430,30 @@
           "goals_against": 1,
           "result": "D",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-06",
-          "opponent": "Brazil",
-          "goals_for": 1,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-28",
-          "opponent": "Russia",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Spain",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
-          "tournament": "Friendly"
         }
       ]
     },
     "irn": {
       "matches": 10,
       "wins": 4,
-      "draws": 4,
-      "losses": 2,
+      "draws": 5,
+      "losses": 1,
       "goals_for": 16,
-      "goals_against": 7,
-      "last_10": "4W-4D-2L",
+      "goals_against": 6,
+      "last_10": "4W-5D-1L",
       "goals_for_per_match": 1.6,
-      "goals_against_per_match": 0.7,
-      "form_index": 0.035,
-      "latest_date": "2026-06-21",
+      "goals_against_per_match": 0.6,
+      "form_index": 0.049,
+      "latest_date": "2026-06-26",
       "recent": [
+        {
+          "date": "2026-06-26",
+          "opponent": "Egypt",
+          "goals_for": 1,
+          "goals_against": 1,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-21",
           "opponent": "Belgium",
@@ -1477,14 +1485,6 @@
           "goals_against": 1,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Costa Rica",
-          "goals_for": 5,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
@@ -1493,14 +1493,22 @@
       "wins": 1,
       "draws": 2,
       "losses": 7,
-      "goals_for": 9,
-      "goals_against": 19,
+      "goals_for": 10,
+      "goals_against": 23,
       "last_10": "1W-2D-7L",
-      "goals_for_per_match": 0.9,
-      "goals_against_per_match": 1.9,
-      "form_index": -0.145,
-      "latest_date": "2026-06-21",
+      "goals_for_per_match": 1.0,
+      "goals_against_per_match": 2.3,
+      "form_index": -0.153,
+      "latest_date": "2026-06-26",
       "recent": [
+        {
+          "date": "2026-06-26",
+          "opponent": "Belgium",
+          "goals_for": 1,
+          "goals_against": 5,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-21",
           "opponent": "Egypt",
@@ -1532,85 +1540,93 @@
           "goals_against": 4,
           "result": "L",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-30",
-          "opponent": "Chile",
-          "goals_for": 4,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "FIFA Series"
         }
       ]
     },
     "esp": {
       "matches": 10,
-      "wins": 6,
-      "draws": 4,
+      "wins": 7,
+      "draws": 3,
       "losses": 0,
-      "goals_for": 23,
-      "goals_against": 4,
-      "last_10": "6W-4D-0L",
-      "goals_for_per_match": 2.3,
-      "goals_against_per_match": 0.4,
-      "form_index": 0.132,
-      "latest_date": "2026-06-21",
+      "goals_for": 17,
+      "goals_against": 3,
+      "last_10": "7W-3D-0L",
+      "goals_for_per_match": 1.7,
+      "goals_against_per_match": 0.3,
+      "form_index": 0.143,
+      "latest_date": "2026-07-14",
       "recent": [
         {
-          "date": "2026-06-21",
-          "opponent": "Saudi Arabia",
-          "goals_for": 4,
+          "date": "2026-07-14",
+          "opponent": "France",
+          "goals_for": 2,
           "goals_against": 0,
           "result": "W",
           "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-15",
-          "opponent": "Cape Verde",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
-          "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-08",
-          "opponent": "Peru",
-          "goals_for": 3,
+          "date": "2026-07-10",
+          "opponent": "Belgium",
+          "goals_for": 2,
           "goals_against": 1,
           "result": "W",
-          "tournament": "Friendly"
+          "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-04",
-          "opponent": "Iraq",
+          "date": "2026-07-06",
+          "opponent": "Portugal",
           "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "Friendly"
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-03-31",
-          "opponent": "Egypt",
-          "goals_for": 0,
+          "date": "2026-07-02",
+          "opponent": "Austria",
+          "goals_for": 3,
           "goals_against": 0,
-          "result": "D",
-          "tournament": "Friendly"
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-26",
+          "opponent": "Uruguay",
+          "goals_for": 1,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
         }
       ]
     },
     "cpv": {
       "matches": 10,
-      "wins": 2,
+      "wins": 1,
       "draws": 6,
-      "losses": 2,
-      "goals_for": 15,
+      "losses": 3,
+      "goals_for": 11,
       "goals_against": 14,
-      "last_10": "2W-6D-2L",
-      "goals_for_per_match": 1.5,
+      "last_10": "1W-6D-3L",
+      "goals_for_per_match": 1.1,
       "goals_against_per_match": 1.4,
-      "form_index": -0.034,
-      "latest_date": "2026-06-21",
+      "form_index": -0.079,
+      "latest_date": "2026-07-03",
       "recent": [
+        {
+          "date": "2026-07-03",
+          "opponent": "Argentina",
+          "goals_for": 2,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-26",
+          "opponent": "Saudi Arabia",
+          "goals_for": 0,
+          "goals_against": 0,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-21",
           "opponent": "Uruguay",
@@ -1634,38 +1650,30 @@
           "goals_against": 3,
           "result": "L",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-31",
-          "opponent": "Serbia",
-          "goals_for": 3,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-30",
-          "opponent": "Finland",
-          "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "FIFA Series"
         }
       ]
     },
     "ksa": {
       "matches": 10,
       "wins": 2,
-      "draws": 2,
-      "losses": 6,
+      "draws": 3,
+      "losses": 5,
       "goals_for": 8,
-      "goals_against": 16,
-      "last_10": "2W-2D-6L",
+      "goals_against": 15,
+      "last_10": "2W-3D-5L",
       "goals_for_per_match": 0.8,
-      "goals_against_per_match": 1.6,
-      "form_index": -0.104,
-      "latest_date": "2026-06-21",
+      "goals_against_per_match": 1.5,
+      "form_index": -0.089,
+      "latest_date": "2026-06-26",
       "recent": [
+        {
+          "date": "2026-06-26",
+          "opponent": "Cape Verde",
+          "goals_for": 0,
+          "goals_against": 0,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-21",
           "opponent": "Spain",
@@ -1697,30 +1705,30 @@
           "goals_against": 0,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-30",
-          "opponent": "Ecuador",
-          "goals_for": 1,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
         }
       ]
     },
     "uru": {
       "matches": 10,
-      "wins": 3,
+      "wins": 2,
       "draws": 6,
-      "losses": 1,
-      "goals_for": 11,
-      "goals_against": 10,
-      "last_10": "3W-6D-1L",
-      "goals_for_per_match": 1.1,
-      "goals_against_per_match": 1.0,
-      "form_index": 0.003,
-      "latest_date": "2026-06-21",
+      "losses": 2,
+      "goals_for": 8,
+      "goals_against": 11,
+      "last_10": "2W-6D-2L",
+      "goals_for_per_match": 0.8,
+      "goals_against_per_match": 1.1,
+      "form_index": -0.044,
+      "latest_date": "2026-06-26",
       "recent": [
+        {
+          "date": "2026-06-26",
+          "opponent": "Spain",
+          "goals_for": 0,
+          "goals_against": 1,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-21",
           "opponent": "Cape Verde",
@@ -1752,85 +1760,93 @@
           "goals_against": 1,
           "result": "D",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2025-11-18",
-          "opponent": "United States",
-          "goals_for": 1,
-          "goals_against": 5,
-          "result": "L",
-          "tournament": "Friendly"
         }
       ]
     },
     "fra": {
       "matches": 10,
       "wins": 8,
-      "draws": 1,
-      "losses": 1,
-      "goals_for": 27,
-      "goals_against": 9,
-      "last_10": "8W-1D-1L",
-      "goals_for_per_match": 2.7,
-      "goals_against_per_match": 0.9,
-      "form_index": 0.165,
-      "latest_date": "2026-06-22",
+      "draws": 0,
+      "losses": 2,
+      "goals_for": 23,
+      "goals_against": 8,
+      "last_10": "8W-0D-2L",
+      "goals_for_per_match": 2.3,
+      "goals_against_per_match": 0.8,
+      "form_index": 0.145,
+      "latest_date": "2026-07-14",
       "recent": [
         {
-          "date": "2026-06-22",
-          "opponent": "Iraq",
+          "date": "2026-07-14",
+          "opponent": "Spain",
+          "goals_for": 0,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-09",
+          "opponent": "Morocco",
+          "goals_for": 2,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-04",
+          "opponent": "Paraguay",
+          "goals_for": 1,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-30",
+          "opponent": "Sweden",
           "goals_for": 3,
           "goals_against": 0,
           "result": "W",
           "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-16",
-          "opponent": "Senegal",
-          "goals_for": 3,
+          "date": "2026-06-26",
+          "opponent": "Norway",
+          "goals_for": 4,
           "goals_against": 1,
           "result": "W",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-08",
-          "opponent": "Northern Ireland",
-          "goals_for": 3,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-04",
-          "opponent": "Ivory Coast",
-          "goals_for": 1,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-29",
-          "opponent": "Colombia",
-          "goals_for": 3,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "sen": {
       "matches": 10,
-      "wins": 5,
+      "wins": 4,
       "draws": 1,
-      "losses": 4,
-      "goals_for": 15,
-      "goals_against": 14,
-      "last_10": "5W-1D-4L",
-      "goals_for_per_match": 1.5,
-      "goals_against_per_match": 1.4,
-      "form_index": 0.014,
-      "latest_date": "2026-06-22",
+      "losses": 5,
+      "goals_for": 18,
+      "goals_against": 16,
+      "last_10": "4W-1D-5L",
+      "goals_for_per_match": 1.8,
+      "goals_against_per_match": 1.6,
+      "form_index": -0.019,
+      "latest_date": "2026-07-01",
       "recent": [
+        {
+          "date": "2026-07-01",
+          "opponent": "Belgium",
+          "goals_for": 2,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-26",
+          "opponent": "Iraq",
+          "goals_for": 5,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-22",
           "opponent": "Norway",
@@ -1854,38 +1870,30 @@
           "goals_against": 0,
           "result": "D",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-31",
-          "opponent": "United States",
-          "goals_for": 2,
-          "goals_against": 3,
-          "result": "L",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Gambia",
-          "goals_for": 3,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "irq": {
       "matches": 10,
-      "wins": 4,
+      "wins": 3,
       "draws": 1,
-      "losses": 5,
-      "goals_for": 9,
-      "goals_against": 15,
-      "last_10": "4W-1D-5L",
-      "goals_for_per_match": 0.9,
-      "goals_against_per_match": 1.5,
-      "form_index": -0.039,
-      "latest_date": "2026-06-22",
+      "losses": 6,
+      "goals_for": 7,
+      "goals_against": 19,
+      "last_10": "3W-1D-6L",
+      "goals_for_per_match": 0.7,
+      "goals_against_per_match": 1.9,
+      "form_index": -0.09,
+      "latest_date": "2026-06-26",
       "recent": [
+        {
+          "date": "2026-06-26",
+          "opponent": "Senegal",
+          "goals_for": 0,
+          "goals_against": 5,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-22",
           "opponent": "France",
@@ -1917,30 +1925,54 @@
           "goals_against": 1,
           "result": "D",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-29",
-          "opponent": "Andorra",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "nor": {
       "matches": 10,
-      "wins": 6,
-      "draws": 3,
-      "losses": 1,
-      "goals_for": 26,
-      "goals_against": 10,
-      "last_10": "6W-3D-1L",
-      "goals_for_per_match": 2.6,
-      "goals_against_per_match": 1.0,
-      "form_index": 0.112,
-      "latest_date": "2026-06-22",
+      "wins": 5,
+      "draws": 2,
+      "losses": 3,
+      "goals_for": 18,
+      "goals_against": 15,
+      "last_10": "5W-2D-3L",
+      "goals_for_per_match": 1.8,
+      "goals_against_per_match": 1.5,
+      "form_index": 0.031,
+      "latest_date": "2026-07-11",
       "recent": [
+        {
+          "date": "2026-07-11",
+          "opponent": "England",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-05",
+          "opponent": "Brazil",
+          "goals_for": 2,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-30",
+          "opponent": "Ivory Coast",
+          "goals_for": 2,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-26",
+          "opponent": "France",
+          "goals_for": 1,
+          "goals_against": 4,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-22",
           "opponent": "Senegal",
@@ -1948,109 +1980,93 @@
           "goals_against": 2,
           "result": "W",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-16",
-          "opponent": "Iraq",
-          "goals_for": 4,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-07",
-          "opponent": "Morocco",
-          "goals_for": 1,
-          "goals_against": 1,
-          "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-01",
-          "opponent": "Sweden",
-          "goals_for": 3,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Switzerland",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
-          "tournament": "Friendly"
         }
       ]
     },
     "arg": {
       "matches": 10,
-      "wins": 9,
+      "wins": 10,
       "draws": 0,
-      "losses": 1,
-      "goals_for": 26,
-      "goals_against": 2,
-      "last_10": "9W-0D-1L",
-      "goals_for_per_match": 2.6,
-      "goals_against_per_match": 0.2,
+      "losses": 0,
+      "goals_for": 29,
+      "goals_against": 7,
+      "last_10": "10W-0D-0L",
+      "goals_for_per_match": 2.9,
+      "goals_against_per_match": 0.7,
       "form_index": 0.18,
-      "latest_date": "2026-06-22",
+      "latest_date": "2026-07-15",
       "recent": [
         {
-          "date": "2026-06-22",
-          "opponent": "Austria",
+          "date": "2026-07-15",
+          "opponent": "England",
           "goals_for": 2,
-          "goals_against": 0,
+          "goals_against": 1,
           "result": "W",
           "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-16",
-          "opponent": "Algeria",
+          "date": "2026-07-11",
+          "opponent": "Switzerland",
           "goals_for": 3,
-          "goals_against": 0,
+          "goals_against": 1,
           "result": "W",
           "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-09",
-          "opponent": "Iceland",
+          "date": "2026-07-07",
+          "opponent": "Egypt",
           "goals_for": 3,
-          "goals_against": 0,
+          "goals_against": 2,
           "result": "W",
-          "tournament": "Friendly"
+          "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-06",
-          "opponent": "Honduras",
-          "goals_for": 2,
-          "goals_against": 0,
+          "date": "2026-07-03",
+          "opponent": "Cape Verde",
+          "goals_for": 3,
+          "goals_against": 2,
           "result": "W",
-          "tournament": "Friendly"
+          "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-03-31",
-          "opponent": "Zambia",
-          "goals_for": 5,
-          "goals_against": 0,
+          "date": "2026-06-27",
+          "opponent": "Jordan",
+          "goals_for": 3,
+          "goals_against": 1,
           "result": "W",
-          "tournament": "Friendly"
+          "tournament": "FIFA World Cup"
         }
       ]
     },
     "alg": {
       "matches": 10,
-      "wins": 7,
-      "draws": 1,
-      "losses": 2,
-      "goals_for": 19,
-      "goals_against": 7,
-      "last_10": "7W-1D-2L",
-      "goals_for_per_match": 1.9,
-      "goals_against_per_match": 0.7,
-      "form_index": 0.114,
-      "latest_date": "2026-06-22",
+      "wins": 5,
+      "draws": 2,
+      "losses": 3,
+      "goals_for": 18,
+      "goals_against": 11,
+      "last_10": "5W-2D-3L",
+      "goals_for_per_match": 1.8,
+      "goals_against_per_match": 1.1,
+      "form_index": 0.041,
+      "latest_date": "2026-07-02",
       "recent": [
+        {
+          "date": "2026-07-02",
+          "opponent": "Switzerland",
+          "goals_for": 0,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Austria",
+          "goals_for": 3,
+          "goals_against": 3,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-22",
           "opponent": "Jordan",
@@ -2074,38 +2090,38 @@
           "goals_against": 0,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-03",
-          "opponent": "Netherlands",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Uruguay",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
-          "tournament": "Friendly"
         }
       ]
     },
     "aut": {
       "matches": 10,
-      "wins": 7,
-      "draws": 1,
-      "losses": 2,
-      "goals_for": 25,
-      "goals_against": 7,
-      "last_10": "7W-1D-2L",
-      "goals_for_per_match": 2.5,
-      "goals_against_per_match": 0.7,
-      "form_index": 0.129,
-      "latest_date": "2026-06-22",
+      "wins": 5,
+      "draws": 2,
+      "losses": 3,
+      "goals_for": 16,
+      "goals_against": 12,
+      "last_10": "5W-2D-3L",
+      "goals_for_per_match": 1.6,
+      "goals_against_per_match": 1.2,
+      "form_index": 0.034,
+      "latest_date": "2026-07-02",
       "recent": [
+        {
+          "date": "2026-07-02",
+          "opponent": "Spain",
+          "goals_for": 0,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Algeria",
+          "goals_for": 3,
+          "goals_against": 3,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-22",
           "opponent": "Argentina",
@@ -2129,38 +2145,30 @@
           "goals_against": 0,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "South Korea",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-27",
-          "opponent": "Ghana",
-          "goals_for": 5,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "jor": {
       "matches": 10,
-      "wins": 3,
+      "wins": 2,
       "draws": 2,
-      "losses": 5,
-      "goals_for": 14,
-      "goals_against": 18,
-      "last_10": "3W-2D-5L",
-      "goals_for_per_match": 1.4,
-      "goals_against_per_match": 1.8,
-      "form_index": -0.058,
-      "latest_date": "2026-06-22",
+      "losses": 6,
+      "goals_for": 12,
+      "goals_against": 21,
+      "last_10": "2W-2D-6L",
+      "goals_for_per_match": 1.2,
+      "goals_against_per_match": 2.1,
+      "form_index": -0.106,
+      "latest_date": "2026-06-27",
       "recent": [
+        {
+          "date": "2026-06-27",
+          "opponent": "Argentina",
+          "goals_for": 1,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-22",
           "opponent": "Algeria",
@@ -2192,14 +2200,6 @@
           "goals_against": 4,
           "result": "L",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Nigeria",
-          "goals_for": 2,
-          "goals_against": 2,
-          "result": "D",
-          "tournament": "Friendly"
         }
       ]
     },
@@ -2208,14 +2208,38 @@
       "wins": 6,
       "draws": 3,
       "losses": 1,
-      "goals_for": 24,
-      "goals_against": 8,
+      "goals_for": 23,
+      "goals_against": 6,
       "last_10": "6W-3D-1L",
-      "goals_for_per_match": 2.4,
-      "goals_against_per_match": 0.8,
-      "form_index": 0.112,
-      "latest_date": "2026-06-23",
+      "goals_for_per_match": 2.3,
+      "goals_against_per_match": 0.6,
+      "form_index": 0.115,
+      "latest_date": "2026-07-06",
       "recent": [
+        {
+          "date": "2026-07-06",
+          "opponent": "Spain",
+          "goals_for": 0,
+          "goals_against": 1,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-02",
+          "opponent": "Croatia",
+          "goals_for": 2,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Colombia",
+          "goals_for": 0,
+          "goals_against": 0,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-23",
           "opponent": "Uzbekistan",
@@ -2231,46 +2255,38 @@
           "goals_against": 1,
           "result": "D",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-10",
-          "opponent": "Nigeria",
-          "goals_for": 2,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-06",
-          "opponent": "Chile",
-          "goals_for": 2,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "United States",
-          "goals_for": 2,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
         }
       ]
     },
     "cod": {
       "matches": 10,
       "wins": 4,
-      "draws": 3,
-      "losses": 3,
-      "goals_for": 10,
-      "goals_against": 6,
-      "last_10": "4W-3D-3L",
-      "goals_for_per_match": 1.0,
-      "goals_against_per_match": 0.6,
-      "form_index": 0.01,
-      "latest_date": "2026-06-23",
+      "draws": 2,
+      "losses": 4,
+      "goals_for": 12,
+      "goals_against": 8,
+      "last_10": "4W-2D-4L",
+      "goals_for_per_match": 1.2,
+      "goals_against_per_match": 0.8,
+      "form_index": -0.002,
+      "latest_date": "2026-07-01",
       "recent": [
+        {
+          "date": "2026-07-01",
+          "opponent": "England",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Uzbekistan",
+          "goals_for": 3,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-23",
           "opponent": "Colombia",
@@ -2294,22 +2310,6 @@
           "goals_against": 2,
           "result": "L",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-03",
-          "opponent": "Denmark",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Jamaica",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "FIFA World Cup qualification"
         }
       ]
     },
@@ -2319,13 +2319,21 @@
       "draws": 3,
       "losses": 5,
       "goals_for": 10,
-      "goals_against": 17,
+      "goals_against": 18,
       "last_10": "2W-3D-5L",
       "goals_for_per_match": 1.0,
-      "goals_against_per_match": 1.7,
-      "form_index": -0.089,
-      "latest_date": "2026-06-23",
+      "goals_against_per_match": 1.8,
+      "form_index": -0.092,
+      "latest_date": "2026-06-27",
       "recent": [
+        {
+          "date": "2026-06-27",
+          "opponent": "DR Congo",
+          "goals_for": 1,
+          "goals_against": 3,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-23",
           "opponent": "Portugal",
@@ -2357,30 +2365,46 @@
           "goals_against": 2,
           "result": "L",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-30",
-          "opponent": "Venezuela",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
-          "tournament": "FIFA Series"
         }
       ]
     },
     "col": {
       "matches": 10,
-      "wins": 7,
-      "draws": 1,
+      "wins": 6,
+      "draws": 2,
       "losses": 2,
-      "goals_for": 20,
-      "goals_against": 8,
-      "last_10": "7W-1D-2L",
-      "goals_for_per_match": 2.0,
-      "goals_against_per_match": 0.8,
-      "form_index": 0.114,
-      "latest_date": "2026-06-23",
+      "goals_for": 15,
+      "goals_against": 7,
+      "last_10": "6W-2D-2L",
+      "goals_for_per_match": 1.5,
+      "goals_against_per_match": 0.7,
+      "form_index": 0.08,
+      "latest_date": "2026-07-07",
       "recent": [
+        {
+          "date": "2026-07-07",
+          "opponent": "Switzerland",
+          "goals_for": 0,
+          "goals_against": 0,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-03",
+          "opponent": "Ghana",
+          "goals_for": 1,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Portugal",
+          "goals_for": 0,
+          "goals_against": 0,
+          "result": "D",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-23",
           "opponent": "DR Congo",
@@ -2396,101 +2420,93 @@
           "goals_against": 1,
           "result": "W",
           "tournament": "FIFA World Cup"
-        },
-        {
-          "date": "2026-06-07",
-          "opponent": "Jordan",
-          "goals_for": 2,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-01",
-          "opponent": "Costa Rica",
-          "goals_for": 3,
-          "goals_against": 1,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-29",
-          "opponent": "France",
-          "goals_for": 1,
-          "goals_against": 3,
-          "result": "L",
-          "tournament": "Friendly"
         }
       ]
     },
     "eng": {
       "matches": 10,
       "wins": 7,
-      "draws": 2,
-      "losses": 1,
-      "goals_for": 21,
-      "goals_against": 4,
-      "last_10": "7W-2D-1L",
-      "goals_for_per_match": 2.1,
-      "goals_against_per_match": 0.4,
-      "form_index": 0.138,
-      "latest_date": "2026-06-23",
+      "draws": 1,
+      "losses": 2,
+      "goals_for": 18,
+      "goals_against": 9,
+      "last_10": "7W-1D-2L",
+      "goals_for_per_match": 1.8,
+      "goals_against_per_match": 0.9,
+      "form_index": 0.107,
+      "latest_date": "2026-07-15",
       "recent": [
         {
-          "date": "2026-06-23",
-          "opponent": "Ghana",
-          "goals_for": 0,
-          "goals_against": 0,
-          "result": "D",
+          "date": "2026-07-15",
+          "opponent": "Argentina",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
           "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-17",
-          "opponent": "Croatia",
-          "goals_for": 4,
+          "date": "2026-07-11",
+          "opponent": "Norway",
+          "goals_for": 2,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-07-05",
+          "opponent": "Mexico",
+          "goals_for": 3,
           "goals_against": 2,
           "result": "W",
           "tournament": "FIFA World Cup"
         },
         {
-          "date": "2026-06-10",
-          "opponent": "Costa Rica",
-          "goals_for": 3,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-06",
-          "opponent": "New Zealand",
-          "goals_for": 1,
-          "goals_against": 0,
-          "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Japan",
-          "goals_for": 0,
+          "date": "2026-07-01",
+          "opponent": "DR Congo",
+          "goals_for": 2,
           "goals_against": 1,
-          "result": "L",
-          "tournament": "Friendly"
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Panama",
+          "goals_for": 2,
+          "goals_against": 0,
+          "result": "W",
+          "tournament": "FIFA World Cup"
         }
       ]
     },
     "cro": {
       "matches": 10,
       "wins": 6,
-      "draws": 1,
-      "losses": 3,
+      "draws": 0,
+      "losses": 4,
       "goals_for": 17,
-      "goals_against": 14,
-      "last_10": "6W-1D-3L",
+      "goals_against": 17,
+      "last_10": "6W-0D-4L",
       "goals_for_per_match": 1.7,
-      "goals_against_per_match": 1.4,
-      "form_index": 0.055,
-      "latest_date": "2026-06-23",
+      "goals_against_per_match": 1.7,
+      "form_index": 0.036,
+      "latest_date": "2026-07-02",
       "recent": [
+        {
+          "date": "2026-07-02",
+          "opponent": "Portugal",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Ghana",
+          "goals_for": 2,
+          "goals_against": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-23",
           "opponent": "Panama",
@@ -2514,38 +2530,38 @@
           "goals_against": 1,
           "result": "W",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-06-02",
-          "opponent": "Belgium",
-          "goals_for": 0,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-31",
-          "opponent": "Brazil",
-          "goals_for": 1,
-          "goals_against": 3,
-          "result": "L",
-          "tournament": "Friendly"
         }
       ]
     },
     "gha": {
       "matches": 10,
-      "wins": 3,
+      "wins": 1,
       "draws": 2,
-      "losses": 5,
-      "goals_for": 10,
-      "goals_against": 13,
-      "last_10": "3W-2D-5L",
-      "goals_for_per_match": 1.0,
-      "goals_against_per_match": 1.3,
-      "form_index": -0.055,
-      "latest_date": "2026-06-23",
+      "losses": 7,
+      "goals_for": 5,
+      "goals_against": 16,
+      "last_10": "1W-2D-7L",
+      "goals_for_per_match": 0.5,
+      "goals_against_per_match": 1.6,
+      "form_index": -0.148,
+      "latest_date": "2026-07-03",
       "recent": [
+        {
+          "date": "2026-07-03",
+          "opponent": "Colombia",
+          "goals_for": 0,
+          "goals_against": 1,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
+        {
+          "date": "2026-06-27",
+          "opponent": "Croatia",
+          "goals_for": 1,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-23",
           "opponent": "England",
@@ -2569,38 +2585,30 @@
           "goals_against": 1,
           "result": "D",
           "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-22",
-          "opponent": "Mexico",
-          "goals_for": 0,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-03-30",
-          "opponent": "Germany",
-          "goals_for": 1,
-          "goals_against": 2,
-          "result": "L",
-          "tournament": "Friendly"
         }
       ]
     },
     "pan": {
       "matches": 10,
-      "wins": 3,
+      "wins": 2,
       "draws": 3,
-      "losses": 4,
-      "goals_for": 14,
-      "goals_against": 15,
-      "last_10": "3W-3D-4L",
-      "goals_for_per_match": 1.4,
-      "goals_against_per_match": 1.5,
-      "form_index": -0.039,
-      "latest_date": "2026-06-23",
+      "losses": 5,
+      "goals_for": 11,
+      "goals_against": 17,
+      "last_10": "2W-3D-5L",
+      "goals_for_per_match": 1.1,
+      "goals_against_per_match": 1.7,
+      "form_index": -0.087,
+      "latest_date": "2026-06-27",
       "recent": [
+        {
+          "date": "2026-06-27",
+          "opponent": "England",
+          "goals_for": 0,
+          "goals_against": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup"
+        },
         {
           "date": "2026-06-23",
           "opponent": "Croatia",
@@ -2631,14 +2639,6 @@
           "goals_for": 4,
           "goals_against": 2,
           "result": "W",
-          "tournament": "Friendly"
-        },
-        {
-          "date": "2026-05-31",
-          "opponent": "Brazil",
-          "goals_for": 2,
-          "goals_against": 6,
-          "result": "L",
           "tournament": "Friendly"
         }
       ]
